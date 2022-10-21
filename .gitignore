@@ -1,0 +1,16 @@
+/node_modules
+/storage/*.key
+/vendor
+.env
+.htaccess
+.well-known
+stderr.log
+.ftpquota
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+.elasticbeanstalk/
+misc
+.DS_Store
