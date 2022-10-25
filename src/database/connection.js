@@ -8,7 +8,6 @@ var mysql = require('mysql');
 
 require('dotenv').config();
 
-
 //Connection class to connect to database
 
 class Connection {

@@ -105,7 +105,9 @@ class Base{
     _generateDataObject(){
         let dataObject = {};
         this._attributes().forEach((item,index)=>{
-            dataObject[item] = this[item];
+            if( item != "created_at" && item != "updated_at"){
+                dataObject[item] = this[item];
+            }
         });
         return dataObject;
     }
@@ -119,7 +121,8 @@ class Base{
             },
             first : async ()=>{
                 let result =  await vm._select(params);
-
+                
+                if(!result || result.length == 0){ return null; }
                 Object.keys(result[0]).forEach((item,index)=>{
                     if(item!='id'){
                         vm[item] = Object.values(result[0])[index];
@@ -148,6 +151,11 @@ class Base{
             //Set inserted id to _uniqueKey
             this._setUniqueKey(result.insertId);
         }
+    }
+
+    async delete(){
+        this._delete({id : this._uniqueKey});
+        
     }
 
 

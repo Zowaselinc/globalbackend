@@ -13,38 +13,46 @@ class Router{
             };
 
         }
-        
+
         this.router = express.Router();
 
     }
 
+    parseArgs(...args){
+        let argLen = args.length;
 
-    get(path,handler){
+        let path = args[0];
+        
+        let handler = args[argLen-1];
+
+        let addonMiddleware = argLen > 2  ? args[1] : [];
+
+        let middlewares = [];
+
         if(this.middleware){
-            return this.router.get(path,this.middleware,handler);
+            middlewares.push(this.middleware);
         }
-        return this.router.get(path,handler);
+
+        var finalArgs = [path,[ ...middlewares, ...addonMiddleware ],handler];
+
+        return finalArgs;
     }
 
-    post(path,handler){
-        if(this.middleware){
-            return this.router.post(path,this.middleware,handler);
-        }
-        return this.router.post(path,handler);
+
+    get(...args){
+        return this.router.get(...this.parseArgs(...args));
     }
 
-    patch(path,handler){
-        if(this.middleware){
-            return this.router.patch(path,this.middleware,handler);
-        }
-        return this.router.patch(path,handler);
+    post(...args){
+        return this.router.post(...this.parseArgs(...args));
     }
 
-    put(path,handler){
-        if(this.middleware){
-            return this.router.put(path,this.middleware,handler);
-        }
-        return this.router.put(path,handler);
+    patch(...args){
+        return this.router.patch(...this.parseArgs(...args));
+    }
+
+    put(...args){
+        return this.router.put(...this.parseArgs(...args));
     }
 }
 

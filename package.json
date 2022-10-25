@@ -21,15 +21,19 @@
   "license": "ISC",
   "dependencies": {
     "amqplib": "^0.10.3",
+    "bcryptjs": "^2.4.3",
     "dotenv": "^9.0.2",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
+    "express-validator": "^6.14.2",
+    "jsonwebtoken": "^8.5.1",
     "md5": "^2.3.0",
     "mysql": "^2.18.1",
     "mysql2": "^2.3.3",
     "mysql2-extended": "^1.1.3",
     "node-cron": "^3.0.1",
-    "nodemon": "^2.0.19"
+    "nodemon": "^2.0.20",
+    "sequelize": "^6.25.3"
   },
   "devDependencies": {
     "link-module-alias": "^1.2.0"
