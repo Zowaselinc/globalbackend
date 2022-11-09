@@ -26,7 +26,7 @@ class Server{
 
         //Sync Database Models
         //{ force: true }
-        DB.sequelize.sync({ force: true })
+        DB.sequelize.sync()
         .then(() => {
             console.log("Synced db.");
         })
