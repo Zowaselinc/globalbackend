@@ -46,8 +46,8 @@ class Mailer{
         return this;
     }
 
-    template(template){
-        this.Mail.html = Utilities.loadTemplate(template);
+    template(template, data = {}){
+        this.Mail.html = Utilities.loadTemplate(template, data);
         return this;
     }
 
