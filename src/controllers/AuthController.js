@@ -1,9 +1,10 @@
 
 const jwt = require("jsonwebtoken");
-const { User, Company, AccessToken, Merchant, Partner } = require("~models");
+const { User, Company, AccessToken, Merchant, Partner, Buyer, Agent, UserCode } = require("~models");
 const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const Mailer = require('~services/mailer');
+const { buyers } = require("~database/models");
 
 
 class AuthController{
@@ -30,9 +31,13 @@ class AuthController{
 
         let merchant = await Merchant().where({user_id : user._uniqueKey}).first();
         let partner = await Partner().where({user_id : user._uniqueKey}).first();
+        let agent = await Agent().where({user_id : user._uniqueKey}).first();
+        let buyer = await Buyer().where({user_id : user._uniqueKey}).first();
         
         if(merchant){  user.merchant = merchant  }
         if(partner){  user.partner = partner  }
+        if(buyer){  user.buyer = buyer  }
+        if(agent){  user.agent = agent  }
 
         let passwordCheck =  await bcrypt.compare(data.password, user.password)
 
@@ -94,9 +99,9 @@ class AuthController{
             }
         }
 
-        var merchant = Merchant();
-        merchant.user_id = user._uniqueKey;
-        await merchant.save().catch((error => {
+        var UserTypeModel = data.user_type == "merchant" ? Merchant() : Buyer();
+        UserTypeModel.user_id = user._uniqueKey;
+        await UserTypeModel.save().catch((error => {
             return res.status(400).json({
                 error : true,
                 message : error.sqlMessage
@@ -305,6 +310,86 @@ class AuthController{
                 message : e.sqlMessage
             }
         }
+
+
+    }
+
+    static async sendVerificationCode(req, res){
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+          return res.status(400).json({ errors: errors.array() });
+        }
+
+
+        const data = req.body;
+
+        function getRandomInt(min, max) {
+            min = Math.ceil(min);
+            max = Math.floor(max);
+            return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
+        }
+
+        var code = getRandomInt(100000,999999);
+
+        //Check for exixting
+        var formerCode = await UserCode().where({email : data.email, type : "verification"}).first();
+
+        if(!formerCode){
+            var userCode = UserCode();
+
+            userCode.email = data.email;
+            userCode.type = "verification";
+            userCode.code = code;
+            userCode.save().catch(error => {
+                console.log(error.sqlMessage)
+            });
+        }else{
+            formerCode.code = code;
+            formerCode.save().catch(error => {
+                console.log(error.sqlMessage)
+            });
+        }
+
+
+
+
+        Mailer()
+        .to(data.email).from("hello@ctrixx.com")
+        .subject('Verify').template('emails.OTPEmail',{code : code}).send();
+
+
+        res.status(200).json({
+            status : true,
+            message : "Code sent successfully"
+        });
+
+    }
+
+    static async verifyCode(req, res){
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+          return res.status(400).json({ errors: errors.array() });
+        }
+
+
+        const data = req.body;
+
+        var userCode = await UserCode().where({email : data.email, type : "verification"}).first();
+
+        if(userCode.code == data.code){
+            return res.status(200).json({
+                status : true,
+                message : "Code verified successfully"
+            });
+        }else{
+            return res.status(400).json({
+                error : true,
+                message : "Invalid code"
+            });
+        }
+
 
 
     }

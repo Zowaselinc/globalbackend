@@ -29,6 +29,7 @@ module.exports = {
         body('email').isString().isEmail(),
         body('phone').isLength({max : 11}).isNumeric(),
         body('password').isStrongPassword(),
+        body('user_type').isString(),
         ...Constraints.companyIsOptional
     ],
 
@@ -38,6 +39,7 @@ module.exports = {
         body('email').isString().isEmail(),
         body('phone').isLength({max : 11}).isNumeric(),
         body('password').isStrongPassword(),
+        body('user_type').isString(),
         body('partnership_type').isString(),
         ...Constraints.companyIsRequired
     ],
@@ -48,8 +50,18 @@ module.exports = {
         body('email').isString().isEmail(),
         body('phone').isLength({max : 11}).isNumeric(),
         body('password').isStrongPassword(),
+        body('user_type').isString(),
         body('agent_type').isString(),
         ...Constraints.companyIsRequired
+    ],
+
+    SendVerificationValidator : [
+        body('email').isString().isEmail(),
+    ],
+
+    ConfirmVerificationValidator : [
+        body('email').isString().isEmail(),
+        body('code').isString()
     ],
 
     LoginValidator : [

@@ -14,7 +14,7 @@ class TemplateHelper{
     static parseDataToTemplate(templateString,data){
         var keys = Object.keys(data);
         keys.forEach((variable)=>{
-            templateString.replace(`{{${variable}}}`,data[variable]);
+            templateString = templateString.replace(`{{${variable}}}`,data[variable]);
         });
         return templateString;
     }

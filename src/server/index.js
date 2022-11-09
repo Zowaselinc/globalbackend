@@ -8,9 +8,17 @@ const DB = require("~database/models");
 const { Connection, RawConnection } = require('~database/connection');
 const { User } = require('../models');
 
+
+const cors = require('cors');
+
 class Server{
 
     static boot(port=3000){
+
+        App.use(cors({
+            origin: '*',
+            methods: ['GET','POST']
+        }));
 
         // Register App Routes
         Routes(App).register();
