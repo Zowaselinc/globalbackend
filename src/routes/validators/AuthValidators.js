@@ -1,13 +1,16 @@
 const { body } = require('express-validator');
 
-module.exports = {
+const Constraints = {
+    companyIsRequired : [
+        body('company_name').isString(),
+        body('company_address').isString(),
+        body('company_state').isString(),
+        body('rc_number').isString(),
+        body('company_email').isString().isEmail(),
+        body('company_phone').isLength({max : 11}).isNumeric(),
+    ],
 
-    RegisterMerchantValidator : [
-        body('first_name').isString(),
-        body('last_name').isString(),
-        body('email').isString().isEmail(),
-        body('phone').isLength({max : 11}).isNumeric(),
-        body('password').isStrongPassword(),
+    companyIsOptional : [
         body('has_company').optional().isBoolean(),
         body('company_name').if(body('has_company').exists()).isString(),
         body('company_address').if(body('has_company').exists()).isString(),
@@ -15,6 +18,18 @@ module.exports = {
         body('rc_number').if(body('has_company').exists()).isString(),
         body('company_email').if(body('has_company').exists()).isString().isEmail(),
         body('company_phone').if(body('has_company').exists()).isLength({max : 11}).isNumeric(),
+    ]
+};
+
+module.exports = {
+
+    RegisterMerchantBuyerValidator : [
+        body('first_name').isString(),
+        body('last_name').isString(),
+        body('email').isString().isEmail(),
+        body('phone').isLength({max : 11}).isNumeric(),
+        body('password').isStrongPassword(),
+        ...Constraints.companyIsOptional
     ],
 
     RegisterPartnerValidator : [
@@ -24,12 +39,17 @@ module.exports = {
         body('phone').isLength({max : 11}).isNumeric(),
         body('password').isStrongPassword(),
         body('partnership_type').isString(),
-        body('company_name').isString(),
-        body('company_address').isString(),
-        body('company_state').isString(),
-        body('rc_number').isString(),
-        body('company_email').isString().isEmail(),
-        body('company_phone').isLength({max : 11}).isNumeric(),
+        ...Constraints.companyIsRequired
+    ],
+
+    RegisterAgentValidator : [
+        body('first_name').isString(),
+        body('last_name').isString(),
+        body('email').isString().isEmail(),
+        body('phone').isLength({max : 11}).isNumeric(),
+        body('password').isStrongPassword(),
+        body('agent_type').isString(),
+        ...Constraints.companyIsRequired
     ],
 
     LoginValidator : [

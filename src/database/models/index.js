@@ -25,6 +25,8 @@ DB.sequelize = sequelize;
 //Register Sequelize Models
 DB.users = require("./user.model.js").Model(sequelize, Sequelize);
 DB.merchants = require("./merchant.model.js").Model(sequelize, Sequelize);
+DB.buyers = require("./buyer.model.js").Model(sequelize, Sequelize);
+DB.agents = require("./agent.model.js").Model(sequelize, Sequelize);
 DB.companies = require("./company.model.js").Model(sequelize, Sequelize);
 DB.partners = require("./partner.model.js").Model(sequelize, Sequelize);
 DB.accessTokens = require("./access_token.model.js").Model(sequelize, Sequelize);

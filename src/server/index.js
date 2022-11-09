@@ -18,13 +18,13 @@ class Server{
 
         //Sync Database Models
         //{ force: true }
-        // DB.sequelize.sync({ force: true })
-        // .then(() => {
-        //     console.log("Synced db.");
-        // })
-        // .catch((err) => {
-        //     console.log("Failed to sync db: " + err.message);
-        // });
+        DB.sequelize.sync({ force: true })
+        .then(() => {
+            console.log("Synced db.");
+        })
+        .catch((err) => {
+            console.log("Failed to sync db: " + err.message);
+        });
 
         const test = async function(){
             var user = await User();
