@@ -119,9 +119,9 @@ class AuthController{
 
         await AuthController.saveToken(user,token);
 
-        // Mailer()
-        // .to(data.email).from("hello@ctrixx.com")
-        // .subject('Verify Email').template('emails.verifyEmail').send();
+        Mailer()
+        .to(data.email).from("hello@ctrixx.com")
+        .subject('Welcome').template('emails.WelcomeEmail').send();
 
         res.status(200).json({
             status : true,
@@ -169,9 +169,9 @@ class AuthController{
             });
         }));;
 
-        // Mailer()
-        // .to(data.email).from("hello@ctrixx.com")
-        // .subject('Verify Email').template('emails.verifyEmail').send();
+        Mailer()
+        .to(data.email).from("hello@ctrixx.com")
+        .subject('Welcome').template('emails.WelcomeEmail').send();
 
         
         const token = jwt.sign(
@@ -228,9 +228,9 @@ class AuthController{
             });
         }));;
 
-        // Mailer()
-        // .to(data.email).from("hello@ctrixx.com")
-        // .subject('Verify Email').template('emails.verifyEmail').send();
+        Mailer()
+        .to(data.email).from("hello@ctrixx.com")
+        .subject('Welcome').template('emails.WelcomeEmail').send();
         
         const token = jwt.sign(
             {user_id: user._uniqueKey},
@@ -447,7 +447,7 @@ class AuthController{
 
         Mailer()
         .to(data.email).from("hello@ctrixx.com")
-        .subject('Verify').template('emails.ResetEmail',{code : resetToken}).send();
+        .subject('Reset Password').template('emails.ResetEmail',{code : resetToken}).send();
 
 
         res.status(200).json({
