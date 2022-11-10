@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email OTP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Radio+Canada&display=swap" rel="stylesheet">
+    <style type="text/css">
+        body {
+    margin:0;
+    background-color:#ffffff
+}
+table{
+    border-spacing:0;
+    width: 100%;
+}
+img{
+    border:0;
+}
+.wrapper{
+    width:100%;
+    table-layout:fixed;
+    background-color:#ffffff;
+    padding-bottom:60px;
+}
+.main{
+    background-color:#ffffff;
+    margin:0 auto;
+    width:100%;
+    max-width:600px;
+    border-spacing:0;
+    border-radius: 7px;
+    font-family: 'Radio Canada', sans-serif;
+    color: #171a1b;
+    padding-top: 100px;
+    border: 1px #616161;
+}
+
+.two-columns{
+    text-align: center;
+    width: 100%;
+    max-width: 600px;
+    height: 120px;
+    background-color: #008D40;
+    border-radius: 7px 7px 0 0;
+    padding: 0;
+}
+.two-columns .column{
+    width: 100%;
+    max-width: 300px;
+    display:inline;
+    vertical-align: top;
+    text-align: center;
+}       
+.logo{
+    width: 100%;
+    max-width: 600px;
+    height: 39px;
+    padding-top:10px;
+}
+.tablecontainer{
+    width: 65%;
+    height: 200px;
+    margin: auto;
+    background-color: #EEEEEE;
+    margin-bottom: 50px;
+}
+.tableheader{
+    width: 191px;
+    height: 32px;
+    padding-top: 10px;
+    border-bottom: 1px solid #616161;
+    color: #6A6A6A;
+    font-weight: 700;
+    font-size: 19px;
+    font-family: 'Radio Canada', sans-serif;
+    Font-style: Bold;
+    line-height: 31.67px;  
+}
+.tablecontent{
+    color: #616161;
+    Font-family: 'Radio Canada', sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    Line-height: 27px;
+    text-align: center;
+}
+.tablecontent-2{
+    color: #616161;
+    Font-family: 'Radio Canada', sans-serif;
+    font-size: 16px;
+    Line-height: 27px;
+    padding-left: 35px;
+    text-align: center;
+    padding: 15px 1px 10px 5px;
+}
+.button-dark{
+    background-color: #008D40;
+    color: #ffffff;
+    text-decoration: none;
+    padding: 15px 32px;
+    border-radius: 5px;
+    font-weight: bold;
+    width: 295px;
+}
+p.otp-header{
+    color: #1D1D1D;
+    font-weight: 700;
+    font-size: 36px;
+    font-family: 'Radio Canada', sans-serif;
+    Font-style: Bold;
+    line-height: 50.4px;  
+}
+
+p.body{
+    color: #616161;
+    Font-family: 'Radio Canada', sans-serif;
+    font-size: 16px;
+    font-weight: 500px;
+    Line-height: 27px;
+    text-align: center;
+    padding-bottom: 10px;
+    width:568px;
+    height: 27px;
+}
+p.body-2{
+    color: #616161;
+    Font-family: 'Radio Canada', sans-serif;
+    font-size: 16px;
+    font-weight: 500px;
+    Line-height: 27px;
+    text-align: center;
+    padding-bottom: 60px;
+    width:100%;
+    max-width: fit-content;
+    height: 27px;
+    margin: 0 auto;
+    /* table-layout: fixed; */
+}
+p.bodymid{
+    color: #616161;
+    Font-family: 'Radio Canada', sans-serif;
+    font-size: 16px;
+    font-weight:500px;
+    Line-height: 27px;
+    text-align: center;
+    padding-top: 20px;
+    padding-bottom: 10px;
+    margin-bottom: 0;
+    width: 340px;
+    height: 27px;
+    margin: 0 auto;
+}
+p.bodylast{
+    color: #616161;
+    Font-family: 'Radio Canada', sans-serif;
+    font-size: 16px;
+    font-weight:500px;
+    Line-height: 27px;
+    text-align: center;
+    padding-top: 40px;
+    padding-bottom: 10px;
+    width: 537px;
+} 
+.notification{
+    width: 100%;
+    border-left:1px solid #f0efeb;
+    border-right:1px solid #f0efeb;
+    border-bottom:1px solid #f0efeb;
+    border-radius: 0 0 7px 7px;
+}
+span{
+    color: #008D40;
+    font-weight: bold;
+}
+hr{
+    margin: 5px 112px 5px 112px;
+    width: 340px;
+}
+
+@media (max-width:425px) {
+    body {
+        margin:0 auto;
+        background-color:#ffffff
+    }
+    table{
+        border-spacing:0;
+        width: 100%;
+        max-width: 425px;
+        margin: 0;
+    }
+    img{
+        border:0;
+    }
+    .wrapper{
+        width:100%;
+        max-width: 425px;
+        /* table-layout: fixed; */
+        background-color:#ffffff;
+        padding-bottom:60px;
+        margin: 0;
+    }
+    .main{
+        background-color:#ffffff;
+        margin:0;
+        width:100%;
+        max-width:425px;
+        border-spacing:0;
+        border-radius: 7px;
+        font-family: 'Radio Canada', sans-serif;
+        /* color: #171a1b; */
+        padding-top: 100px;
+        border: 1px #616161;
+        table-layout: fixed;
+    }
+    
+    .two-columns{
+        text-align: center;
+        width: 100%;
+        max-width: 420px;
+        height: 120px;
+        background-color: #008D40;
+        border-radius: 7px 7px 0 0;
+        padding: 0;
+    }
+    .two-columns .column{
+        width: 100%;
+        max-width: 300px;
+        display:inline;
+        /* vertical-align: top; */
+        text-align: center;
+        margin: 0;
+    }        
+    .logo{
+        width: 100%;
+        max-width: 425px;
+        height: 39px;
+        padding-top:10px;
+        margin: 0 auto;
+    }
+    
+    .button-dark{
+        background-color: #008D40;
+        color: #ffffff;
+        text-decoration: none;
+        padding: 15px 32px;
+        border-radius: 5px;
+        font-weight: bold;
+        width: 295px;
+    }
+    p.otp-header{
+        color: #1D1D1D;
+        font-weight: 700;
+        font-size: 30px;
+        font-family: 'Radio Canada', sans-serif;
+        Font-style: Bold;
+        line-height: 50.4px;
+        width: 100%;
+        max-width: fit-content; 
+        margin: 32px auto;
+    }
+
+    p.body{
+        color: #616161;
+        Font-family: 'Radio Canada', sans-serif;
+        font-size: 16px;
+        font-weight: 500px;
+        Line-height: 27px;
+        text-align: center;
+        padding-bottom: 48px;
+        width:100%;
+        max-width: fit-content;
+        height: 27px;
+        margin: 0 auto;
+        /* table-layout: fixed; */
+    }
+    p.body-2{
+        color: #616161;
+        Font-family: 'Radio Canada', sans-serif;
+        font-size: 16px;
+        font-weight: 500px;
+        Line-height: 27px;
+        text-align: center;
+        padding-bottom: 60px;
+        width:100%;
+        max-width: fit-content;
+        height: 27px;
+        margin: 0 auto;
+        /* table-layout: fixed; */
+    }
+    p.bodymid{
+        color: #616161;
+        Font-family: 'Radio Canada', sans-serif;
+        font-size: 16px;
+        font-weight:500px;
+        Line-height: 27px;
+        text-align: center;
+        padding-bottom: 7px;
+        margin-bottom: 0;
+        width: 100%;
+        max-width: fit-content;
+        margin: auto;
+    }
+    p.bodylast{
+        color: #616161;
+        Font-family: 'Radio Canada', sans-serif;
+        font-size: 16px;
+        font-weight:500px;
+        Line-height: 27px;
+        text-align: center;
+        padding-top: 35px;
+        padding-bottom: 10px;
+        width: 100%;
+        max-width: fit-content;
+        margin: 0 auto;
+    } 
+    .notification{
+        width: 100%;
+        max-width: 425px;
+        table-layout: fixed;
+        border-left:1px solid #f0efeb;
+        border-right:1px solid #f0efeb;
+        border-bottom:1px solid #f0efeb;
+        border-radius: 0 0 7px 7px;
+    }
+    span{
+        color: #008D40;
+        font-weight: bold;
+    }
+    hr{
+        margin: auto;
+        width: 80%;
+        max-width: 425px;
+    }
+    
+}
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <table class="main">
+
+            <!-- LOGO SECTION -->
+            
+            <tr>
+                <td class="two-columns">
+                    <table class="column">
+                        <tr>
+                            <td>
+                                <a class="logo" href="#"><img src="https://zowaselassets-com.stackstaging.com/logo.png" alt="Zowasel logo" title="Zowasel logo"></a>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+                
+            
+               
+            <!-- TITLE,BODY AND BUTTON -->
+                <tr>
+                    <td>
+                        <table class="notification">
+                            <tr>
+                                <td style="text-align:center; padding:15px">
+                                    <p class="otp-header">Reset Password</p>
+                                    <p class="body">We just recieved a request to reset your password on your account associated with Zowasel</p>
+                                    <p class="body-2">Click the button below to complete the password reset process</p>
+                                    <a href="#" class="button-dark" style="color:#FFFFFF;">Reset Password</a>
+                                    <p class="bodymid">This is an automated message, do not reply.</p>
+                                    
+                                    <hr>
+                                    <p class="body">Thank you for choosing Zowasel</p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+        </table>
+    </div>
+</body>
+</html>

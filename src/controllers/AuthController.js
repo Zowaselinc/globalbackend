@@ -5,6 +5,9 @@ const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const Mailer = require('~services/mailer');
 const { buyers } = require("~database/models");
+const md5  = require('md5');
+const { reset } = require("nodemon");
+const { use } = require("~routes/api");
 
 
 class AuthController{
@@ -237,7 +240,7 @@ class AuthController{
 
         await AuthController.saveToken(user,token);
 
-        res.status(200).json({
+        return res.status(200).json({
             status : true,
             token : token,
             user : user
@@ -359,7 +362,7 @@ class AuthController{
         .subject('Verify').template('emails.OTPEmail',{code : code}).send();
 
 
-        res.status(200).json({
+        return res.status(200).json({
             status : true,
             message : "Code sent successfully"
         });
@@ -394,6 +397,131 @@ class AuthController{
 
     }
 
+    static async sendResetEmail(req, res){
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+          return res.status(400).json({ errors: errors.array() });
+        }
+
+
+        const data = req.body;
+
+        function getRandomInt(min, max) {
+            min = Math.ceil(min);
+            max = Math.floor(max);
+            return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
+        }
+
+        var code = getRandomInt(10000000,99999999);
+
+        var user = await User().where({ email : data.email}).first()
+
+        if(!user){
+            return res.status(400).json({
+                error : true,
+                message : "A user with this email does not exist"
+            });
+        }
+
+        var resetToken = md5(code);
+
+        //Check for exixting
+        var formerCode = await UserCode().where({email : data.email, type : "reset"}).first();
+
+        if(!formerCode){
+            var userCode = UserCode();
+
+            userCode.email = data.email;
+            userCode.type = "reset";
+            userCode.code = resetToken;
+            userCode.save().catch(error => {
+                console.log(error.sqlMessage)
+            });
+        }else{
+            formerCode.code = resetToken;
+            formerCode.save().catch(error => {
+                console.log(error.sqlMessage)
+            });
+        }
+
+        Mailer()
+        .to(data.email).from("hello@ctrixx.com")
+        .subject('Verify').template('emails.ResetEmail',{code : resetToken}).send();
+
+
+        res.status(200).json({
+            status : true,
+            message : "Code sent successfully"
+        });
+
+    }
+
+    static async verifyResetToken(req, res){
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+          return res.status(400).json({ errors: errors.array() });
+        }
+
+
+        const data = req.body;
+
+        var userCode = await UserCode().where({ code : data.token}).first();
+
+        if(!userCode){
+            res.status(400).json({
+                status : false,
+                message : "Invalid token"
+            });
+        }
+
+        res.status(200).json({
+            status : true,
+            message : "Valid token"
+        });
+
+    }
+
+    static async resetPassword(req, res){
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+          return res.status(400).json({ errors: errors.array() });
+        }
+
+
+        const data = req.body;
+
+        var getCode = await UserCode().where({ code : data.token , type : "reset"}).first();
+
+        if(!getCode){
+            return res.status(400).json({
+                error : true,
+                message : "Invalid reset request"
+            });
+        }
+
+        var user = await User().where({ email : getCode.email}).first();
+
+        if(!user){
+            return res.status(400).json({
+                error : true,
+                message : "A user with this email does not exist"
+            });
+        }
+
+        let encryptedPassword = await bcrypt.hash(data.password, 10);
+        
+        user.password = encryptedPassword;
+        user.save();
+
+        res.status(200).json({
+            status : true,
+            message : "Password reset successfully"
+        });
+
+    }
 }
 
 module.exports = AuthController;

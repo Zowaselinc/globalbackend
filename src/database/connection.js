@@ -4,7 +4,7 @@
 const MySQL2Extended = require('mysql2-extended');
 const mysql2 = require('mysql2/promise');
 
-var mysql = require('mysql');
+var mysql = require('mysql2');
 
 require('dotenv').config();
 
@@ -21,6 +21,7 @@ class Connection {
             user: process.env.DATABASE_USER,
             password: process.env.DATABASE_PASSWORD,
             database: process.env.DATABASE_NAME,
+            port : process.env.DATABASE_PORT ?? 3306
         });
         
         const db = new MySQL2Extended.MySQL2Extended(pool);
@@ -49,6 +50,7 @@ class RawConnection {
             user: process.env.DATABASE_USER,
             password: process.env.DATABASE_PASSWORD,
             database: process.env.DATABASE_NAME,
+            port : process.env.DATABASE_PORT ?? 3306
         });
 
         connection.connect();

@@ -67,6 +67,15 @@ module.exports = {
     LoginValidator : [
         body('email').isString().isEmail(),
         body('password').isString()
+    ],
+
+    VerifyResetTokenValidator : [
+        body('token').isString(),
+    ],
+
+    ResetPasswordValidator : [
+        body('token').isString(),
+        body('password').isString()
     ]
 
 }

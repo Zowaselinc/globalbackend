@@ -7,6 +7,7 @@ const sequelize = new Sequelize(process.env.DATABASE_NAME, process.env.DATABASE_
   host: process.env.DATABASE_HOST,
   dialect: process.env.DATABASE_DIALECT,
   operatorsAliases: false,
+  port : process.env.DATABASE_PORT ?? 3306,
 
   pool: {
     max: eval(process.env.DATABASE_POOL_MAX),
