@@ -6,8 +6,10 @@ class User extends Base {
     constructor(input){
         const table = 'users';
         const attributes = Object.keys(UserSchema(Sequelize));
+        const relationships = {};
+        const appends = {};
         super();
-        return this._boot(table, attributes, input);
+        return this._boot(table, attributes, relationships,appends, input);
     }
 }
 

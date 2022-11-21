@@ -1,4 +1,4 @@
-const { Connection } = require('~database/connection');
+const { Connection, RawConnection } = require('~database/connection');
 
 class Base{
     constructor(){
@@ -9,9 +9,11 @@ class Base{
     /*                                                 BOOT MODEL INSTANCE                                                */
     /* ------------------------------------------------------------------------------------------------------------------ */
 
-    _boot(table,attributes,input){
+    _boot(table,attributes,relationships,appends,input){
         this._table = () => table;
         this._attributes = () => attributes;
+        this._relationships = () => relationships;
+        this._appends = () => appends;
         // Cast possible ID input to number from string
         if(input && typeof input == "string"){ input = eval(input) }
         //----------------------------------------------------------
@@ -52,7 +54,7 @@ class Base{
 
     async _select(params){
         let result = await (params ? this._db().select(this._table(),params) : this._db().select(this._table()));
-        return result;
+        return this._buildSelectResult(result);
     }
 
     async _insert(data){
@@ -70,12 +72,35 @@ class Base{
         return result;
     }
 
+    async _selectWithJoin(relationship, params){
+        let vm = this;
+        var query = params 
+
+            ? `SELECT ${this._table()}.* , ${this._buildRelationshipFields(relationship)} FROM ${this._table()} INNER JOIN ${relationship.model._table()} ON ${this._table()}.${relationship.key} = ${relationship.model._table()}.id WHERE ${this._buildQueryParams(params)}`
+
+            : `SELECT ${this._table()}.* , ${this._buildRelationshipFields(relationship)} FROM ${this._table()} INNER JOIN ${relationship.model._table()} ON ${this._table()}.${relationship.key} = ${relationship.model._table()}.id`;
+
+            console.log(query);
+
+        return new Promise(function(myResolve, myReject) {
+            RawConnection.db.query(
+                query,
+                function(err, results, fields) {
+                    results = vm._buildSelectResult(results);
+                    myResolve(vm._formatJoinResult(results));
+                }
+            );
+        });
+
+    }
+
     /* ------------------------------------------------------------------------------------------------------------------ */
     /*                                            LOAD EXISTING RECORD FROM DB                                            */
     /* ------------------------------------------------------------------------------------------------------------------ */
 
     _setUniqueKey(value){
         this._uniqueKey = value;
+        this.id = value;
     }
 
 
@@ -112,21 +137,81 @@ class Base{
         return dataObject;
     }
 
-    _resultSetType(params){
+    _buildSelectResult(results){
+        var vm = this;
+        if(results){
+            results.forEach(result => {
+                Object.keys(vm._appends()).forEach( data => {
+                    result[data] = vm._appends()[data];
+                });
+            });
+        }
+        return results;
+    }
+
+    _buildQueryParams(params){
+        var resultArray = [];
+        Object.keys(params).forEach((item)=>{
+            resultArray.push(`${this._table()}.${item} = ${params[item]}`);
+        });
+        return resultArray.join(' AND ');
+    }
+
+    _buildRelationshipFields(relationship){
+        var fields = relationship.model._attributes();
+        var selectors = [];
+        fields.forEach(field => {
+            selectors.push(`${relationship.model._table()}.${field} as '${relationship.name}#${field}'`)
+        });
+        return selectors.join(' , ');
+    }
+
+    _formatJoinResult(result){
+        var formatted = [];
+        // Loop through each result
+        if(result){
+            result.forEach(row => {
+                var keys = Object.keys(row);
+                var rowResult = {};
+                // Check each key
+                keys.forEach( key => {
+                    if(key.includes("#")){
+                        var keySplit = key.split('#');
+                        var propertyToAdd = {};
+                        propertyToAdd[keySplit[1]] = row[key];
+                        // Generate new object
+                        rowResult[keySplit[0]] = {
+                            ...(rowResult[keySplit[0]] ?? {}),
+                            ...propertyToAdd
+                        };
+                    }else{
+                        rowResult[key] = row[key];
+                    }
+                });
+                formatted.push(rowResult);
+            });
+        }else{
+            return result;
+        }
+
+
+        return formatted;
+    }
+
+    _resultSetType(loadResult){
         let vm = this;
         var rsType = {
             get : async ()=>{
-                let result =  await vm._select(params);
+                var result = await loadResult();
                 return result;
             },
             first : async ()=>{
-                let result =  await vm._select(params);
-                
+                var result = await loadResult();
                 if(!result || result.length == 0){ return null; }
                 Object.keys(result[0]).forEach((item,index)=>{
-                    if(item!='id'){
+                    // if(item!='id'){
                         vm[item] = Object.values(result[0])[index];
-                    }
+                    // }
                 });
                 
                 this._isExisting = true;
@@ -161,10 +246,29 @@ class Base{
 
     where(params){
         let vm = this;
-        return this._resultSetType(params);
+        var result = async () => {
+            var rs;
+            if(vm._linkedRelation){
+                rs = await this._selectWithJoin(vm._linkedRelation(),params);
+                return rs
+            }
+            rs = await this._select(params);
+            return rs;
+        }
+        return this._resultSetType(result);
+    }
+
+    with(relation){
+        var relationship = this._relationships()[relation];
+        relationship.name = relation;
+        this._linkedRelation = () => relationship;
+        return this;
     }
 
     all(){
+        if(this._linkedRelation){
+            return this._selectWithJoin(this._linkedRelation(),null);
+        }
         return this._select();
     }
 

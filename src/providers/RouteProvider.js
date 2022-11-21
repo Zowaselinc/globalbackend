@@ -4,12 +4,12 @@ const Middleware = require('~middleware');
 
 class Router{
 
-    constructor(middleware=null){
+    constructor(middlewares=null){
 
-        if(middleware){
+        if(middlewares){
             
             this.middleware = (...args)=>{
-                Middleware(middleware).handle(...args);
+                Middleware(middlewares).handle(...args);
             };
 
         }
@@ -66,7 +66,7 @@ class RouteProvider{
 
         this.Router.parent = null;
 
-        this.Router.middleware = null;
+        this.Router.middlewares = null;
 
         this.Router.groups = [];
 
@@ -78,21 +78,21 @@ class RouteProvider{
 
         // Register middleware function
 
-        this.Router.middleware = (middleware)=>{
-            return this.middleware(middleware,this.Router);
+        this.Router.middleware = (middlewares)=>{
+            return this.middleware(middlewares,this.Router);
         };
     }
 
 
     // Custom middleware function to add to router
 
-    middleware(middleware,parentRouter){
+    middleware(middlewares,parentRouter){
         // Apply middleware here
         const SubRouter = (new RouteProvider()).Router;
 
         SubRouter.parent = parentRouter;
 
-        SubRouter.middleware = middleware;
+        SubRouter.middlewares = middlewares;
 
         return SubRouter;
     }
@@ -100,11 +100,11 @@ class RouteProvider{
     // Custom route grouper for express router
     group(routes, currentRouter){
 
-        const router = new Router(currentRouter.middleware); 
+        const router = new Router(currentRouter.middlewares); 
 
         routes(router);
 
-        currentRouter.parent.groups.push(router.router);
+        currentRouter.parent ? currentRouter.parent.groups.push(router.router) : currentRouter.groups.push(router.router);
 
     }
 

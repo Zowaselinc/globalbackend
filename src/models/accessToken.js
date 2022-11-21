@@ -6,8 +6,10 @@ class AccessToken extends Base {
     constructor(input){
         const table = 'access_tokens';
         const attributes = Object.keys(Schema(Sequelize));
+        const relationships = {};
         super();
-        return this._boot(table, attributes, input);
+        const appends = {};
+        return this._boot(table, attributes, relationships,appends, input);
     }
 }
 

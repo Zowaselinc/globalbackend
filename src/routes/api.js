@@ -1,9 +1,13 @@
 
 const AuthController = require('~controllers/AuthController');
+const UserController = require('~controllers/UserController');
 const RouteProvider = require('~providers/RouteProvider');
 const { RegisterMerchantBuyerValidator, LoginValidator, RegisterPartnerValidator, RegisterAgentValidator, SendVerificationValidator, ConfirmVerificationValidator, ResetPasswordValidator, VerifyResetTokenValidator } = require('./validators/AuthValidators');
 
 const Router = RouteProvider.Router;
+
+
+// Authentication Routes
 
 Router.middleware(['isGuest']).group((router)=>{
 
@@ -24,6 +28,17 @@ Router.middleware(['isGuest']).group((router)=>{
     router.post('/password/verify',VerifyResetTokenValidator,AuthController.verifyResetToken);
 
     router.post('/password/reset',ResetPasswordValidator,AuthController.resetPassword);
+
+});
+
+// User routes
+Router.group((router)=>{
+
+    router.get('/user', UserController.getAllUsers);
+
+    router.get('/user/bytype/:type', UserController.getUserByType);
+
+    router.get('/user/:id', UserController.getUserById);
 
 });
 
