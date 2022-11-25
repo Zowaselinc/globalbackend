@@ -1,8 +1,25 @@
 
 const AuthController = require('~controllers/AuthController');
+
+const TransactionContollers = require('~controllers/TransactionController')
+
 const UserController = require('~controllers/UserController');
+
+const ProductSpecificationController = require('~controllers/ProductSpecificationController');
+
 const RouteProvider = require('~providers/RouteProvider');
-const { RegisterMerchantBuyerValidator, LoginValidator, RegisterPartnerValidator, RegisterAgentValidator, SendVerificationValidator, ConfirmVerificationValidator, ResetPasswordValidator, VerifyResetTokenValidator, PricingValidator } = require('./validators/AuthValidators');
+
+const { RegisterMerchantBuyerValidator, LoginValidator, RegisterPartnerValidator, RegisterAgentValidator, SendVerificationValidator, ConfirmVerificationValidator, ResetPasswordValidator, VerifyResetTokenValidator} = require('./validators/AuthValidators');
+
+
+
+ const {PricingValidator, TransactionValidator} =  require('./validators/TransactionValidators');
+
+const {ProductSpecificationValidators} = require('./validators/ProductSpecificationValidators');
+const {OrderValidators} = require('./validators/OrderValidators');
+const OrderController = require('~controllers/OrderController');
+
+
 
 const Router = RouteProvider.Router;
 
@@ -29,7 +46,18 @@ Router.middleware(['isGuest']).group((router)=>{
 
     router.post('/password/reset',ResetPasswordValidator,AuthController.resetPassword);
 
-    router.post('/pricing/plan',PricingValidator,AuthController.pricing);
+    router.post('/pricing/plan',PricingValidator,TransactionContollers.pricing);
+
+    router.post('/transaction',TransactionValidator,TransactionContollers.transaction);
+
+   router.post('/productspecification',ProductSpecificationValidators, ProductSpecificationController.specification);
+
+   router.post('/order',OrderValidators,OrderController.order);
+
+   
+
+   
+
 });
 
 // User routes
@@ -45,4 +73,5 @@ Router.group((router)=>{
 
 
 module.exports = Router;
+
 

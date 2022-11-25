@@ -78,10 +78,6 @@ module.exports = {
         body('password').isString()
     ],
 
-    PricingValidator : [
-        body('userId').isString(),
-        body('clientId').isString(),
-        body('type').isString()
-    ]
+    
 
 }

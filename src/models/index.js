@@ -8,6 +8,9 @@ const Partner = require("./partner");
 const AccessToken = require("./accessToken");
 const UserCode = require("./userCodes");
 const Pricing = require("./pricing");
+const Transaction = require("./transaction");
+const ProductSpecification = require("./productSpecification");
+const Order = require("./order");
 
 module.exports = {
     User,
@@ -18,5 +21,8 @@ module.exports = {
     Partner,
     AccessToken,
     UserCode,
-    Pricing
+    Pricing,
+    Transaction,
+    ProductSpecification,
+    Order,       
 }

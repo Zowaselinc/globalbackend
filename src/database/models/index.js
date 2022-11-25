@@ -32,7 +32,14 @@ DB.companies = require("./company.model.js").Model(sequelize, Sequelize);
 DB.partners = require("./partner.model.js").Model(sequelize, Sequelize);
 DB.accessTokens = require("./access_token.model.js").Model(sequelize, Sequelize);
 DB.userCodes = require("./user_codes.model.js").Model(sequelize, Sequelize);
-DB.pricing = require("./pricing.model").Model(sequelize, Sequelize);
+DB.pricings = require("./pricing.model").Model(sequelize, Sequelize);
+DB.transactions = require("./transaction.model").Model(sequelize, Sequelize);
+DB.productSpecification = require("./product_specification.model").Model(sequelize, Sequelize);
+DB.order = require("./order.model").Model(sequelize, Sequelize);
+//DB.productSpecification = require("./order.model").Model(sequelize, Sequelize);
+
+
+
 
 
 module.exports = DB;
