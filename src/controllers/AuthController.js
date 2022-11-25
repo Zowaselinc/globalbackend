@@ -1,6 +1,6 @@
 
 const jwt = require("jsonwebtoken");
-const { User, Company, AccessToken, Merchant, Partner, Buyer, Agent, UserCode } = require("~models");
+const { User, Company, AccessToken, Merchant, Partner, Buyer, Agent, UserCode, Pricing } = require("~models");
 const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const Mailer = require('~services/mailer');
@@ -11,6 +11,11 @@ const { use } = require("~routes/api");
 
 
 class AuthController{
+
+ /* -------------------------------------------------------------------------- */
+ /*                                    login                                   */
+ /* -------------------------------------------------------------------------- */
+
 
     static async login(req, res){
 
@@ -24,7 +29,7 @@ class AuthController{
         const data = req.body;
 
         let user = await User().where({email : data.email}).first();
-
+console.log(user);
         if(!user){
            return res.status(400).json({
             error : true,
@@ -72,10 +77,14 @@ class AuthController{
 
     }
 
+        /* -------------------------------------------------------------------------- */
+        /*                              register marchant                             */
+        /* -------------------------------------------------------------------------- */
+
     static async registerMerchantBuyer( req, res ){
 
         const errors = validationResult(req);
-
+        console.log(errors)
         if (!errors.isEmpty()) {
           return res.status(400).json({ errors: errors.array() });
         }
@@ -190,6 +199,10 @@ class AuthController{
 
     }
 
+/* -------------------------------------------------------------------------- */
+/*                              register partner                              */
+/* -------------------------------------------------------------------------- */
+
     static async registerPartner( req, res ){
 
         const errors = validationResult(req);
@@ -270,6 +283,25 @@ class AuthController{
         }
 
         return user;
+    }
+
+    static async savePricing(data){
+        let pricing = Pricing();
+
+        pricing.user_id = data.userId;
+        pricing.client_id = data.clientId;
+        pricing.package = data.type;
+      
+        try{  
+            await pricing.save();
+        }catch(e){
+            pricing = {
+                error : true,
+                message : e.sqlMessage
+            }
+        }
+
+        return pricing;
     }
 
     static async saveCompany(user,data){
@@ -520,6 +552,35 @@ class AuthController{
             status : true,
             message : "Password reset successfully"
         });
+
+    }
+    
+    static async pricing(req, res){
+        const errors = validationResult(req);
+        console.log(errors.array());
+        if(!errors.isEmpty()){
+            return res.status(400).json({errors: errors.array()});
+        }
+
+        const data = req.body;
+        console.log(data);
+
+        let pricingObjModel = await AuthController.savePricing(data);
+        console.log(pricingObjModel);
+        if(!pricingObjModel){
+            return res.status(400).json({
+             error : true,
+             message : "Invalid request"
+            });
+         }else{
+            return res.status(200).json({
+                error : false,
+                message : "Successful Selected Pricing Plan"
+            })
+         }
+
+        
+
 
     }
 }

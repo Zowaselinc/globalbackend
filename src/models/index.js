@@ -7,6 +7,7 @@ const Agent = require("./agent");
 const Partner = require("./partner");
 const AccessToken = require("./accessToken");
 const UserCode = require("./userCodes");
+const Pricing = require("./pricing");
 
 module.exports = {
     User,
@@ -16,6 +17,6 @@ module.exports = {
     Agent,
     Partner,
     AccessToken,
-    UserCode
-
+    UserCode,
+    Pricing
 }

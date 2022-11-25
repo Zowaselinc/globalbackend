@@ -32,5 +32,7 @@ DB.companies = require("./company.model.js").Model(sequelize, Sequelize);
 DB.partners = require("./partner.model.js").Model(sequelize, Sequelize);
 DB.accessTokens = require("./access_token.model.js").Model(sequelize, Sequelize);
 DB.userCodes = require("./user_codes.model.js").Model(sequelize, Sequelize);
+DB.pricing = require("./pricing.model").Model(sequelize, Sequelize);
+
 
 module.exports = DB;
