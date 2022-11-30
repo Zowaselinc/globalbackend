@@ -1,13 +1,11 @@
 
 const jwt = require("jsonwebtoken");
-const { User, Company, AccessToken, Merchant, Partner, Buyer, Agent, UserCode, Pricing } = require("~models");
+const { User, Company, AccessToken, Merchant, Partner, Buyer, Agent, UserCode, MerchantType } = require("~database/models");
 const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const Mailer = require('~services/mailer');
-const { buyers } = require("~database/models");
 const md5  = require('md5');
-const { reset } = require("nodemon");
-const { use } = require("~routes/api");
+require('dotenv').config();
 
 
 class AuthController{
@@ -28,8 +26,8 @@ class AuthController{
 
         const data = req.body;
 
-        let user = await User().where({email : data.email}).first();
-console.log(user);
+        let user = await User.findOne({ where : { email : data.email }});
+
         if(!user){
            return res.status(400).json({
             error : true,
@@ -37,27 +35,30 @@ console.log(user);
            });
         }
 
-        let merchant = await Merchant().where({user_id : user._uniqueKey}).first();
-        let partner = await Partner().where({user_id : user._uniqueKey}).first();
-        let agent = await Agent().where({user_id : user._uniqueKey}).first();
-        let buyer = await Buyer().where({user_id : user._uniqueKey}).first();
-        
-        if(merchant){  user.merchant = merchant  }
-        if(partner){  user.partner = partner  }
-        if(buyer){  user.buyer = buyer  }
-        if(agent){  user.agent = agent  }
+        var userTypeMap = {
+            merchant : Merchant,
+            partner : Partner,
+            agent : Agent,
+            corporate : Buyer
+        };
 
+        let userType = await userTypeMap[user.type].findOne({where :{user_id : user.id}});
+
+        user[user.type] = userType;
+        
         let passwordCheck =  await bcrypt.compare(data.password, user.password)
 
         if(passwordCheck){
 
             const token = jwt.sign(
-                {user_id: user._uniqueKey},
+                {user_id: user.id},
                 process.env.TOKEN_KEY,
                 {expiresIn: "48h"}
             );
     
             await AuthController.saveToken(user,token);
+
+            delete user.password;
 
             return res.status(200).json({
                 error : false,
@@ -84,7 +85,7 @@ console.log(user);
     static async registerMerchantBuyer( req, res ){
 
         const errors = validationResult(req);
-        console.log(errors)
+
         if (!errors.isEmpty()) {
           return res.status(400).json({ errors: errors.array() });
         }
@@ -111,8 +112,17 @@ console.log(user);
             }
         }
 
-        var UserTypeModel = data.user_type == "merchant" ? Merchant() : Buyer();
-        UserTypeModel.user_id = user._uniqueKey;
+        var UserTypeModel = data.user_type == "merchant" ? Merchant : Buyer;
+        UserTypeModel.user_id = user.id;
+        if(data.user_type == "merchant"){
+            var merchantType = await MerchantType.findOne({ where : { title : data.merchant_type}});
+            if(merchantType){
+                UserTypeModel.type_id = merchantType.id;
+            }
+        }else{
+            UserTypeModel.type = "red-hot";
+        }
+
         await UserTypeModel.save().catch((error => {
             return res.status(400).json({
                 error : true,
@@ -121,7 +131,7 @@ console.log(user);
         }));
         
         const token = jwt.sign(
-            {user_id: user._uniqueKey},
+            {user_id: user.id},
             process.env.TOKEN_KEY,
             {expiresIn: "48h"}
         );
@@ -129,7 +139,7 @@ console.log(user);
         await AuthController.saveToken(user,token);
 
         Mailer()
-        .to(data.email).from("hello@ctrixx.com")
+        .to(data.email).from(process.env.MAIL_FROM)
         .subject('Welcome').template('emails.WelcomeEmail').send();
 
         res.status(200).json({
@@ -168,23 +178,23 @@ console.log(user);
             });
         }
 
-        var agent = Agent();
-        agent.user_id = user._uniqueKey;
-        agent.agent_type = data.agent_type;
-        await agent.save().catch((error => {
+        await Agent.create({
+            user_id : user.id,
+            agent_type : data.agent_type
+        }).catch((error) => {
             return res.status(400).json({
                 error : true,
                 message : error.sqlMessage
             });
-        }));;
+        });
 
         Mailer()
-        .to(data.email).from("hello@ctrixx.com")
+        .to(data.email).from(process.env.MAIL_FROM)
         .subject('Welcome').template('emails.WelcomeEmail').send();
 
         
         const token = jwt.sign(
-            {user_id: user._uniqueKey},
+            {user_id: user.id},
             process.env.TOKEN_KEY,
             {expiresIn: "48h"}
         );
@@ -231,10 +241,10 @@ console.log(user);
             });
         }
 
-        var partner = Partner();
-        partner.user_id = user._uniqueKey;
-        partner.partnership_type = data.partnership_type;
-        await partner.save().catch((error => {
+        await Partner.create({
+            user_id : user.id,
+            partnership_type : data.partnership_type
+        }).catch((error => {
             return res.status(400).json({
                 error : true,
                 message : error.sqlMessage
@@ -242,11 +252,11 @@ console.log(user);
         }));;
 
         Mailer()
-        .to(data.email).from("hello@ctrixx.com")
+        .to(data.email).from(process.env.MAIL_FROM)
         .subject('Welcome').template('emails.WelcomeEmail').send();
         
         const token = jwt.sign(
-            {user_id: user._uniqueKey},
+            {user_id: user.id},
             process.env.TOKEN_KEY,
             {expiresIn: "48h"}
         );
@@ -262,19 +272,21 @@ console.log(user);
     }
 
     static async saveUser(data){
-        let user = User();
-
-        user.first_name = data.first_name;
-        user.last_name = data.last_name;
-        user.phone = data.phone;
-        user.email = data.email;
-        user.is_verified = 0;
-        user.status = 1;
+        var user;
         let encryptedPassword = await bcrypt.hash(data.password, 10);
-        user.password = encryptedPassword;
 
         try{
-            await user.save();
+            user = await User.create({
+                first_name : data.first_name,
+                last_name : data.last_name,
+                phone : data.phone,
+                email : data.email,
+                is_verified : 0,
+                status : 1,
+                password : encryptedPassword,
+                type : data.user_type,
+                account_type : data.has_company || data.company_email ? "company" : "individual"
+            });
         }catch(e){
             user = {
                 error : true,
@@ -289,18 +301,18 @@ console.log(user);
 
 
     static async saveCompany(user,data){
-        let company = Company();
-
-        company.user_id = user._uniqueKey;
-        company.company_name = data.company_name;
-        company.company_address = data.company_address;
-        company.company_phone = data.company_phone;
-        company.company_email = data.company_email;
-        company.state = data.company_state;
-        company.rc_number = data.rc_number;
+        let company;
 
         try{
-            await company.save();
+            company = await Company.create({
+                user_id : user.id,
+                company_name : data.company_name,
+                company_address : data.company_address,
+                company_phone : data.company_phone,
+                company_email : data.company_email,
+                state : data.company_state,
+                rc_number : data.rc_number
+            });
         }catch(e){
             company = {
                 error : true,
@@ -313,24 +325,24 @@ console.log(user);
 
     static async saveToken(user,token){
 
-        let accessToken = AccessToken();
-        accessToken.user_id = user._uniqueKey;
-        accessToken.client_id = 1;
-        accessToken.token = token;
         let expiry = new Date();
         expiry.setDate( expiry.getDate() + 2);
-        accessToken.expires_at = expiry.toISOString().slice(0, 19).replace('T', ' ');;
+        
+        var previousToken = await AccessToken.findOne({where : {user_id : user.id}});
 
-        try{
-            await accessToken.save();
-        }catch(e){
-            accessToken = {
-                error : true,
-                message : e.sqlMessage
-            }
+        if(previousToken){
+            await AccessToken.update({
+                token : token,
+                expires_at : expiry.toISOString().slice(0, 19).replace('T', ' ')
+            }, { where : { user_id : user.id } });
+        }else{
+            await AccessToken.create({
+                user_id : user.id,
+                client_id : 1,
+                token : token,
+                expires_at : expiry.toISOString().slice(0, 19).replace('T', ' ')
+            });
         }
-
-
     }
 
     static async sendVerificationCode(req, res){
@@ -339,7 +351,6 @@ console.log(user);
         if (!errors.isEmpty()) {
           return res.status(400).json({ errors: errors.array() });
         }
-
 
         const data = req.body;
 
@@ -352,20 +363,22 @@ console.log(user);
         var code = getRandomInt(100000,999999);
 
         //Check for exixting
-        var formerCode = await UserCode().where({email : data.email, type : "verification"}).first();
+        var formerCode = await UserCode.findOne({ where : {email : data.email, type : "verification"}})
 
         if(!formerCode){
-            var userCode = UserCode();
-
-            userCode.email = data.email;
-            userCode.type = "verification";
-            userCode.code = code;
-            userCode.save().catch(error => {
+            UserCode.create({
+                email : data.email,
+                type : "verification",
+                code : code
+            }).catch(error => {
                 console.log(error.sqlMessage)
             });
         }else{
-            formerCode.code = code;
-            formerCode.save().catch(error => {
+            UserCode.update({
+                code : code,
+            },{ 
+                where : { email : data.email, type : "verification" } 
+            }).catch(error => {
                 console.log(error.sqlMessage)
             });
         }
@@ -374,7 +387,7 @@ console.log(user);
 
 
         Mailer()
-        .to(data.email).from("hello@ctrixx.com")
+        .to(data.email).from(process.env.MAIL_FROM)
         .subject('Verify').template('emails.OTPEmail',{code : code}).send();
 
 
@@ -395,7 +408,7 @@ console.log(user);
 
         const data = req.body;
 
-        var userCode = await UserCode().where({email : data.email, type : "verification"}).first();
+        var userCode = await UserCode.findOne({ where : {email : data.email, type : "verification"}});
 
         if(userCode.code == data.code){
             return res.status(200).json({
@@ -431,7 +444,7 @@ console.log(user);
 
         var code = getRandomInt(10000000,99999999);
 
-        var user = await User().where({ email : data.email}).first()
+        var user = await User.findOne({ where : { email : data.email}});
 
         if(!user){
             return res.status(400).json({
@@ -443,26 +456,26 @@ console.log(user);
         var resetToken = md5(code);
 
         //Check for exixting
-        var formerCode = await UserCode().where({email : data.email, type : "reset"}).first();
+        var formerCode = await UserCode.findOne( { where : {email : data.email, type : "reset"} });
 
         if(!formerCode){
-            var userCode = UserCode();
-
-            userCode.email = data.email;
-            userCode.type = "reset";
-            userCode.code = resetToken;
-            userCode.save().catch(error => {
+            UserCode.create({
+                email : data.email,
+                type : "reset",
+                code : resetToken
+            }).catch(error => {
                 console.log(error.sqlMessage)
             });
         }else{
-            formerCode.code = resetToken;
-            formerCode.save().catch(error => {
-                console.log(error.sqlMessage)
+            UserCode.update({ code : resetToken},
+                { where : {email : data.email, type : "reset"} 
+            }).catch(error => {
+                    console.log(error.sqlMessage)
             });
         }
 
         Mailer()
-        .to(data.email).from("hello@ctrixx.com")
+        .to(data.email).from(process.env.MAIL_FROM)
         .subject('Reset Password').template('emails.ResetEmail',{code : resetToken}).send();
 
 
@@ -483,7 +496,7 @@ console.log(user);
 
         const data = req.body;
 
-        var userCode = await UserCode().where({ code : data.token}).first();
+        var userCode = await UserCode.findOne({ where : { code : data.token}});
 
         if(!userCode){
             res.status(400).json({
@@ -509,7 +522,7 @@ console.log(user);
 
         const data = req.body;
 
-        var getCode = await UserCode().where({ code : data.token , type : "reset"}).first();
+        var getCode = await UserCode.findOne({ where : { code : data.token , type : "reset"} });
 
         if(!getCode){
             return res.status(400).json({
@@ -518,7 +531,8 @@ console.log(user);
             });
         }
 
-        var user = await User().where({ email : getCode.email}).first();
+
+        var user = await User.findOne( { where : { email : getCode.email}});
 
         if(!user){
             return res.status(400).json({
@@ -529,8 +543,8 @@ console.log(user);
 
         let encryptedPassword = await bcrypt.hash(data.password, 10);
         
-        user.password = encryptedPassword;
-        user.save();
+        await User.update({ password : encryptedPassword
+        }, { where : { id : user.id }});
 
         res.status(200).json({
             status : true,

@@ -1,4 +1,6 @@
-let Schema = (Sequelize) => {
+const generateTimestamps = require("./timestamps");
+
+let Schema = (Sequelize,mode) => {
     return {
         transaction_id : {
             type: Sequelize.STRING,
@@ -20,18 +22,14 @@ let Schema = (Sequelize) => {
             type: Sequelize.STRING,
             allowNull : false
         },   
-        created_at: {
-            type: 'TIMESTAMP',
-            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-        },
-        updated_at: {
-            type: 'TIMESTAMP',
-            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
-        },
+        ...generateTimestamps(Sequelize,mode)
     }
 }
-const Model = (sequelize, Sequelize) => {
-    const Transaction = sequelize.define("transactions", Schema(Sequelize),{ timestamps: false });
+const Model = (sequelize, instance, Sequelize) => {
+    // Define initial for DB sync
+    sequelize.define("transactions", Schema(Sequelize,1),{ timestamps: false });
+    // Bypass initial instance to cater for timestamps
+    const Transaction = instance.define("transactions", Schema(Sequelize,2),{ timestamps: false });
     return Transaction;
 }
 

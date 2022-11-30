@@ -2,21 +2,16 @@ const generateTimestamps = require("./timestamps");
 
 let Schema = (Sequelize,mode) => {
     return {
-        user_id : {
-            type: Sequelize.INTEGER,
-            allowNull : false
-        },
-        client_id : {
+        product_id : {
             type : Sequelize.INTEGER,
             allowNull : false
         },
-        token : {
-            type: Sequelize.STRING,
-            unique : true,
+        auction_enddate : {
+            type : Sequelize.STRING,
             allowNull : false
         },
-        expires_at : {
-            type: Sequelize.DATE,
+        status : {
+            type : Sequelize.INTEGER,
             allowNull : false
         },
         ...generateTimestamps(Sequelize, mode)
@@ -24,10 +19,10 @@ let Schema = (Sequelize,mode) => {
 }
 const Model = (sequelize, instance, Sequelize) => {
     // Define initial for DB sync
-    sequelize.define("access_tokens", Schema(Sequelize,1),{ timestamps: false });
+    sequelize.define("auctions", Schema(Sequelize,1),{ timestamps: false });
     // Bypass initial instance to cater for timestamps
-    const AccessTokens = instance.define("access_tokens", Schema(Sequelize,2),{ timestamps: false });
-    return AccessTokens;
+    const Auction = instance.define("auctions", Schema(Sequelize,2),{ timestamps: false });
+    return Auction;
 }
 
 module.exports = { Schema , Model};

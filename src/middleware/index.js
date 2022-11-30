@@ -17,18 +17,18 @@ class Middleware {
 
     }
 
-    chain( req, res ){
+    async chain( req, res ){
         for(var i = 0; i < this.middlewares.length ; i++){
             var mware = this.middlewares[i];
             if(!res.headersSent){
-                AppMiddlewares[mware]( req , res );
+                await AppMiddlewares[mware]( req , res );
             }
         }
     }
 
-    handle( req, res, next ){
+    async handle( req, res, next ){
 
-        this.chain(req, res);
+        await this.chain(req, res);
 
         if(!res.headersSent){
             next();

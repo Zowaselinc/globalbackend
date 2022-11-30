@@ -1,11 +1,13 @@
-let Schema = (Sequelize) => {
+const generateTimestamps = require("./timestamps");
+
+let Schema = (Sequelize,mode) => {
     return {
-        category : {
-            type: Sequelize.STRING,
-            allowNull : false
+        product_id : {
+            type : Sequelize.INTEGER,
+            allowNull: false
         },
-        sub_category : {
-            type: Sequelize.STRING,
+        product_type : {
+            type : Sequelize.STRING,
             allowNull : false
         },
         color : {
@@ -24,7 +26,7 @@ let Schema = (Sequelize) => {
             type: Sequelize.STRING,
             allowNull : false
         },   
-        weeevil : {
+        weevil : {
             type: Sequelize.STRING,
             allowNull : false
         },   
@@ -40,7 +42,7 @@ let Schema = (Sequelize) => {
             type: Sequelize.STRING,
             allowNull : false
         },   
-        hectolitter : {
+        hectoliter : {
             type: Sequelize.STRING,
             allowNull : false
         },   
@@ -60,7 +62,7 @@ let Schema = (Sequelize) => {
             type: Sequelize.STRING,
             allowNull : false
         },
-        grian_size: {
+        grain_size: {
             type: Sequelize.STRING,
             allowNull : false
         }, 
@@ -120,20 +122,15 @@ let Schema = (Sequelize) => {
             type: Sequelize.STRING,
             allowNull : false
         },                      
-
-        created_at: {
-            type: 'TIMESTAMP',
-            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-        },
-        updated_at: {
-            type: 'TIMESTAMP',
-            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
-        },
+        ...generateTimestamps(Sequelize,mode)
     }
 }
-const Model = (sequelize, Sequelize) => {
-    const spec = sequelize.define("product_specifications", Schema(Sequelize),{ timestamps: false });
-    return spec;
+const Model = (sequelize, instance, Sequelize) => {
+    // Define initial for DB sync
+    sequelize.define("product_specifications", Schema(Sequelize,1),{ timestamps: false });
+    // Bypass initial instance to cater for timestamps
+    const ProductSpecification = instance.define("product_specifications", Schema(Sequelize,2),{ timestamps: false });
+    return ProductSpecification;
 }
 
 module.exports = { Schema , Model};

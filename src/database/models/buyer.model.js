@@ -1,22 +1,23 @@
-let Schema = (Sequelize) => {
+const generateTimestamps = require("./timestamps");
+
+let Schema = (Sequelize, mode) => {
     return {
         user_id : {
             type: Sequelize.INTEGER,
             unique : true,
             allowNull : false
         },
-        created_at: {
-            type: 'TIMESTAMP',
-            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+        type : {
+            type : Sequelize.STRING,
         },
-        updated_at: {
-            type: 'TIMESTAMP',
-            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
-        },
+        ...generateTimestamps(Sequelize, mode)
     }
 }
-const Model = (sequelize, Sequelize) => {
-    const Buyer = sequelize.define("buyers", Schema(Sequelize),{ timestamps: false });
+const Model = (sequelize, instance, Sequelize) => {
+    // Define initial for DB sync
+    sequelize.define("buyers", Schema(Sequelize,1),{ timestamps: false });
+    // Bypass initial instance to cater for timestamps
+    const Buyer = instance.define("buyers", Schema(Sequelize,2),{ timestamps: false });
     return Buyer;
 }
 

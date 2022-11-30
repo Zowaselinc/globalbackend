@@ -8,8 +8,8 @@ class Router{
 
         if(middlewares){
             
-            this.middleware = (...args)=>{
-                Middleware(middlewares).handle(...args);
+            this.middleware = async (...args)=>{
+                await Middleware(middlewares).handle(...args);
             };
 
         }

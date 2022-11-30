@@ -1,11 +1,10 @@
 
 const jwt = require("jsonwebtoken");
-const { User, Company, Merchant, Partner, Buyer, Agent } = require("~models");
+const { User, Company, Merchant, Partner, Buyer, Agent, Product, ProductRequest } = require("~database/models");
 const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const Mailer = require('~services/mailer');
 const md5  = require('md5');
-const agent = require("~models/agent");
 
 
 class UserController{
@@ -13,13 +12,13 @@ class UserController{
     static async getAllUsers(req, res){
 
 
-        var merchants = await Merchant().with('user').all();
+        var merchants = await Merchant.findAll({ include : User});
 
-        var buyers = await Buyer().with('user').all();
+        var buyers = await Buyer.findAll({ include : User});
 
-        var agents = await Agent().with('user').all();
+        var agents = await Agent.findAll({ include : User});
 
-        var partners = await Partner().with('user').all();
+        var partners = await Partner.findAll({ include : User});
 
         var resultSet = [ ...merchants, ...buyers , ...agents, ...partners];
 
@@ -33,24 +32,24 @@ class UserController{
 
     }
 
-    static async getUserByType(req , res){
+    static async getUsersByType(req , res){
 
         var result = [];
 
         if(req.params.type == "merchant"){
-            result = await Merchant().with('user').all();
+            result = await Merchant.findAll({ include : User });
         }
 
         if(req.params.type == "buyer"){
-            result = await Buyer().with('user').all();
+            result = await Buyer.findAll({ include : User});
         }
 
         if(req.params.type == "agent"){
-            result = await Agent().with('user').all();
+            result = await Agent.findAll({ include : User});
         }
 
         if(req.params.type == "partner"){
-            result = await Partner().with('user').all();
+            result = await Partner.findAll({ include : User});
         }
 
 
@@ -68,10 +67,18 @@ class UserController{
 
         var id = req.params.id;
 
-        let user = await Merchant().with('user').where({user_id : id}).first();
-        user = !user ? await Buyer().with('user').where({user_id : id}).first() : user;
-        user = !user ? await Partner().with('user').where({user_id : id}).first() : user;
-        user = !user ? await Agent().with('user').where({user_id : id}).first() : user;
+        var userTypeMap = {
+            merchant : Merchant,
+            corporate : Buyer,
+            agent : Agent,
+            partner : Partner
+        };
+
+        let user = await User.findByPk(id);
+
+        if(user){
+            user = await userTypeMap[user.type].findOne({ where : {user_id : id} , include : User});
+        }
 
         if(!user){
             return res.status(400).json({
@@ -86,6 +93,11 @@ class UserController{
             message : "User fetched successfully",
             data : user
         });
+    }
+
+
+    static async getUserStats(req ,res){
+        
     }
 }
 

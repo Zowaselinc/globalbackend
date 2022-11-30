@@ -2,13 +2,12 @@ const generateTimestamps = require("./timestamps");
 
 let Schema = (Sequelize,mode) => {
     return {
-        user_id : {
-            type: Sequelize.INTEGER,
-            unique : true,
+        user_id: {
+            type : Sequelize.INTEGER,
             allowNull : false
         },
-        partnership_type : {
-            type: Sequelize.STRING,
+        balance : {
+            type : Sequelize.STRING,
             allowNull : false
         },
         ...generateTimestamps(Sequelize,mode)
@@ -16,10 +15,10 @@ let Schema = (Sequelize,mode) => {
 }
 const Model = (sequelize, instance, Sequelize) => {
     // Define initial for DB sync
-    sequelize.define("partners", Schema(Sequelize,1),{ timestamps: false });
+    sequelize.define("wallets", Schema(Sequelize,1),{ timestamps: false });
     // Bypass initial instance to cater for timestamps
-    const Partner = instance.define("partners", Schema(Sequelize,2),{ timestamps: false });
-    return Partner;
+    const Wallet = instance.define("wallets", Schema(Sequelize,2),{ timestamps: false });
+    return Wallet;
 }
 
 module.exports = { Schema , Model};
