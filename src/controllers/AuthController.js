@@ -1,6 +1,6 @@
 
 const jwt = require("jsonwebtoken");
-const { User, Company, AccessToken, Merchant, Partner, Buyer, Agent, UserCode, MerchantType } = require("~database/models");
+const { User, Company, AccessToken, Merchant, Partner, Corporate, Agent, UserCode, MerchantType } = require("~database/models");
 const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const Mailer = require('~services/mailer');
@@ -39,7 +39,7 @@ class AuthController{
             merchant : Merchant,
             partner : Partner,
             agent : Agent,
-            corporate : Buyer
+            corporate : Corporate
         };
 
         let userType = await userTypeMap[user.type].findOne({where :{user_id : user.id}});
@@ -82,7 +82,7 @@ class AuthController{
         /*                              register marchant                             */
         /* -------------------------------------------------------------------------- */
 
-    static async registerMerchantBuyer( req, res ){
+    static async registerMerchantCorporate( req, res ){
 
         const errors = validationResult(req);
 
@@ -104,7 +104,7 @@ class AuthController{
         if(data.has_company){
             var response = await AuthController.saveCompany(user,data);
             if(response.error){
-                await user.delete();
+                // await user.delete();
                 return res.status(400).json({
                     error : true,
                     message : response.message
@@ -112,18 +112,21 @@ class AuthController{
             }
         }
 
-        var UserTypeModel = data.user_type == "merchant" ? Merchant : Buyer;
+        var UserTypeModel = data.user_type == "merchant" ? Merchant : Corporate;
         UserTypeModel.user_id = user.id;
+        let change;
         if(data.user_type == "merchant"){
-            var merchantType = await MerchantType.findOne({ where : { title : data.merchant_type}});
+            // var merchantType = await MerchantType.findOne({ where : { title : data.merchant_type}});
+            var merchantType = await MerchantType.findOne({ where : { title : 'grower'}});
             if(merchantType){
-                UserTypeModel.type_id = merchantType.id;
+                change = { type_id : merchantType.id};
             }
         }else{
-            UserTypeModel.type = "red-hot";
+            change = {type : "red-hot"};
+            // UserTypeModel.type = "red-hot";
         }
 
-        await UserTypeModel.save().catch((error => {
+        await UserTypeModel.update(change , { where : {user_id : user.id}}).catch((error => {
             return res.status(400).json({
                 error : true,
                 message : error.sqlMessage
@@ -171,7 +174,7 @@ class AuthController{
 
         var save = await AuthController.saveCompany(user,data);
         if(save.error){
-            await user.delete();
+            // await user.delete();
             return res.status(400).json({
                 error : true,
                 message : save.message
@@ -234,7 +237,7 @@ class AuthController{
 
         var save = await AuthController.saveCompany(user,data);
         if(save.error){
-            await user.delete();
+            // await user.delete();
             return res.status(400).json({
                 error : true,
                 message : save.message

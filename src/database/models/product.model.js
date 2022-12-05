@@ -22,10 +22,6 @@ let Schema = (Sequelize,mode) => {
             type : Sequelize.INTEGER,
             allowNull : false
         },
-        qty : {
-            type : Sequelize.INTEGER,
-            allowNull : false
-        },
         market : {
             type : Sequelize.STRING,
             allowNull : false
@@ -34,23 +30,16 @@ let Schema = (Sequelize,mode) => {
             type : Sequelize.STRING,
             allowNull : false
         },
-        image : {
+        images : {
             type : Sequelize.STRING
         },
-        amount : {
-            type : Sequelize.STRING,
-            allowNull : false
-        },
+
         currency : {
             type : Sequelize.STRING,
             allowNull : false
         },
         is_negotiable : {
             type : Sequelize.INTEGER,
-            allowNull : false
-        },
-        po_expiry : {
-            type : Sequelize.STRING,
             allowNull : false
         },
         video : {

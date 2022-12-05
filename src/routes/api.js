@@ -5,7 +5,7 @@ const UserController = require('~controllers/UserController');
 
 const RouteProvider = require('~providers/RouteProvider');
 
-const { RegisterMerchantBuyerValidator, LoginValidator, RegisterPartnerValidator, RegisterAgentValidator, SendVerificationValidator, ConfirmVerificationValidator, ResetPasswordValidator, VerifyResetTokenValidator} = require('./validators/AuthValidators');
+const { RegisterMerchantCorporateValidator, LoginValidator, RegisterPartnerValidator, RegisterAgentValidator, SendVerificationValidator, ConfirmVerificationValidator, ResetPasswordValidator, VerifyResetTokenValidator} = require('./validators/AuthValidators');
 
 
 const Router = RouteProvider.Router;
@@ -17,7 +17,7 @@ Router.middleware(['isGuest']).group((router)=>{
 
     router.post('/login',LoginValidator,AuthController.login);
 
-    router.post('/register',RegisterMerchantBuyerValidator,AuthController.registerMerchantBuyer);
+    router.post('/register',RegisterMerchantCorporateValidator,AuthController.registerMerchantCorporate);
 
     router.post('/register/partner',RegisterPartnerValidator,AuthController.registerPartner);
 

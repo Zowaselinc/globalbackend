@@ -23,7 +23,7 @@ const Constraints = {
 
 module.exports = {
 
-    RegisterMerchantBuyerValidator : [
+    RegisterMerchantCorporateValidator : [
         body('first_name').isString(),
         body('last_name').isString(),
         body('email').isString().isEmail(),

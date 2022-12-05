@@ -32,7 +32,7 @@ DB.sequelize = initialInstance;
 //Register Sequelize Models
 const User = DB.users = require("./user.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Merchant = DB.merchants = require("./merchant.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
-const Buyer = DB.buyers = require("./buyer.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
+const Corporate = DB.corporate = require("./corporate.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Agent = DB.agents = require("./agent.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Company = DB.companies = require("./company.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Partner = DB.partners = require("./partner.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
@@ -48,11 +48,12 @@ const Order = DB.orders = require("./order.model").Model(initialInstance, create
 const Wallet= DB.wallets = require("./wallet.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const MerchantType = DB.merchantTypes = require("./merchant_type.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const BankAccount = DB.bankAccount = require("./bank_account.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
+const NegotiationOffer = DB.negotiationOffer = require('./negotiation_offer.model').Model(initialInstance, createSequelizeInstance(), Sequelize);
 
 
 //Register Relationships
 Merchant.belongsTo(User , { foreignKey : "user_id"});
-Buyer.belongsTo(User , { foreignKey : "user_id"});
+Corporate.belongsTo(User , { foreignKey : "user_id"});
 Agent.belongsTo(User , { foreignKey : "user_id"});
 Partner.belongsTo(User , { foreignKey : "user_id"});
 
@@ -62,7 +63,7 @@ module.exports = {
   User,
   Company,
   Merchant,
-  Buyer,
+  Corporate,
   Agent,
   Partner,
   AccessToken,
@@ -76,5 +77,6 @@ module.exports = {
   Wallet,
   MerchantType,
   BankAccount,
-  Auction   
+  Auction,
+  NegotiationOffer
 };

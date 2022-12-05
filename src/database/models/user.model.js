@@ -65,6 +65,9 @@ let Schema = (Sequelize,mode) => {
         status : {
             type : Sequelize.INTEGER
         },
+        rating : {
+            type : Sequelize.INTEGER
+        },
         is_verified : {
             type : Sequelize.INTEGER
         },

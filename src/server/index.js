@@ -15,7 +15,7 @@ class Server{
 
         App.use(cors({
             origin: '*',
-            methods: ['GET','POST']
+            methods: ['GET','POST','OPTIONS','PUT']
         }));
 
         // Register App Routes
@@ -24,7 +24,7 @@ class Server{
 
         //Sync Database Models
         //{ force: true }
-        DB.sequelize.sync()
+        DB.sequelize.sync({ force: true })
         .then(() => {
             console.log("Synced db.");
         })

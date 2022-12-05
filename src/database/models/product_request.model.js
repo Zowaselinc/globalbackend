@@ -2,39 +2,9 @@ const generateTimestamps = require("./timestamps");
 
 let Schema = (Sequelize,mode) => {
     return {
-        user_id : {
+        product_id : {
             type: Sequelize.INTEGER,
             allowNull : false
-        },
-        image : {
-            type : Sequelize.STRING,
-        },
-        type : {
-            type : Sequelize.STRING,
-            allowNull : false
-        },
-        category : {
-            type: Sequelize.STRING,
-            allowNull : false
-        },
-        sub_category : {
-            type: Sequelize.STRING,
-            allowNull : false
-        },
-        active : {
-            type : Sequelize.INTEGER,
-            allowNull : false
-        },
-        qty : {
-            type : Sequelize.INTEGER,
-            allowNull : false
-        },
-        market : {
-            type : Sequelize.STRING,
-            allowNull : false
-        },
-        description : {
-            type : Sequelize.TEXT,
         },
         state : {
             type : Sequelize.STRING,
@@ -48,36 +18,13 @@ let Schema = (Sequelize,mode) => {
         address : {
             type : Sequelize.STRING,
         },
-        amount : {
-            type : Sequelize.STRING,
-            allowNull : false
-        },
-        currency : {
-            type : Sequelize.STRING,
-            allowNull : false
-        },
-        po_expiry : {
+        delivery_method : {
             type : Sequelize.STRING,
         },
-        d_method : {
+        delivery_date : {
             type : Sequelize.STRING,
         },
-        d_date : {
-            type : Sequelize.STRING,
-        },
-        d_window : {
-            type : Sequelize.STRING,
-        },
-        video : {
-            type : Sequelize.STRING,
-        },
-        packaging : {
-            type : Sequelize.STRING,
-        },
-        application : {
-            type : Sequelize.STRING,
-        },
-        is_negotiable : {
+        delivery_window : {
             type : Sequelize.STRING,
         },
         ...generateTimestamps(Sequelize,mode)

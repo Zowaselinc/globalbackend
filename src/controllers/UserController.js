@@ -1,6 +1,6 @@
 
 const jwt = require("jsonwebtoken");
-const { User, Company, Merchant, Partner, Buyer, Agent, Product, ProductRequest } = require("~database/models");
+const { User, Company, Merchant, Partner, Corporate, Agent, Product, ProductRequest } = require("~database/models");
 const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const Mailer = require('~services/mailer');
@@ -14,13 +14,13 @@ class UserController{
 
         var merchants = await Merchant.findAll({ include : User});
 
-        var buyers = await Buyer.findAll({ include : User});
+        var corporates = await Corporate.findAll({ include : User});
 
         var agents = await Agent.findAll({ include : User});
 
         var partners = await Partner.findAll({ include : User});
 
-        var resultSet = [ ...merchants, ...buyers , ...agents, ...partners];
+        var resultSet = [ ...merchants, ...corporates , ...agents, ...partners];
 
         resultSet = resultSet.sort((a,b) => b.user_id - a.user_id);
 
@@ -40,8 +40,8 @@ class UserController{
             result = await Merchant.findAll({ include : User });
         }
 
-        if(req.params.type == "buyer"){
-            result = await Buyer.findAll({ include : User});
+        if(req.params.type == "corporate"){
+            result = await Corporate.findAll({ include : User});
         }
 
         if(req.params.type == "agent"){
@@ -69,7 +69,7 @@ class UserController{
 
         var userTypeMap = {
             merchant : Merchant,
-            corporate : Buyer,
+            corporate : Corporate,
             agent : Agent,
             partner : Partner
         };

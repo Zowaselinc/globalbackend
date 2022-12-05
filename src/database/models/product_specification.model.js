@@ -2,11 +2,19 @@ const generateTimestamps = require("./timestamps");
 
 let Schema = (Sequelize,mode) => {
     return {
-        product_id : {
+        model_id : {
             type : Sequelize.INTEGER,
             allowNull: false
         },
-        product_type : {
+        model_type :{
+            type : Sequelize.STRING,
+            allowNull : false
+        },
+        qty : {
+            type : Sequelize.INTEGER,
+            allowNull : false
+        },
+        price : {
             type : Sequelize.STRING,
             allowNull : false
         },
