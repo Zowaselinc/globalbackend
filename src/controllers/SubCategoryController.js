@@ -21,6 +21,7 @@ class SubCategoryController{
         // });
 
         const errors = validationResult(req);
+        const categoryid = parseInt(req.body.category_id);
 
         try{
             
@@ -33,7 +34,7 @@ class SubCategoryController{
             let randomid = crypto.randomBytes(8).toString('hex');
 
             const { count, rows } = await SubCategory.findAndCountAll({ 
-                where: { category_id: req.body.category_id, name:req.body.subcategory_name } 
+                where: { category_id: categoryid, name:req.body.subcategory_name } 
             });
 
             // console.log(count, "Count");
@@ -46,16 +47,15 @@ class SubCategoryController{
                 })
             }else{
                 var subcategory = await SubCategory.create({
-                    category_id: req.body.category_id,
-                    subcategory_name: req.body.subcategory_name,
-                    type: "cropmarket",
-                    subcategory_id: "CROPMARKETSUBCATEG"+randomid
+                    category_id: categoryid,
+                    name: req.body.subcategory_name,
+                    type: "cropmarket"
                 })
                 
                 return res.status(200).json({
                     "error": false,
                     "message": "Subcategory created successfully",
-                    "subcategory": subcategory
+                    "data": req.body
                 })
             }
             
@@ -142,7 +142,7 @@ class SubCategoryController{
                 return res.status(400).json({ errors: errors.array() });
             }
     
-            var subcategory = await SubCategory.findOne({ where: { subcategory_id: req.body.subcategory_id } });
+            var subcategory = await SubCategory.findOne({ where: { id: req.body.subcategory_id } });
             if(subcategory){
                 return res.status(200).json({
                     error : false,
@@ -192,19 +192,19 @@ class SubCategoryController{
                 return res.status(400).json({ errors: errors.array() });
             }
     
-            var findsubcategory = await SubCategory.findOne({ where: { subcategory_id: req.body.subcategory_id } });
+            var findsubcategory = await SubCategory.findOne({ where: { id: req.body.subcategory_id } });
 
             if(findsubcategory){
 
                 var subcategory = await SubCategory.update({
-                    subcategory_name: req.body.name
-                }, { where : { subcategory_id: req.body.subcategory_id } });
+                    name: req.body.subcategory_name
+                }, { where : { id: req.body.subcategory_id } });
 
                 if(subcategory){
                     return res.status(200).json({
                         error : false,
                         message : "Subcategory edited successfully",
-                        subcategory : req.body.name
+                        subcategory : req.body.subcategory_name
                     })
                 }else{
                     return res.status(200).json({
@@ -257,17 +257,17 @@ class SubCategoryController{
                 return res.status(400).json({ errors: errors.array() });
             }
             
-            var findsubcategory = await SubCategory.findOne({ where: { subcategory_id: req.body.subcategory_id } });
+            var findsubcategory = await SubCategory.findOne({ where: { id: req.body.subcategory_id } });
 
             if(findsubcategory){
 
-                var subcategory = await SubCategory.destroy({ where : { subcategory_id: req.body.subcategory_id } });
+                var subcategory = await SubCategory.destroy({ where : { id: req.body.subcategory_id } });
 
                 if(subcategory){
                     return res.status(200).json({
                         error : false,
                         message : "Subcategory deleted successfully",
-                        subcategory : req.body.name
+                        subcategory : req.body.subcategory_id
                     })
                 }else{
                     return res.status(400).json({
