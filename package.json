@@ -17,7 +17,9 @@
     "~services": "src/services",
     "~providers": "src/providers",
     "~templates": "src/templates",
-    "~utilities": "src/utilities"
+    "~utilities": "src/utilities",
+    "~uploads": "src/uploads",
+    "~cropimageupload": "src/uploads/crops/image/"
   },
   "author": "",
   "license": "ISC",
@@ -36,7 +38,8 @@
     "node-cron": "^3.0.1",
     "nodemailer": "^6.8.0",
     "nodemon": "^2.0.20",
-    "sequelize": "^6.25.3"
+    "sequelize": "^6.25.3",
+    "express-fileupload": "^1.4.0"
   },
   "devDependencies": {
     "link-module-alias": "^1.2.0"

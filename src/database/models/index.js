@@ -36,26 +36,54 @@ const Corporate = DB.corporate = require("./corporate.model.js").Model(initialIn
 const Agent = DB.agents = require("./agent.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Company = DB.companies = require("./company.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Partner = DB.partners = require("./partner.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
-const AccessToken = DB.accessTokens = require("./access_token.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
-const UserCode = DB.userCodes = require("./user_codes.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
+const AccessToken = DB.accessTokens = require("./accessToken.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
+const UserCode = DB.userCodes = require("./userCodes.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Pricing = DB.pricings = require("./pricing.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Transaction = DB.transactions = require("./transaction.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
-const ProductSpecification = DB.productSpecifications = require("./product_specification.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
+const ProductSpecification = DB.productSpecifications = require("./productSpecification.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Product = DB.products = require("./product.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
-const ProductRequest = DB.productRequests = require("./product_request.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
+const ProductRequest = DB.productRequests = require("./productRequest.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Auction = DB.auctions = require("./auction.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Order = DB.orders = require("./order.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Wallet= DB.wallets = require("./wallet.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
-const MerchantType = DB.merchantTypes = require("./merchant_type.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
-const BankAccount = DB.bankAccount = require("./bank_account.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
-const NegotiationOffer = DB.negotiationOffer = require('./negotiation.model').Model(initialInstance, createSequelizeInstance(), Sequelize);
+const MerchantType = DB.merchantTypes = require("./merchantType.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
+const BankAccount = DB.bankAccount = require("./bankAccount.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
+const Category = DB.categories = require("./category.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
+const SubCategory = DB.subcategories = require("./subcategory.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
+const ErrorLog = DB.errorlog = require("./errorLog.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
+const Negotiation = DB.negotiation = require("./negotiation.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
 
-
+//---------------------------------------------------
 //Register Relationships
+//---------------------------------------------------
+
 Merchant.belongsTo(User , { foreignKey : "user_id"});
+
 Corporate.belongsTo(User , { foreignKey : "user_id"});
+
 Agent.belongsTo(User , { foreignKey : "user_id"});
+
 Partner.belongsTo(User , { foreignKey : "user_id"});
+
+Product.hasMany(ProductSpecification,{
+  foreignKey: 'model_id',
+  as: 'product_specification'
+})
+
+ProductSpecification.belongsTo(Product,{
+  foreignKey: 'model_id',
+  as: 'product'
+})
+
+Product.hasMany(ProductRequest,{
+  foreignKey: 'product_id',
+  as: 'product_request'
+})
+
+ProductRequest.belongsTo(Product,{
+  foreignKey: 'product_id',
+  as: 'product'
+})
 
 
 module.exports = {
@@ -70,13 +98,16 @@ module.exports = {
   UserCode,
   Pricing,
   Transaction,
-  ProductSpecification,
-  Order,
   Product,
+  ProductSpecification,
   ProductRequest,
+  Order,
   Wallet,
   MerchantType,
   BankAccount,
   Auction,
-  NegotiationOffer
+  Category,
+  SubCategory,
+  ErrorLog,
+  Negotiation
 };

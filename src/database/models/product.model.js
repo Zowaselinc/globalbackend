@@ -3,11 +3,11 @@ const generateTimestamps = require("./timestamps");
 let Schema = (Sequelize,mode) => {
     return {
         user_id : {
-            type: Sequelize.INTEGER,
+            type: Sequelize.INTEGER(11),
             allowNull : false
         },
         type : {
-            type : Sequelize.STRING,
+            type: Sequelize.STRING,
             allowNull : false
         },
         category : {
@@ -16,54 +16,54 @@ let Schema = (Sequelize,mode) => {
         },
         sub_category : {
             type: Sequelize.STRING,
-            allowNull : false
+            // allowNull : false
         },
         active : {
-            type : Sequelize.INTEGER,
+            type: Sequelize.INTEGER(11),
             allowNull : false
         },
         market : {
-            type : Sequelize.STRING,
+            type: Sequelize.STRING,
             allowNull : false
         },
         description : {
-            type : Sequelize.STRING,
+            type: Sequelize.STRING,
             allowNull : false
         },
         images : {
-            type : Sequelize.STRING
+            type: Sequelize.STRING,
+            // allowNull : false
         },
-
         currency : {
-            type : Sequelize.STRING,
+            type: Sequelize.STRING,
             allowNull : false
         },
         is_negotiable : {
-            type : Sequelize.INTEGER,
+            type: Sequelize.INTEGER(11),
             allowNull : false
         },
         video : {
-            type : Sequelize.STRING,
-            allowNull : false
+            type: Sequelize.STRING,
+            // allowNull : false
         },
         packaging : {
-            type : Sequelize.STRING,
+            type: Sequelize.STRING,
             allowNull : false
         },
         application : {
-            type : Sequelize.STRING,
+            type: Sequelize.STRING,
             allowNull : false
         },
         manufacture_name : {
-            type : Sequelize.STRING,
+            type: Sequelize.STRING,
             allowNull : false
         },
         manufacture_date : {
-            type : Sequelize.STRING,
+            type: Sequelize.STRING,
             allowNull : false
         },
         expiration_date : {
-            type : Sequelize.STRING,
+            type: Sequelize.STRING,
             allowNull : false
         },
         ...generateTimestamps(Sequelize,mode)
@@ -73,8 +73,10 @@ const Model = (sequelize, instance, Sequelize) => {
     // Define initial for DB sync
     sequelize.define("products", Schema(Sequelize,1),{ timestamps: false });
     // Bypass initial instance to cater for timestamps
-    const Product = instance.define("products", Schema(Sequelize,2),{ timestamps: false });
-    return Product;
+    const Products = instance.define("products", Schema(Sequelize,2),{ 
+        timestamps: false,
+    });
+    return Products;
 }
 
 module.exports = { Schema , Model};

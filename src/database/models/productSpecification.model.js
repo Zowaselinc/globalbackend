@@ -1,25 +1,26 @@
 const generateTimestamps = require("./timestamps");
 
 let Schema = (Sequelize,mode) => {
+
     return {
         model_id : {
-            type : Sequelize.INTEGER,
-            allowNull: false
-        },
-        model_type :{
-            type : Sequelize.STRING,
+            type: Sequelize.INTEGER(11),
             allowNull : false
         },
+        model_type : {
+            type: Sequelize.STRING,
+            allowNull : false
+        },  
         qty : {
-            type : Sequelize.INTEGER,
+            type: Sequelize.INTEGER(11),
             allowNull : false
         },
         price : {
-            type : Sequelize.STRING,
+            type: Sequelize.STRING,
             allowNull : false
         },
         color : {
-            type : Sequelize.STRING,
+            type: Sequelize.STRING,
             allowNull : false
         },
         moisture : {
@@ -33,111 +34,115 @@ let Schema = (Sequelize,mode) => {
         broken_grains : {
             type: Sequelize.STRING,
             allowNull : false
-        },   
+        },
         weevil : {
             type: Sequelize.STRING,
             allowNull : false
-        },   
+        },
         dk : {
             type: Sequelize.STRING,
             allowNull : false
-        },   
+        },
         rotten_shriveled : {
             type: Sequelize.STRING,
             allowNull : false
-        },   
-        test_weight : {
+        },
+        test_weight: {
             type: Sequelize.STRING,
             allowNull : false
-        },   
+        },
         hectoliter : {
             type: Sequelize.STRING,
             allowNull : false
-        },   
+        },
         hardness : {
             type: Sequelize.STRING,
             allowNull : false
-        },   
-        splits: {
+        },
+        splits : {
             type: Sequelize.STRING,
             allowNull : false
         },
-        oil_content: {
+        oil_content : {
             type: Sequelize.STRING,
             allowNull : false
         },
-        infestation: {
+        infestation : {
             type: Sequelize.STRING,
             allowNull : false
         },
-        grain_size: {
-            type: Sequelize.STRING,
-            allowNull : false
-        }, 
-        total_defects: {
+        grain_size : {
             type: Sequelize.STRING,
             allowNull : false
         },
-        dockage: {
-            type: Sequelize.STRING,
-            allowNull : false
-        }, 
-        ash_content: {
+        total_defects : {
             type: Sequelize.STRING,
             allowNull : false
         },
-        acid_ash: {
-            type: Sequelize.STRING,
-            allowNull : false
-        }, 
-        volatile: {
-            type: Sequelize.STRING,
-            allowNull : false
-        },  
-        mold: {
-            type: Sequelize.STRING,
-            allowNull : false
-        }, 
-        drying_process: {
+        dockage : {
             type: Sequelize.STRING,
             allowNull : false
         },
-        dead_insect: {
-            type: Sequelize.STRING,
-            allowNull : false
-        }, 
-        mammalian: {
+        ash_content : {
             type: Sequelize.STRING,
             allowNull : false
         },
-        infested_by_weight: {
-            type: Sequelize.STRING,
-            allowNull : false
-        }, 
-        curcumin_content: {
+        acid_ash : {
             type: Sequelize.STRING,
             allowNull : false
         },
-        extraneous: {
+        volatile : {
             type: Sequelize.STRING,
             allowNull : false
         },
-        kg: {
+        mold : {
             type: Sequelize.STRING,
             allowNull : false
-        }, 
-        liters: {
+        },
+        drying_process : {
             type: Sequelize.STRING,
             allowNull : false
-        },                      
+        },
+        dead_insect : {
+            type: Sequelize.STRING,
+            allowNull : false
+        },
+        mammalian : {
+            type: Sequelize.STRING,
+            allowNull : false
+        },
+        infested_by_weight : {
+            type: Sequelize.STRING,
+            allowNull : false
+        },
+        curcumin_content : {
+            type: Sequelize.STRING,
+            allowNull : false
+        },
+        extraneous : {
+            type: Sequelize.STRING,
+            allowNull : false
+        },
+        kg : {
+            type: Sequelize.STRING,
+            allowNull : false
+        },
+        liters : {
+            type: Sequelize.STRING,
+            allowNull : false
+        },
+        
         ...generateTimestamps(Sequelize,mode)
     }
 }
+
 const Model = (sequelize, instance, Sequelize) => {
     // Define initial for DB sync
-    sequelize.define("product_specifications", Schema(Sequelize,1),{ timestamps: false });
+    sequelize.define("product_specification", Schema(Sequelize,1),{ timestamps: false });
     // Bypass initial instance to cater for timestamps
-    const ProductSpecification = instance.define("product_specifications", Schema(Sequelize,2),{ timestamps: false });
+    const ProductSpecification = instance.define("product_specification", Schema(Sequelize,2),{ 
+        timestamps: false,
+    });
     return ProductSpecification;
 }
 
