@@ -1,3 +1,7 @@
+
+/* ------------------------------- CONTROLLERS ------------------------------ */
+/* ----------------------------------- --- ---------------------------------- */
+
 const Controller = require("~controllers/Controller");
 
 const AuthController = require('~controllers/AuthController');
@@ -16,10 +20,11 @@ const ProductSpecificationController = require('../controllers/ProductSpecificat
 
 const NegotiationController = require('../controllers/NegotiationController');
 
-const RouteProvider = require('~providers/RouteProvider');
+const InputsCart = require('~controllers/InputcartController');
+
+/* ------------------------------- VALIDATORS ------------------------------- */
 
 const { RegisterMerchantCorporateValidator, LoginValidator, RegisterPartnerValidator, RegisterAgentValidator, SendVerificationValidator, ConfirmVerificationValidator, ResetPasswordValidator, VerifyResetTokenValidator} = require('./validators/AuthValidators');
-
 
 const CategoryValidator = require('./validators/CategoryValidator');
 const SubCategoryValidator = require('./validators/SubCategoryValidator');
@@ -27,6 +32,12 @@ const ProductValidation = require('./validators/ProductValidation');
 const ProductSpecificationValidator = require('./validators/ProductSpecificationValidator');
 const ProductRequestValidation = require('./validators/ProductRequestValidation');
 const NegotiationValidator = require('./validators/NegotiationValidator');
+const InputsCartValidator = require('./validators/InputsCartValidator');
+
+
+/* -------------------------------- PROVIDERS ------------------------------- */
+
+const RouteProvider = require('~providers/RouteProvider');
 
 const Router = RouteProvider.Router;
 
@@ -137,6 +148,49 @@ Router.group((router)=>{
 
 });
 
+
+/* -------------------------------------------------------------------------- */
+/*                             INPUT MARKET PLACE                             */
+/* -------------------------------------------------------------------------- */
+
+
+/* -------------------------- category route group -------------------------- */
+Router.group((router) => {
+    router.post('/input/category/add', CategoryValidator.createCategoryValidator, CategoryController.createCategory);
+    router.get('/input/category/getall', CategoryController.getAllCategories);
+    router.get('/input/category/getallparams/:offset/:limit', CategoryController.getCategories);
+    router.get('/input/category/getbyid/:id', CategoryController.getCategoryById);
+    router.post('/input/category/delete', CategoryValidator.deleteCategoryValidator, CategoryController.deleteCategory);
+    router.post('/input/category/update', CategoryValidator.updateCategoryValidator, CategoryController.updateCategory);
+})
+
+
+/* ------------------------- subcategory route group ------------------------ */
+Router.group((router) => {
+    router.post('/input/subcategory/add', SubCategoryValidator.createSubCategoryValidator, SubCategoryController.createSubcategory);
+    router.get('/SubCategoryValidator.createSubCategoryValidatornput/subcategory/getallbycategoryid/:id', SubCategoryValidator.getSubCategoryValidator, SubCategoryController.getAllSubCategories);
+    router.get('/input/subcategory/getallparams/:id/:offset/:limit', SubCategoryController.getSubCategories);
+    router.get('/input/subcategory/getbyid/:id', SubCategoryController.getSubCategoryById);
+    // router.post('/input/subcategory/delete', SubCategoryValidator.deleteCategoryValidator, SubCategoryController.deleteCategory);
+    // router.post('/input/subcategory/update', SubCategoryValidator.updateCategoryValidator, SubCategoryController.updateCategory);
+})
+
+/* -------------------------------------------------------------------------- */
+/*                                INPUT PRODUCT                               */
+/* -------------------------------------------------------------------------- */
+/* ---------------------------------- INPUT --------------------------------- */
+Router.group((router) => {
+
+    
+})
+
+/* ---------------------------------- CART ---------------------------------- */
+Router.group((router) => {
+    router.post('/input/cart/add', InputsCartValidator.addToCartValidator,InputsCart.addtoCart);
+    // router.get('/input/cart/getall/:user_id', InputsCart.getUserInputCart);
+})
+
 module.exports = Router;
+
 
 

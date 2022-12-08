@@ -11,10 +11,6 @@ let Schema = (Sequelize,mode) => {
             type: Sequelize.STRING,
             allowNull : false
         },
-        category_id : {
-            type: Sequelize.STRING,
-            allowNull : false
-        },
         ...generateTimestamps(Sequelize,mode)
     }
 }
