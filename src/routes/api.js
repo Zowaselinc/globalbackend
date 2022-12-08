@@ -82,6 +82,31 @@ Router.middleware(['isAuthenticated']).group((router)=>{
 
 
 /* -------------------------------------------------------------------------- */
+/*                         GENERAL MARKETPLACE ROUTES                         */
+/* -------------------------------------------------------------------------- */
+
+Router.group((router) => {
+
+        /* -------------------------------- Category -------------------------------- */
+        router.get('/category/:type/getall', CategoryController.getAllCategories);
+        router.get('/category/:type/getall/:offset/:limit', CategoryController.getAllByLimit);
+        router.get('/category/:id', CategoryController.getById);
+        // router.post('/crop/category/add', CategoryValidator.addCategoryValidator, CategoryController.add);
+        // router.post('/crop/category/editbyid', CategoryValidator.addCategoryValidator, CategoryController.editbyid);
+        // router.post('/crop/category/deletebyid', CategoryController.deletebyid);
+    
+        /* ------------------------------- SubCategory ------------------------------ */
+
+        router.get('/subcategory/getbycategory/:categoryId', SubCategoryController.getByCategory);
+        router.get('/subcategory/:id', SubCategoryController.getById);
+        // router.post('/crop/subcategory/add', SubCategoryValidator.addSubCategoryValidator, SubCategoryController.add);
+        // router.post('/crop/subcategory/editbyid', SubCategoryValidator.addSubCategoryValidator, SubCategoryController.editbyid);
+        // router.post('/crop/subcategory/deletebyid', SubCategoryController.deletebyid);
+
+
+})
+
+/* -------------------------------------------------------------------------- */
 /*                              CROP MARKETPLACE                              */
 /* -------------------------------------------------------------------------- */
 
@@ -100,20 +125,6 @@ Router.get("/crop/croprequest/hello", CropSpecificationController.hello);
 Router.group((router)=>{
 
     // router.get();
-    /* -------------------------------- Category -------------------------------- */
-    router.post('/crop/category/add', CategoryValidator.addCategoryValidator, CategoryController.add);
-    router.get('/crop/category/getall', CategoryController.getall);
-    router.get('/crop/category/getall/:offset/:limit', CategoryController.getallbyLimit);
-    router.post('/crop/category/getbyid', CategoryController.getbyid);
-    router.post('/crop/category/editbyid', CategoryValidator.addCategoryValidator, CategoryController.editbyid);
-    router.post('/crop/category/deletebyid', CategoryController.deletebyid);
-
-    /* ------------------------------- SubCategory ------------------------------ */
-    router.post('/crop/subcategory/add', SubCategoryValidator.addSubCategoryValidator, SubCategoryController.add);
-    router.post('/crop/subcategory/getbycategory', SubCategoryController.getbycategory);
-    router.post('/crop/subcategory/getbyid', SubCategoryController.getbyid);
-    router.post('/crop/subcategory/editbyid', SubCategoryValidator.addSubCategoryValidator, SubCategoryController.editbyid);
-    router.post('/crop/subcategory/deletebyid', SubCategoryController.deletebyid);
 
 
     /* ------------------------------- Crop ------------------------------ */
@@ -154,26 +165,6 @@ Router.group((router)=>{
 /* -------------------------------------------------------------------------- */
 
 
-/* -------------------------- category route group -------------------------- */
-Router.group((router) => {
-    router.post('/input/category/add', CategoryValidator.createCategoryValidator, CategoryController.createCategory);
-    router.get('/input/category/getall', CategoryController.getAllCategories);
-    router.get('/input/category/getallparams/:offset/:limit', CategoryController.getCategories);
-    router.get('/input/category/getbyid/:id', CategoryController.getCategoryById);
-    router.post('/input/category/delete', CategoryValidator.deleteCategoryValidator, CategoryController.deleteCategory);
-    router.post('/input/category/update', CategoryValidator.updateCategoryValidator, CategoryController.updateCategory);
-})
-
-
-/* ------------------------- subcategory route group ------------------------ */
-Router.group((router) => {
-    router.post('/input/subcategory/add', SubCategoryValidator.createSubCategoryValidator, SubCategoryController.createSubcategory);
-    router.get('/SubCategoryValidator.createSubCategoryValidatornput/subcategory/getallbycategoryid/:id', SubCategoryValidator.getSubCategoryValidator, SubCategoryController.getAllSubCategories);
-    router.get('/input/subcategory/getallparams/:id/:offset/:limit', SubCategoryController.getSubCategories);
-    router.get('/input/subcategory/getbyid/:id', SubCategoryController.getSubCategoryById);
-    // router.post('/input/subcategory/delete', SubCategoryValidator.deleteCategoryValidator, SubCategoryController.deleteCategory);
-    // router.post('/input/subcategory/update', SubCategoryValidator.updateCategoryValidator, SubCategoryController.updateCategory);
-})
 
 /* -------------------------------------------------------------------------- */
 /*                                INPUT PRODUCT                               */
