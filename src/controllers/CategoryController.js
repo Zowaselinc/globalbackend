@@ -1,6 +1,6 @@
 //Import validation result
 const { validationResult } = require('express-validator');
-const { Category, ErrorLog } = require('~database/models');
+const { Category, ErrorLog, SubCategory } = require('~database/models');
 const crypto = require('crypto');
 
 class CategoryController{
@@ -40,7 +40,7 @@ class CategoryController{
             return res.status(200).json({
                 "error": false,
                 "message": "Category created successfully",
-                "category": category
+                "data": req.body
             })
         }catch(e){
             var logError = await ErrorLog.create({
@@ -157,7 +157,7 @@ class CategoryController{
                 return res.status(400).json({ errors: errors.array() });
             }
     
-            var category = await Category.findOne({ where: { category_id: req.body.id } });
+            var category = await Category.findOne({ where: { id: req.body.id } });
             if(category){
                 return res.status(200).json({
                     error : false,
@@ -208,13 +208,13 @@ class CategoryController{
                 return res.status(400).json({ errors: errors.array() });
             }
             
-            var findcategory = await Category.findOne({ where: { category_id: req.body.id } });
+            var findcategory = await Category.findOne({ where: { id: req.body.id } });
 
             if(findcategory){
 
                 var category = await Category.update({
                     name: req.body.name
-                }, { where : { category_id: req.body.id } });
+                }, { where : { id: req.body.id } });
 
                 if(category){
                     return res.status(200).json({
@@ -274,13 +274,15 @@ class CategoryController{
                 return res.status(400).json({ errors: errors.array() });
             }
             
-            var findcategory = await Category.findOne({ where: { category_id: req.body.id } });
+            var findcategory = await Category.findOne({ where: { id: req.body.id } });
 
             if(findcategory){
 
-                var category = await Category.destroy({ where : { category_id: req.body.id } });
-
+                var category = await Category.destroy({ where : { id: req.body.id } });
+                
                 if(category){
+                    var subcategory = await SubCategory.destroy({ where : { category_id: req.body.id } });
+                    
                     return res.status(200).json({
                         error : false,
                         message : "Category deleted successfully",
@@ -317,6 +319,8 @@ class CategoryController{
     }
     /* --------------------------- DELETE CATEGORY BY CATEGORY ID --------------------------- */
 
+
+    
     /* ------------------------------- INPUT CODE ------------------------------- */
     
     

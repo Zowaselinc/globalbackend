@@ -17,9 +17,7 @@
     "~services": "src/services",
     "~providers": "src/providers",
     "~templates": "src/templates",
-    "~utilities": "src/utilities",
-    "~uploads": "src/uploads",
-    "~cropimageupload": "src/uploads/crops/image/"
+    "~utilities": "src/utilities"
   },
   "author": "",
   "license": "ISC",

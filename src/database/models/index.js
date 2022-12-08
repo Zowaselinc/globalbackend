@@ -50,7 +50,7 @@ const MerchantType = DB.merchantTypes = require("./merchantType.model").Model(in
 const BankAccount = DB.bankAccount = require("./bankAccount.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Category = DB.categories = require("./category.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const SubCategory = DB.subcategories = require("./subcategory.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
-const ErrorLog = DB.errorlog = require("./errorLog.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
+const ErrorLog = DB.errorlogs = require("./errorLog.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Negotiation = DB.negotiation = require("./negotiation.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
 
 //---------------------------------------------------

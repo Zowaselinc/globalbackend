@@ -24,9 +24,9 @@ let Schema = (Sequelize,mode) => {
 
 const Model = (sequelize, instance, Sequelize) => {
     // Define initial for DB sync
-    sequelize.define("errorlog", Schema(Sequelize,1),{ timestamps: false });
+    sequelize.define("errorlogs", Schema(Sequelize,1),{ timestamps: false });
     // Bypass initial instance to cater for timestamps
-    const ErrorLog = instance.define("errorlog", Schema(Sequelize,2),{ 
+    const ErrorLog = instance.define("errorlogs", Schema(Sequelize,2),{ 
         timestamps: false,
     });
     return ErrorLog;
