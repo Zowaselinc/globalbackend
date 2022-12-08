@@ -16,7 +16,6 @@ class SubCategoryController{
 
 
 
-
     /* --------------------------- GET SUBCATEGORIES BY CATEGORY --------------------------- */
     static async getByCategory(req , res){
 

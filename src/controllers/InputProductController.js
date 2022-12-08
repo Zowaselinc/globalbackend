@@ -1,12 +1,12 @@
 const { request } = require("express");
-const { ErrorLog } = require("~database/models");
+const { Inputs, ErrorLog } = require("~database/models");
 const { validationResult } = require("express-validator");
 const crypto = require("crypto");
 // const jwt = require("jsonwebtoken");
 
-class InputCrops{
+class InputProducts{
 
-    static async createCrop(req , res){
+    static async createInput(req , res){
 
         let sampleFile;
         let uploadPath;
@@ -18,7 +18,7 @@ class InputCrops{
         try{
 
             if(!errors.isEmpty()){
-                return res.status(200).json({
+                return res.status(400).json({
                     "error": true,
                     "message": "All fields are required",
                     "data": []
@@ -26,9 +26,10 @@ class InputCrops{
             }
 
             if (!req.files || Object.keys(req.files).length === 0) {
-                return res.status(200).json({
+                return res.status(400).json({
                     "error": true,
-                    "message": "No files were uploaded."
+                    "message": "No input images(s) found.",
+                    "data": []
                 })
             
             }else{
@@ -42,12 +43,9 @@ class InputCrops{
                     
                     my_object.push(req.files[allImages[i]].name);
                     sampleFile = req.files[allImages[i]];
-                    uploadPath = `${__dirname} / ${req.files[allImages[i]].name}`;
+                    uploadPath = __dirname + "/uploads/" + req.files[allImages[i]].name;
 
                     sampleFile.mv(uploadPath, function(err) {
-                        if (err){
-                            return res.status(500).send(err);
-                        }else{}
                     });
                 }
                 /* -------------------------- MOVE UPLOADED FOLDER -------------------------- */
@@ -55,7 +53,7 @@ class InputCrops{
 
                 /* ------------------------ INSERT INTO PRODUCT TABLE ----------------------- */
                
-                var input = await InputCrops.create({
+                var input = await Inputs.create({
                     user_id: req.body.user_id,
                     category: req.body.category,
                     sub_category: req.body.sub_category,
@@ -80,7 +78,7 @@ class InputCrops{
                 /* ------------------------ INSERT INTO PRODUCT TABLE ----------------------- */
 
 
-                if(product){
+                if(input){
 
                     return res.status(200).json({
                         "error": false,
@@ -95,7 +93,7 @@ class InputCrops{
 
         }catch(e){
             var logError = await ErrorLog.create({
-                error_name: "Error on add a product",
+                error_name: "Error on adding an input",
                 error_description: e.toString(),
                 route: "/api/input/product/add",
                 error_code: "500"
@@ -111,6 +109,205 @@ class InputCrops{
         
     }
 
+    static async getallInputsByUser(req , res){
+        try{
+            var alluserinputs = await Inputs.findAll({
+                where: {
+                    user_id: req.params.user_id
+                }
+            });
+
+            if(alluserinputs.length > 0){
+
+                return res.status(200).json({
+                    error : false,
+                    message: "All Inputs returned successfully",
+                    data : alluserinputs
+                })
+
+            }else{
+
+                return res.status(200).json({
+                    error : false,
+                    message: "User does not have an input product",
+                    data : []
+                })
+
+            }
+        }catch(e){
+            var logError = await ErrorLog.create({
+                error_name: "Error on getting all user Inputs",
+                error_description: e.toString(),
+                route: "/api/input/getallbyuserid/:user_id",
+                error_code: "500"
+            });
+            if(logError){
+                return res.status(500).json({
+                    error: true,
+                    message: 'Unable to complete request at the moment'
+                })
+            }  
+        }
+    }
+
+    static async getallInputs(req , res){
+        try{
+            var alluserinputs = await Inputs.findAll();
+
+            if(alluserinputs.length > 0){
+
+                return res.status(200).json({
+                    error : false,
+                    message: "All Inputs returned successfully",
+                    data : alluserinputs
+                })
+
+            }else{
+
+                return res.status(200).json({
+                    error : false,
+                    message: "No input products found",
+                    data : []
+                })
+
+            }
+        }catch(e){
+            var logError = await ErrorLog.create({
+                error_name: "Error on getting all Inputs",
+                error_description: e.toString(),
+                route: "/api/input/getall",
+                error_code: "500"
+            });
+            if(logError){
+                return res.status(500).json({
+                    error: true,
+                    message: 'Unable to complete request at the moment'
+                })
+            }  
+        }
+    }
+
+    static async getallInputsByCategory(req , res){
+        try{
+            var allInputs = await Inputs.findAll({
+                where: {
+                    category: req.params.category
+                }
+            });
+
+            if(allInputs.length > 0){
+
+                return res.status(200).json({
+                    error : false,
+                    message: "All Inputs for this input type returned",
+                    data : allInputs
+                })
+
+            }else{
+
+                return res.status(200).json({
+                    error : false,
+                    message: "No input products found for this input type",
+                    data : []
+                })
+
+            }
+        }catch(e){
+            var logError = await ErrorLog.create({
+                error_name: "Error on getting all Inputs by category",
+                error_description: e.toString(),
+                route: "/api/input/getallbycategory/:category",
+                error_code: "500"
+            });
+            if(logError){
+                return res.status(500).json({
+                    error: true,
+                    message: 'Unable to complete request at the moment'
+                })
+            }  
+        }
+    }
+    static async getallInputsByManufacturer(req , res){
+        try{
+            var allInputs = await Inputs.findAll({
+                where: {
+                    manufacture_name: req.params.manufacturer
+                }
+            });
+
+            if(allInputs.length > 0){
+
+                return res.status(200).json({
+                    error : false,
+                    message: "All Inputs for this manufacturer returned",
+                    data : allInputs
+                })
+
+            }else{
+
+                return res.status(200).json({
+                    error : false,
+                    message: "No input products found for this manufacturer",
+                    data : []
+                })
+
+            }
+        }catch(e){
+            var logError = await ErrorLog.create({
+                error_name: "Error on getting all Inputs by manfacturer",
+                error_description: e.toString(),
+                route: "/api/input/getallbymanfacturer/:manfacturer",
+                error_code: "500"
+            });
+            if(logError){
+                return res.status(500).json({
+                    error: true,
+                    message: 'Unable to complete request at the moment'
+                })
+            }  
+        }
+    }
+    static async getallInputsByPackaging(req , res){
+        try{
+            var allInputs = await Inputs.findAll({
+                where: {
+                    packaging: req.params.packaging
+                }
+            });
+
+            if(allInputs.length > 0){
+
+                return res.status(200).json({
+                    error : false,
+                    message: "All Inputs for this packaging returned",
+                    data : allInputs
+                })
+
+            }else{
+
+                return res.status(200).json({
+                    error : false,
+                    message: "No input products found for this packaging",
+                    data : []
+                })
+
+            }
+        }catch(e){
+            var logError = await ErrorLog.create({
+                error_name: "Error on getting all Inputs by packaging",
+                error_description: e.toString(),
+                route: "/api/input/getallbypackaging/:packaging",
+                error_code: "500"
+            });
+            if(logError){
+                return res.status(500).json({
+                    error: true,
+                    message: 'Unable to complete request at the moment'
+                })
+            }  
+        }
+    }
+    // static async getallInputsByDeliveryMethod(req , res){}
 }
 
-// module.exports = InputCrops;
+module.exports = InputProducts;

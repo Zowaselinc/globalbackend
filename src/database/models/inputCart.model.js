@@ -7,7 +7,7 @@ let Schema = (Sequelize,mode) => {
             type : Sequelize.STRING,
             allowNull : false
         },
-        crop_id : {
+        input_id : {
             type : Sequelize.STRING,
             allowNull : false
         },

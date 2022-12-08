@@ -19,6 +19,7 @@ const CropRequestController = require('../controllers/CropRequestController');
 const CropSpecificationController = require('../controllers/CropSpecificationController');
 
 const NegotiationController = require('../controllers/NegotiationController');
+const Inputs = require('~controllers/InputProductController');
 
 const InputsCart = require('~controllers/InputcartController');
 
@@ -29,10 +30,8 @@ const { RegisterMerchantCorporateValidator, LoginValidator, RegisterPartnerValid
 const CategoryValidator = require('./validators/CategoryValidator');
 const SubCategoryValidator = require('./validators/SubCategoryValidator');
 const CropValidation = require('./validators/CropValidation');
-const CropSpecificationValidator = require('./validators/CropSpecificationValidator');
-const CropRequestValidation = require('./validators/CropRequestValidation');
 const NegotiationValidator = require('./validators/NegotiationValidator');
-const InputsCartValidator = require('./validators/InputsCartValidator');
+const InputsValidator = require('./validators/InputsValidator');
 
 
 /* -------------------------------- PROVIDERS ------------------------------- */
@@ -128,21 +127,21 @@ Router.group((router)=>{
 
 
     /* ------------------------------- Crop ------------------------------ */
-    router.post('/crop/product/add', CropValidation.addCropValidator, CropController.add);
-    router.get('/crop/product/getbyproductwanted', CropController.getbyproductwanted);
-    router.get('/crop/product/getbyproductoffer', CropController.getbyproductoffer);
-    router.post('/crop/product/getbyid', CropController.getbyid);
-    router.post('/crop/product/editbyid', CropValidation.addCropValidator, CropController.editbyid);
+    router.post('/crop/add', CropValidation.addCropValidator, CropController.add);
+    router.get('/crop/getbycropwanted', CropController.getByCropWanted);
+    router.get('/crop/getbycropoffer', CropController.getByCropOffer);
+    router.get('/crop/getbyid/:id', CropController.getById);
+    router.post('/crop/editbyid', CropValidation.addCropValidator, CropController.EditById);
 
 
     /* ------------------------------- Crop Specification ------------------------------ */
-    router.post('/crop/cropspecification/add', CropSpecificationValidator.addCropSpecificationValidator, CropSpecificationController.add);
+    router.post('/crop/cropspecification/add', CropValidation.addCropSpecificationValidator, CropSpecificationController.add);
   
 
 
 
     /* ------------------------------- Crop Request ------------------------------ */
-    router.post('/crop/croprequest/add', CropRequestValidation.addCropRequestValidator, CropRequestController.add);
+    router.post('/crop/croprequest/add', CropValidation.addCropRequestValidator, CropRequestController.add);
     router.get('/crop/croprequest/getall', CropRequestController.getall);
     router.get('/crop/croprequest/getall/:offset/:limit', CropRequestController.getallbyLimit);
     router.post('/crop/croprequest/getbyid', CropRequestController.getbyid);
@@ -177,8 +176,20 @@ Router.group((router) => {
 
 /* ---------------------------------- CART ---------------------------------- */
 Router.group((router) => {
-    router.post('/input/cart/add', InputsCartValidator.addToCartValidator,InputsCart.addtoCart);
-    // router.get('/input/cart/getall/:user_id', InputsCart.getUserInputCart);
+
+    router.post('/input/add', InputsValidator.createInputValidator,Inputs.createInput);
+    router.get('/input/getallbyuserid/:user_id', Inputs.getallInputsByUser);
+    router.get('/input/getall', Inputs.getallInputs);
+    router.get('/input/getallbycategory/:category', Inputs.getallInputsByCategory);
+    router.get('/input/getallbymanufacturer/:manufacturer', Inputs.getallInputsByManufacturer);
+    router.get('/input/getallbypackaging/:packaging', Inputs.getallInputsByPackaging);
+})
+
+/* ---------------------------------- CART ---------------------------------- */
+Router.group((router) => {
+    router.post('/input/cart/add', InputsValidator.addToCartValidator,InputsCart.addtoCart);
+    router.get('/input/cart/getallcartbyuserid/:user_id', InputsCart.getUserInputCart);
+    router.get('/input/cart/delete/:id', InputsCart.deleteCartItem);
 })
 
 module.exports = Router;
