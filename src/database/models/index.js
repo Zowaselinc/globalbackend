@@ -52,6 +52,8 @@ const Category = DB.categories = require("./category.model.js").Model(initialIns
 const SubCategory = DB.subcategories = require("./subcategory.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const ErrorLog = DB.errorlogs = require("./errorLog.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Negotiation = DB.negotiation = require("./negotiation.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
+const Input = DB.inputs = require("./input.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
+
 
 //---------------------------------------------------
 //Register Relationships
@@ -68,23 +70,38 @@ Partner.belongsTo(User , { foreignKey : "user_id"});
 Crop.hasMany(CropSpecification,{
   foreignKey: 'model_id',
   as: 'product_specification'
-})
+});
 
 CropSpecification.belongsTo(Crop,{
   foreignKey: 'model_id',
   as: 'product'
-})
+});
 
 Crop.hasMany(CropRequest,{
   foreignKey: 'crop_id',
   as: 'product_request'
-})
+});
 
 CropRequest.belongsTo(Crop,{
   foreignKey: 'crop_id',
   as: 'product'
 })
 
+Category.hasMany(Crop ,{
+  foreignKey : "category",
+});
+
+Category.hasMany(Input ,{
+  foreignKey : "category",
+});
+
+SubCategory.hasMany(Input,{
+  foreignKey : "subcategory",
+});
+
+SubCategory.hasMany(Crop,{
+  foreignKey : "subcategory",
+});
 
 module.exports = {
   DB,
@@ -109,5 +126,6 @@ module.exports = {
   Category,
   SubCategory,
   ErrorLog,
-  Negotiation
+  Negotiation,
+  Input
 };

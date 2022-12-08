@@ -1,7 +1,9 @@
 //Import validation result
 const { validationResult } = require('express-validator');
-const { Category, ErrorLog, SubCategory } = require('~database/models');
+const { Category, ErrorLog, SubCategory, Crop, Input } = require('~database/models');
 const crypto = require('crypto');
+const { count } = require('console');
+const { Sequelize } = require('sequelize');
 
 class CategoryController{
 
@@ -20,11 +22,22 @@ class CategoryController{
 
         try{
 
+            var countOptions = {
+                attributes: { 
+                    include: [[Sequelize.fn("COUNT", Sequelize.col(`${req.params.type}s.id`)), `count`]] 
+                },
+                include: [{
+                    model: req.params.type == "crop" ? Crop : Input,
+                    attributes: []
+                }],
+                group: ['Category.id']
+            };
+
             var categories = await Category.findAll({
                 where: {
                     type: req.params.type
                 },
-                attributes: ['name', 'id', 'created_at']
+                ...countOptions
             });
 
             if(categories.length > 0){
@@ -49,7 +62,7 @@ class CategoryController{
             var logError = await ErrorLog.create({
                 error_name: "Error on getting all Categories",
                 error_description: error.toString(),
-                route: "/api/input/category/getall",
+                route: `/category/${req.params.type}/getall`,
                 error_code: "500"
             });
 
