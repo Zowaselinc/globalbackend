@@ -20,6 +20,8 @@ const CropSpecificationController = require('../controllers/CropSpecificationCon
 
 const NegotiationController = require('../controllers/NegotiationController');
 
+const Inputs = require('~controllers/InputProductController');
+
 const InputsCart = require('~controllers/InputcartController');
 
 /* ------------------------------- VALIDATORS ------------------------------- */
@@ -32,7 +34,7 @@ const CropValidation = require('./validators/CropValidation');
 const CropSpecificationValidator = require('./validators/CropSpecificationValidator');
 const CropRequestValidation = require('./validators/CropRequestValidation');
 const NegotiationValidator = require('./validators/NegotiationValidator');
-const InputsCartValidator = require('./validators/InputsCartValidator');
+const InputsValidator = require('./validators/InputsValidator');
 
 
 /* -------------------------------- PROVIDERS ------------------------------- */
@@ -181,13 +183,19 @@ Router.group((router) => {
 /* ---------------------------------- INPUT --------------------------------- */
 Router.group((router) => {
 
-    
+    router.post('/input/add', InputsValidator.createInputValidator,Inputs.createInput);
+    router.get('/input/getallbyuserid/:user_id', Inputs.getallInputsByUser);
+    router.get('/input/getall', Inputs.getallInputs);
+    router.get('/input/getallbycategory/:category', Inputs.getallInputsByCategory);
+    router.get('/input/getallbymanufacturer/:manufacturer', Inputs.getallInputsByManufacturer);
+    router.get('/input/getallbypackaging/:packaging', Inputs.getallInputsByPackaging);
 })
 
 /* ---------------------------------- CART ---------------------------------- */
 Router.group((router) => {
-    router.post('/input/cart/add', InputsCartValidator.addToCartValidator,InputsCart.addtoCart);
-    // router.get('/input/cart/getall/:user_id', InputsCart.getUserInputCart);
+    router.post('/input/cart/add', InputsValidator.addToCartValidator,InputsCart.addtoCart);
+    router.get('/input/cart/getallcartbyuserid/:user_id', InputsCart.getUserInputCart);
+    router.get('/input/cart/delete/:id', InputsCart.deleteCartItem);
 })
 
 module.exports = Router;
