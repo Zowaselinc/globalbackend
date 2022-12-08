@@ -52,6 +52,8 @@ const Category = DB.categories = require("./category.model.js").Model(initialIns
 const SubCategory = DB.subcategories = require("./subcategory.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const ErrorLog = DB.errorlogs = require("./errorLog.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Negotiation = DB.negotiation = require("./negotiation.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
+const InputCart = DB.input_cart = require("./inputCart.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
+const Inputs = DB.input = require("./inputs.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
 
 //---------------------------------------------------
 //Register Relationships
@@ -90,6 +92,14 @@ CropRequest.belongsTo(Crop,{
 /* ---------------------------------- CROP ---------------------------------- */
 
 
+
+InputCart.hasOne(Inputs,{ foreignKey: 'id' })
+
+Inputs.hasMany(InputCart,{
+  foreignKey: 'input_id',
+  as: 'input_cart'
+})
+
 module.exports = {
   DB,
   User,
@@ -113,5 +123,7 @@ module.exports = {
   Category,
   SubCategory,
   ErrorLog,
-  Negotiation
+  Negotiation,
+  InputCart,
+  Inputs
 };
