@@ -65,9 +65,12 @@ Agent.belongsTo(User , { foreignKey : "user_id"});
 
 Partner.belongsTo(User , { foreignKey : "user_id"});
 
+
+
+/* ---------------------------------- CROP ---------------------------------- */
 Crop.hasMany(CropSpecification,{
   foreignKey: 'model_id',
-  as: 'product_specification'
+  as: 'crop_specification'
 })
 
 CropSpecification.belongsTo(Crop,{
@@ -77,13 +80,14 @@ CropSpecification.belongsTo(Crop,{
 
 Crop.hasMany(CropRequest,{
   foreignKey: 'crop_id',
-  as: 'product_request'
+  as: 'crop_request'
 })
 
 CropRequest.belongsTo(Crop,{
   foreignKey: 'crop_id',
   as: 'product'
 })
+/* ---------------------------------- CROP ---------------------------------- */
 
 
 module.exports = {

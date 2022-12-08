@@ -33,7 +33,7 @@ class CategoryController{
             let randomid = crypto.randomBytes(8).toString('hex');
             var category = await Category.create({
                 name: req.body.name,
-                type: "cropmarket",
+                type: "crop",
                 category_id: "CROPMARKETCATEG"+randomid
             })
     
@@ -320,7 +320,7 @@ class CategoryController{
     /* --------------------------- DELETE CATEGORY BY CATEGORY ID --------------------------- */
 
 
-    
+
     /* ------------------------------- INPUT CODE ------------------------------- */
     
     
