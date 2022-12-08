@@ -270,17 +270,7 @@ class CropController{
     /* --------------------------- GET ALL OFFERED PRODUCTS --------------------------- */
     static async getbyproductoffer(req , res){
 
-        // return res.status(200).json({
-        //     message : "GET Category By Category ID"
-        // });
-
-        const errors = validationResult(req);
-
         try{
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array() });
-            }
-    
             var findofferCrops = await Crop.findAll({ 
                 include: [{
                     model: CropSpecification,
@@ -293,9 +283,7 @@ class CropController{
                     as: 'product_request',
                     order: [['id', 'DESC']],
                     limit: 1,
-                    
                 }],
-                
                 where: { type: "offer" },
                 order: [['id', 'DESC']]
             });
@@ -306,13 +294,13 @@ class CropController{
             return res.status(200).json({
                 error : false,
                 message : "Crops offer grabbed successfully",
-                products : findwantedCrops
+                products : findofferCrops
             })
             
         }catch(error){
             var logError = await ErrorLog.create({
                 error_name: "Error on fetching product offer",
-                error_description: e.toString(),
+                error_description: error.toString(),
                 route: "/api/crop/product/getbyproductoffer",
                 error_code: "500"
             });
@@ -332,10 +320,6 @@ class CropController{
 
     /* --------------------------- GET PRODUCT BY ID --------------------------- */
     static async getbyid(req , res){
-
-        // return res.status(200).json({
-        //     message : "GET Crop by ID"
-        // });
 
         const errors = validationResult(req);
 

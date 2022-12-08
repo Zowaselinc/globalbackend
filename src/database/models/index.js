@@ -85,7 +85,7 @@ Crop.hasMany(CropRequest,{
 CropRequest.belongsTo(Crop,{
   foreignKey: 'crop_id',
   as: 'product'
-})
+});
 
 Category.hasMany(Crop ,{
   foreignKey : "category",
@@ -96,11 +96,11 @@ Category.hasMany(Input ,{
 });
 
 SubCategory.hasMany(Input,{
-  foreignKey : "subcategory",
+  foreignKey : "sub_category",
 });
 
 SubCategory.hasMany(Crop,{
-  foreignKey : "subcategory",
+  foreignKey : "sub_category",
 });
 
 module.exports = {
