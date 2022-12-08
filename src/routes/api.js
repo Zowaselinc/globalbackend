@@ -30,8 +30,6 @@ const { RegisterMerchantCorporateValidator, LoginValidator, RegisterPartnerValid
 const CategoryValidator = require('./validators/CategoryValidator');
 const SubCategoryValidator = require('./validators/SubCategoryValidator');
 const CropValidation = require('./validators/CropValidation');
-const CropSpecificationValidator = require('./validators/CropSpecificationValidator');
-const CropRequestValidation = require('./validators/CropRequestValidation');
 const NegotiationValidator = require('./validators/NegotiationValidator');
 const InputsValidator = require('./validators/InputsValidator');
 
@@ -126,13 +124,13 @@ Router.group((router)=>{
 
 
     /* ------------------------------- Crop Specification ------------------------------ */
-    router.post('/crop/cropspecification/add', CropSpecificationValidator.addCropSpecificationValidator, CropSpecificationController.add);
+    router.post('/crop/cropspecification/add', CropValidation.addCropSpecificationValidator, CropSpecificationController.add);
   
 
 
 
     /* ------------------------------- Crop Request ------------------------------ */
-    router.post('/crop/croprequest/add', CropRequestValidation.addCropRequestValidator, CropRequestController.add);
+    router.post('/crop/croprequest/add', CropValidation.addCropRequestValidator, CropRequestController.add);
     router.get('/crop/croprequest/getall', CropRequestController.getall);
     router.get('/crop/croprequest/getall/:offset/:limit', CropRequestController.getallbyLimit);
     router.post('/crop/croprequest/getbyid', CropRequestController.getbyid);
