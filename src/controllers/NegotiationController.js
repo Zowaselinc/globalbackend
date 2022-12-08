@@ -155,7 +155,7 @@ class NegotiationController{
                             { sender_id: userId }
                         ]
                     },
-                    attributes: ['sender_id', 'receiver_id', 'product_id', 'type','message', 'messagetype', 'status', 'created_at'],
+                    attributes: ['sender_id', 'receiver_id', 'crop_id', 'type','message', 'messagetype', 'status', 'created_at'],
                 });
 
                 if(requestbyuerid){
@@ -276,7 +276,7 @@ class NegotiationController{
                     where: {
                         id: id
                     },
-                    attributes: ['sender_id', 'receiver_id', 'product_id', 'type','message', 'status', 'created_at'],
+                    attributes: ['sender_id', 'receiver_id', 'crop_id', 'type','message', 'status', 'created_at'],
                 });
 
                 if(acceptNegotiations){

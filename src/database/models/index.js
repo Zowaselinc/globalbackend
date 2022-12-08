@@ -40,9 +40,9 @@ const AccessToken = DB.accessTokens = require("./accessToken.model.js").Model(in
 const UserCode = DB.userCodes = require("./userCodes.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Pricing = DB.pricings = require("./pricing.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Transaction = DB.transactions = require("./transaction.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
-const ProductSpecification = DB.productSpecifications = require("./productSpecification.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
-const Product = DB.products = require("./product.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
-const ProductRequest = DB.productRequests = require("./productRequest.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
+const CropSpecification = DB.cropSpecifications = require("./cropSpecification.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
+const Crop = DB.crops = require("./crop.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
+const CropRequest = DB.cropRequests = require("./cropRequest.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Auction = DB.auctions = require("./auction.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Order = DB.orders = require("./order.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Wallet= DB.wallets = require("./wallet.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
@@ -65,23 +65,23 @@ Agent.belongsTo(User , { foreignKey : "user_id"});
 
 Partner.belongsTo(User , { foreignKey : "user_id"});
 
-Product.hasMany(ProductSpecification,{
+Crop.hasMany(CropSpecification,{
   foreignKey: 'model_id',
   as: 'product_specification'
 })
 
-ProductSpecification.belongsTo(Product,{
+CropSpecification.belongsTo(Crop,{
   foreignKey: 'model_id',
   as: 'product'
 })
 
-Product.hasMany(ProductRequest,{
-  foreignKey: 'product_id',
+Crop.hasMany(CropRequest,{
+  foreignKey: 'crop_id',
   as: 'product_request'
 })
 
-ProductRequest.belongsTo(Product,{
-  foreignKey: 'product_id',
+CropRequest.belongsTo(Crop,{
+  foreignKey: 'crop_id',
   as: 'product'
 })
 
@@ -98,9 +98,9 @@ module.exports = {
   UserCode,
   Pricing,
   Transaction,
-  Product,
-  ProductSpecification,
-  ProductRequest,
+  Crop,
+  CropSpecification,
+  CropRequest,
   Order,
   Wallet,
   MerchantType,

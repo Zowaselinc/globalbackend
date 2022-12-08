@@ -2,25 +2,8 @@ const { body } = require('express-validator');
 
 module.exports = {
 
-    addProductValidator : [
-        // body('type').isString(),
-        body('user_id').isString(),
-        body('type').isString(),
-        body('category').isString(),
-        body('sub_category').isString(),
-        // body('active').isString(),
-        // body('market').isString(),
-        body('description').isString(),
-        // body('images').isString(),
-        body('currency').isString(),
-        body('is_negotiable').isString(),
-        body('video').isString(),
-        body('packaging').isString(),
-        body('application').isString(),
-        body('manufacture_name').isString(),
-        body('manufacture_date').isString(),
-        body('expiration_date').isString(),
-
+    addCropSpecificationValidator : [
+        // body('model_id').isNumeric(),
         body('model_type').isString(),
         body('qty').isNumeric(),
         body('price').isNumeric(),
@@ -52,15 +35,6 @@ module.exports = {
         body('extraneous').isNumeric(),
         body('kg').isNumeric(),
         body('liters').isNumeric(),
-
-        // body('product_id').isNumeric(),
-        body('state').isString(),
-        body('zip').isString(),
-        body('country').isString(),
-        body('address').isString(),
-        body('delivery_method').isString(),
-        body('delivery_date').isString(),
-        body('delivery_window').isString()
     ],
 
 }

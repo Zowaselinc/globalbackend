@@ -8,15 +8,15 @@ const AuthController = require('~controllers/AuthController');
 
 const UserController = require('~controllers/UserController');
 
-const ProductController = require('~controllers/ProductController');
+const CropController = require('~controllers/CropController');
 
 const CategoryController = require('../controllers/CategoryController');
 
 const SubCategoryController = require('../controllers/SubCategoryController');
 
-const ProductRequestController = require('../controllers/ProductRequestController');
+const CropRequestController = require('../controllers/CropRequestController');
 
-const ProductSpecificationController = require('../controllers/ProductSpecificationController');
+const CropSpecificationController = require('../controllers/CropSpecificationController');
 
 const NegotiationController = require('../controllers/NegotiationController');
 
@@ -28,9 +28,9 @@ const { RegisterMerchantCorporateValidator, LoginValidator, RegisterPartnerValid
 
 const CategoryValidator = require('./validators/CategoryValidator');
 const SubCategoryValidator = require('./validators/SubCategoryValidator');
-const ProductValidation = require('./validators/ProductValidation');
-const ProductSpecificationValidator = require('./validators/ProductSpecificationValidator');
-const ProductRequestValidation = require('./validators/ProductRequestValidation');
+const CropValidation = require('./validators/CropValidation');
+const CropSpecificationValidator = require('./validators/CropSpecificationValidator');
+const CropRequestValidation = require('./validators/CropRequestValidation');
 const NegotiationValidator = require('./validators/NegotiationValidator');
 const InputsCartValidator = require('./validators/InputsCartValidator');
 
@@ -92,9 +92,9 @@ Router.middleware(['isAuthenticated']).group((router)=>{
 Router.get("/crop/hello", Controller.hello);
 Router.get("/crop/category/hello", CategoryController.hello);
 Router.get("/crop/subcategory/hello", SubCategoryController.hello);
-Router.get("/crop/product/hello", ProductController.hello);
-Router.get("/crop/productspecification/hello", ProductSpecificationController.hello);
-Router.get("/crop/productrequest/hello", ProductSpecificationController.hello);
+Router.get("/crop/product/hello", CropController.hello);
+Router.get("/crop/cropspecification/hello", CropSpecificationController.hello);
+Router.get("/crop/croprequest/hello", CropSpecificationController.hello);
 
 
 Router.group((router)=>{
@@ -116,27 +116,27 @@ Router.group((router)=>{
     router.post('/crop/subcategory/deletebyid', SubCategoryController.deletebyid);
 
 
-    /* ------------------------------- Product ------------------------------ */
-    router.post('/crop/product/add', ProductValidation.addProductValidator, ProductController.add);
-    router.get('/crop/product/getbyproductwanted', ProductController.getbyproductwanted);
-    router.get('/crop/product/getbyproductoffer', ProductController.getbyproductoffer);
-    router.post('/crop/product/getbyid', ProductController.getbyid);
-    router.post('/crop/product/editbyid', ProductValidation.addProductValidator, ProductController.editbyid);
+    /* ------------------------------- Crop ------------------------------ */
+    router.post('/crop/product/add', CropValidation.addCropValidator, CropController.add);
+    router.get('/crop/product/getbyproductwanted', CropController.getbyproductwanted);
+    router.get('/crop/product/getbyproductoffer', CropController.getbyproductoffer);
+    router.post('/crop/product/getbyid', CropController.getbyid);
+    router.post('/crop/product/editbyid', CropValidation.addCropValidator, CropController.editbyid);
 
 
-    /* ------------------------------- Product Specification ------------------------------ */
-    router.post('/crop/productspecification/add', ProductSpecificationValidator.addProductSpecificationValidator, ProductSpecificationController.add);
+    /* ------------------------------- Crop Specification ------------------------------ */
+    router.post('/crop/cropspecification/add', CropSpecificationValidator.addCropSpecificationValidator, CropSpecificationController.add);
   
 
 
 
-    /* ------------------------------- Product Request ------------------------------ */
-    router.post('/crop/productrequest/add', ProductRequestValidation.addProductRequestValidator, ProductRequestController.add);
-    router.get('/crop/productrequest/getall', ProductRequestController.getall);
-    router.get('/crop/productrequest/getall/:offset/:limit', ProductRequestController.getallbyLimit);
-    router.post('/crop/productrequest/getbyid', ProductRequestController.getbyid);
-    router.post('/crop/productrequest/getbyproductid', ProductRequestController.getbyproductid);
-    router.post('/crop/productrequest/editbyid', ProductRequestController.editbyid);
+    /* ------------------------------- Crop Request ------------------------------ */
+    router.post('/crop/croprequest/add', CropRequestValidation.addCropRequestValidator, CropRequestController.add);
+    router.get('/crop/croprequest/getall', CropRequestController.getall);
+    router.get('/crop/croprequest/getall/:offset/:limit', CropRequestController.getallbyLimit);
+    router.post('/crop/croprequest/getbyid', CropRequestController.getbyid);
+    router.post('/crop/croprequest/getbyproductid', CropRequestController.getbyproductid);
+    router.post('/crop/croprequest/editbyid', CropRequestController.editbyid);
 
 
 

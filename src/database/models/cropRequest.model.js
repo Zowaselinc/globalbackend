@@ -3,7 +3,7 @@ const generateTimestamps = require("./timestamps");
 let Schema = (Sequelize,mode) => {
 
     return {
-        product_id : {
+        crop_id : {
             type: Sequelize.INTEGER(11),
             allowNull : false
         },
@@ -41,12 +41,12 @@ let Schema = (Sequelize,mode) => {
 
 const Model = (sequelize, instance, Sequelize) => {
     // Define initial for DB sync
-    sequelize.define("product_requests", Schema(Sequelize,1),{ timestamps: false });
+    sequelize.define("crop_requests", Schema(Sequelize,1),{ timestamps: false });
     // Bypass initial instance to cater for timestamps
-    const ProductRequest = instance.define("product_requests", Schema(Sequelize,2),{ 
+    const CropRequest = instance.define("crop_requests", Schema(Sequelize,2),{ 
         timestamps: false,
     });
-    return ProductRequest;
+    return CropRequest;
 }
 
 module.exports = { Schema , Model};

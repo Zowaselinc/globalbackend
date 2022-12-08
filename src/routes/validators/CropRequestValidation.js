@@ -2,8 +2,8 @@ const { body } = require('express-validator');
 
 module.exports = {
 
-    addProductRequestValidator : [
-        body('product_id').isNumeric(),
+    addCropRequestValidator : [
+        body('crop_id').isNumeric(),
         body('state').isString(),
         body('zip').isString(),
         body('country').isString(),

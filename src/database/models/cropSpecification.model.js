@@ -138,12 +138,12 @@ let Schema = (Sequelize,mode) => {
 
 const Model = (sequelize, instance, Sequelize) => {
     // Define initial for DB sync
-    sequelize.define("product_specification", Schema(Sequelize,1),{ timestamps: false });
+    sequelize.define("crop_specification", Schema(Sequelize,1),{ timestamps: false });
     // Bypass initial instance to cater for timestamps
-    const ProductSpecification = instance.define("product_specification", Schema(Sequelize,2),{ 
+    const CropSpecification = instance.define("crop_specification", Schema(Sequelize,2),{ 
         timestamps: false,
     });
-    return ProductSpecification;
+    return CropSpecification;
 }
 
 module.exports = { Schema , Model};

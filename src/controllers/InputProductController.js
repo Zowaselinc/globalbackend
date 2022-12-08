@@ -4,9 +4,9 @@ const { validationResult } = require("express-validator");
 const crypto = require("crypto");
 // const jwt = require("jsonwebtoken");
 
-class InputProducts{
+class InputCrops{
 
-    static async createProduct(req , res){
+    static async createCrop(req , res){
 
         let sampleFile;
         let uploadPath;
@@ -55,7 +55,7 @@ class InputProducts{
 
                 /* ------------------------ INSERT INTO PRODUCT TABLE ----------------------- */
                
-                var input = await InputProducts.create({
+                var input = await InputCrops.create({
                     user_id: req.body.user_id,
                     category: req.body.category,
                     sub_category: req.body.sub_category,
@@ -113,4 +113,4 @@ class InputProducts{
 
 }
 
-// module.exports = InputProducts;
+// module.exports = InputCrops;

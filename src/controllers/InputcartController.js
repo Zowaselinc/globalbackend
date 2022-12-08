@@ -1,5 +1,5 @@
 const { request } = require("express");
-const { InputProducts, InputCart, ErrorLog } = require("~database/models");
+const { InputCrops, InputCart, ErrorLog } = require("~database/models");
 const { validationResult } = require("express-validator");
 const crypto = require("crypto");
 // const jwt = require("jsonwebtoken");
@@ -23,7 +23,7 @@ class InputsCart{
             var checkCart = await InputCart.findAll({
                 where: {
                     "user_id":req.body.user_id,
-                    "product_id": req.body.product_id
+                    "crop_id": req.body.crop_id
                 }
             });
 
@@ -32,7 +32,7 @@ class InputsCart{
                 var makeRequest = await InputCart.update(req.body, {
                     where: {
                         "user_id":req.body.user_id,
-                        "product_id": req.body.product_id
+                        "crop_id": req.body.crop_id
                     }
                 });
             }else{
@@ -85,9 +85,9 @@ class InputsCart{
                 /* ---------------- check if the item is already in the cart ---------------- */
                 var returnedResult = await InputCart.findAll({
                     include: [{
-                        model: Product,
+                        model: Crop,
                         include: {
-                            model: ProductSpecs,
+                            model: CropSpecs,
                             as: 'product_specification'
                         }
                     }],
@@ -138,7 +138,7 @@ class InputsCart{
         
     }
 
-    // static async getAllProductRequestById(req, res){
+    // static async getAllCropRequestById(req, res){
         
     //     try{
 
@@ -147,24 +147,24 @@ class InputsCart{
     //         if(productId !== "" || productId !== null || productId !== undefined){
                 
     //             /* --------------------- insert the product into the DB --------------------- */
-    //             var requestbyid = await ProductRequest.findOne({ 
+    //             var requestbyid = await CropRequest.findOne({ 
     //                 where: {
-    //                     product_id: productId,
+    //                     crop_id: productId,
     //                 },
-    //                 attributes: ['product_id', 'state', 'zip', 'country','address', 'delivery_method', 'delivery_date', 'delivery_window', 'created_at']
+    //                 attributes: ['crop_id', 'state', 'zip', 'country','address', 'delivery_method', 'delivery_date', 'delivery_window', 'created_at']
     //             });
 
     //             if(requestbyid){
 
-    //                 var getRequestedProduct = await Product.findOne({
+    //                 var getRequestedCrop = await Crop.findOne({
     //                     where: {
     //                         id: productId
     //                     }
     //                 })
 
-    //                 if(getRequestedProduct){
+    //                 if(getRequestedCrop){
 
-    //                     var requestedProductSpec = await ProductSpecs.findOne({
+    //                     var requestedCropSpec = await CropSpecs.findOne({
     //                         where: {
     //                             model_id: productId
     //                         }
@@ -172,10 +172,10 @@ class InputsCart{
 
     //                     return res.status(200).json({
     //                         error : false,
-    //                         message : "Product Request retrieved by Product ID",
+    //                         message : "Crop Request retrieved by Crop ID",
     //                         data : requestbyid,
-    //                         productData: getRequestedProduct,
-    //                         productSpecifications: requestedProductSpec
+    //                         productData: getRequestedCrop,
+    //                         cropSpecifications: requestedCropSpec
     //                     })
     //                 }
 
@@ -203,7 +203,7 @@ class InputsCart{
     //         var logError = await ErrorLog.create({
     //             error_name: "Error on making product request",
     //             error_description: error.toString(),
-    //             route: "/api/input/productrequest/getbybyproductid/:productid",
+    //             route: "/api/input/croprequest/getbybyproductid/:productid",
     //             error_code: "500"
     //         });
 
@@ -215,7 +215,7 @@ class InputsCart{
     //     }
     // }
 
-    // static async getAllProductRequestByState(req, res){
+    // static async getAllCropRequestByState(req, res){
     //     try{
 
     //         const stateLocated = req.params.state;
@@ -223,24 +223,24 @@ class InputsCart{
     //         if(stateLocated !== "" || stateLocated !== null || stateLocated !== undefined){
                 
     //             /* --------------------- insert the product into the DB --------------------- */
-    //             var requestbystate = await ProductRequest.findAll({ 
+    //             var requestbystate = await CropRequest.findAll({ 
     //                 where: {
     //                     state: stateLocated,
     //                 },
-    //                 attributes: ['product_id', 'state', 'zip', 'country','address', 'delivery_method', 'delivery_date', 'delivery_window', 'created_at']
+    //                 attributes: ['crop_id', 'state', 'zip', 'country','address', 'delivery_method', 'delivery_date', 'delivery_window', 'created_at']
     //             });
 
     //             if(requestbystate.length > 0){
 
     //                 for(let i = 0; i < requestbystate.length; i++){
-    //                     let productsId = requestbystate[i].product_id;
-    //                     var requestReturnedProducts = await Product.findAll({
+    //                     let productsId = requestbystate[i].crop_id;
+    //                     var requestReturnedCrops = await Crop.findAll({
     //                         where: {
     //                             id: productsId
     //                         }
     //                     })
 
-    //                     var requestReturnedProductSpecs = await ProductSpecs.findAll({
+    //                     var requestReturnedCropSpecs = await CropSpecs.findAll({
     //                         where: {
     //                             model_id: productsId
     //                         }
@@ -249,10 +249,10 @@ class InputsCart{
 
     //                 return res.status(200).json({
     //                     error : false,
-    //                     message : "Product Request retrieved by State",
+    //                     message : "Crop Request retrieved by State",
     //                     data : requestbystate,
-    //                     productData: requestReturnedProducts,
-    //                     productSpecifications: requestReturnedProductSpecs
+    //                     productData: requestReturnedCrops,
+    //                     cropSpecifications: requestReturnedCropSpecs
 
     //                 })
 
@@ -279,7 +279,7 @@ class InputsCart{
     //         var logError = await ErrorLog.create({
     //             error_name: "Error on getting product request by state",
     //             error_description: error.toString(),
-    //             route: "/api/input/productrequest/getbybystate/:state",
+    //             route: "/api/input/croprequest/getbybystate/:state",
     //             error_code: "500"
     //         });
 
@@ -291,7 +291,7 @@ class InputsCart{
     //     }
     // }
 
-    // static async getAllProductRequestByZip(req, res){
+    // static async getAllCropRequestByZip(req, res){
     //     try{
 
     //         const zipcode = req.params.zip;
@@ -299,24 +299,24 @@ class InputsCart{
     //         if(zipcode !== "" || zipcode !== null || zipcode !== undefined){
                 
     //             /* --------------------- insert the product into the DB --------------------- */
-    //             var requestbyzip = await ProductRequest.findAll({ 
+    //             var requestbyzip = await CropRequest.findAll({ 
     //                 include: [{
-    //                     model: ProductSpecs,
+    //                     model: CropSpecs,
     //                     as: 'product_specification'
     //                 },{
-    //                     model: Product
+    //                     model: Crop
     //                 }],
     //                 where: {
     //                     zip: zipcode,
     //                 },
-    //                 attributes: ['product_id', 'state', 'zip', 'country','address', 'delivery_method', 'delivery_date', 'delivery_window', 'created_at']
+    //                 attributes: ['crop_id', 'state', 'zip', 'country','address', 'delivery_method', 'delivery_date', 'delivery_window', 'created_at']
     //             });
 
     //             if(requestbyzip.length > 0){
 
     //                 return res.status(200).json({
     //                     error : false,
-    //                     message : "Product Request retrieved by Zipcode",
+    //                     message : "Crop Request retrieved by Zipcode",
     //                     data : requestbyzip,
     //                 })
 
@@ -343,7 +343,7 @@ class InputsCart{
     //         var logError = await ErrorLog.create({
     //             error_name: "Error on getting product request by zip",
     //             error_description: error.toString(),
-    //             route: "/api/input/productrequest/getbybyzip/:zip",
+    //             route: "/api/input/croprequest/getbybyzip/:zip",
     //             error_code: "500"
     //         });
 

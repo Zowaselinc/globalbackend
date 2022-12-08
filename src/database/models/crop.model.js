@@ -22,10 +22,6 @@ let Schema = (Sequelize,mode) => {
             type: Sequelize.INTEGER(11),
             allowNull : false
         },
-        market : {
-            type: Sequelize.STRING,
-            allowNull : false
-        },
         description : {
             type: Sequelize.STRING,
             allowNull : false
@@ -54,29 +50,17 @@ let Schema = (Sequelize,mode) => {
             type: Sequelize.STRING,
             allowNull : false
         },
-        manufacture_name : {
-            type: Sequelize.STRING,
-            allowNull : false
-        },
-        manufacture_date : {
-            type: Sequelize.STRING,
-            allowNull : false
-        },
-        expiration_date : {
-            type: Sequelize.STRING,
-            allowNull : false
-        },
         ...generateTimestamps(Sequelize,mode)
     }
 }
 const Model = (sequelize, instance, Sequelize) => {
     // Define initial for DB sync
-    sequelize.define("products", Schema(Sequelize,1),{ timestamps: false });
+    sequelize.define("crops", Schema(Sequelize,1),{ timestamps: false });
     // Bypass initial instance to cater for timestamps
-    const Products = instance.define("products", Schema(Sequelize,2),{ 
+    const Crops = instance.define("crops", Schema(Sequelize,2),{ 
         timestamps: false,
     });
-    return Products;
+    return Crops;
 }
 
 module.exports = { Schema , Model};

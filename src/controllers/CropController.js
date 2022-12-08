@@ -1,17 +1,17 @@
 //Import validation result
 const { validationResult } = require('express-validator');
 const crypto = require('crypto');
-const { Product, ProductSpecification, ProductRequest, ErrorLog } = require('~database/models');
+const { Crop, CropSpecification, CropRequest, ErrorLog } = require('~database/models');
 // const { uploads } = require('~cropimageupload');
 
 
 
-class ProductController{
+class CropController{
 
     static async hello(req , res){
 
         return res.status(200).json({
-            message : "Hello Product"
+            message : "Hello Crop"
         });
     }
 
@@ -87,7 +87,7 @@ class ProductController{
 
                 /* ------------------------ INSERT INTO PRODUCT TABLE ----------------------- */
                
-                var product = await Product.create({
+                var product = await Crop.create({
                     user_id: req.body.user_id,
                     type: req.body.type,
                     category: req.body.category,
@@ -111,7 +111,7 @@ class ProductController{
 
                 if(product){
 
-                    var Productspec = await ProductSpecification.create({
+                    var Cropspec = await CropSpecification.create({
                         model_id: product.id,
                         model_type: req.body.model_type,
                         qty: req.body.qty,
@@ -149,9 +149,9 @@ class ProductController{
 
 
 
-                    if(Productspec){
-                        var ProdRequest = await ProductRequest.create({
-                            product_id: product.id,
+                    if(Cropspec){
+                        var ProdRequest = await CropRequest.create({
+                            crop_id: product.id,
                             state: req.body.state,
                             zip: req.body.zip,
                             country: req.body.country,
@@ -163,8 +163,8 @@ class ProductController{
 
                         return res.status(200).json({
                             "error": false,
-                            "message": "Product created successfully",
-                            // "product": product, Productspec, ProdRequest
+                            "message": "Crop created successfully",
+                            // "product": product, Cropspec, ProdRequest
                         })
                     }
 
@@ -214,15 +214,15 @@ class ProductController{
                 return res.status(400).json({ errors: errors.array() });
             }
     
-            var findwantedProducts = await Product.findAll({ 
+            var findwantedCrops = await Crop.findAll({ 
                 include: [{
-                    model: ProductSpecification,
+                    model: CropSpecification,
                     as: 'product_specification',
                     order: [['id', 'DESC']],
                     limit: 1,
                 },
                 {
-                    model: ProductRequest,
+                    model: CropRequest,
                     as: 'product_request',
                     order: [['id', 'DESC']],
                     limit: 1,
@@ -234,12 +234,12 @@ class ProductController{
             });
 
         
-            /* --------------------- If fetched the Wanted Products --------------------- */
+            /* --------------------- If fetched the Wanted Crops --------------------- */
             
             return res.status(200).json({
                 error : false,
-                message : "Products wanted grabbed successfully",
-                products : findwantedProducts
+                message : "Crops wanted grabbed successfully",
+                products : findwantedCrops
             })
             
         }catch(error){
@@ -281,15 +281,15 @@ class ProductController{
                 return res.status(400).json({ errors: errors.array() });
             }
     
-            var findofferProducts = await Product.findAll({ 
+            var findofferCrops = await Crop.findAll({ 
                 include: [{
-                    model: ProductSpecification,
+                    model: CropSpecification,
                     as: 'product_specification',
                     order: [['id', 'DESC']],
                     limit: 1,
                 },
                 {
-                    model: ProductRequest,
+                    model: CropRequest,
                     as: 'product_request',
                     order: [['id', 'DESC']],
                     limit: 1,
@@ -301,12 +301,12 @@ class ProductController{
             });
 
         
-            /* --------------------- If fetched the Wanted Products --------------------- */
+            /* --------------------- If fetched the Wanted Crops --------------------- */
             
             return res.status(200).json({
                 error : false,
-                message : "Products offer grabbed successfully",
-                products : findwantedProducts
+                message : "Crops offer grabbed successfully",
+                products : findwantedCrops
             })
             
         }catch(error){
@@ -334,7 +334,7 @@ class ProductController{
     static async getbyid(req , res){
 
         // return res.status(200).json({
-        //     message : "GET Product by ID"
+        //     message : "GET Crop by ID"
         // });
 
         const errors = validationResult(req);
@@ -344,18 +344,18 @@ class ProductController{
                 return res.status(400).json({ errors: errors.array() });
             }
     
-            var product = await Product.findOne({ where: { id: req.body.id } });
+            var product = await Crop.findOne({ where: { id: req.body.id } });
             if(product){
 
-                var findProduct = await Product.findOne({ 
+                var findCrop = await Crop.findOne({ 
                     include: [{
-                        model: ProductSpecification,
+                        model: CropSpecification,
                         as: 'product_specification',
                         order: [['id', 'DESC']],
                         limit: 1,
                     },
                     {
-                        model: ProductRequest,
+                        model: CropRequest,
                         as: 'product_request',
                         order: [['id', 'DESC']],
                         limit: 1,
@@ -369,7 +369,7 @@ class ProductController{
                 return res.status(200).json({
                     error : false,
                     message : "Single product grabbed successfully",
-                    data : findProduct
+                    data : findCrop
                 })
             }else{
                 return res.status(400).json({
@@ -435,10 +435,10 @@ class ProductController{
 
             /* ------------------------ UPDATE INTO PRODUCT TABLE ----------------------- */
 
-            var product = await Product.findOne({ where: { id: req.body.product_id } });
+            var product = await Crop.findOne({ where: { id: req.body.crop_id } });
             if(product){
             
-                var product = await Product.update({
+                var product = await Crop.update({
                     user_id: req.body.user_id,
                     type: req.body.type,
                     category: req.body.category,
@@ -455,14 +455,14 @@ class ProductController{
                     manufacture_name: req.body.manufacture_name,
                     manufacture_date: req.body.manufacture_date,
                     expiration_date: req.body.expiration_date
-                }, { where : { id: req.body.product_id } });
+                }, { where : { id: req.body.crop_id } });
                 
                 /* ------------------------ UPDATE INTO PRODUCT TABLE ----------------------- */
 
 
                 if(product){
 
-                    var Productspec = await ProductSpecification.update({
+                    var Cropspec = await CropSpecification.update({
                         model_id: product.id,
                         model_type: req.body.model_type,
                         qty: req.body.qty,
@@ -495,14 +495,14 @@ class ProductController{
                         extraneous: req.body.extraneous,
                         kg: req.body.kg,
                         liters: req.body.liters
-                    }, { where : { model_id: req.body.product_id  } });
+                    }, { where : { model_id: req.body.crop_id  } });
 
 
 
 
-                    if(Productspec){
-                        var ProdRequest = await ProductRequest.update({
-                            product_id: product.id,
+                    if(Cropspec){
+                        var ProdRequest = await CropRequest.update({
+                            crop_id: product.id,
                             state: req.body.state,
                             zip: req.body.zip,
                             country: req.body.country,
@@ -510,12 +510,12 @@ class ProductController{
                             delivery_method: req.body.delivery_method,
                             delivery_date: req.body.delivery_date,
                             delivery_window: req.body.delivery_window
-                        }, { where : { product_id: req.body.product_id,  } });
+                        }, { where : { crop_id: req.body.crop_id,  } });
 
                         return res.status(200).json({
                             "error": false,
-                            "message": "Product edited successfully",
-                            // "product": product, Productspec, ProdRequest
+                            "message": "Crop edited successfully",
+                            // "product": product, Cropspec, ProdRequest
                         })
                     }
 
@@ -554,4 +554,4 @@ class ProductController{
 
 }
 
-module.exports = ProductController;
+module.exports = CropController;
