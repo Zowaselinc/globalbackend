@@ -33,7 +33,7 @@ class SubCategoryController{
             let randomid = crypto.randomBytes(8).toString('hex');
 
             const { count, rows } = await SubCategory.findAndCountAll({ 
-                where: { category_id: req.body.category_id, subcategory_name:req.body.subcategory_name } 
+                where: { category_id: req.body.category_id, name:req.body.subcategory_name } 
             });
 
             // console.log(count, "Count");
