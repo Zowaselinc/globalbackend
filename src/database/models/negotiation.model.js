@@ -2,13 +2,27 @@ const generateTimestamps = require("./timestamps");
 
 let Schema = (Sequelize,mode) => {
     return {
-        user_id : {
+        sender_id : {
+            type : Sequelize.INTEGER,
+            allowNull : false
+        },
+        receiver_id : {
             type : Sequelize.INTEGER,
             allowNull : false
         },
         product_id : {
             type: Sequelize.INTEGER,
             allowNull : false
+        },
+        type : {
+            type: Sequelize.STRING,
+            allowNull : false
+        },
+        message : {
+            type: Sequelize.STRING,
+        },
+        status: {
+            type: Sequelize.STRING,
         },
         ...generateTimestamps(Sequelize,mode)
     }

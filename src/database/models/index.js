@@ -48,7 +48,7 @@ const Order = DB.orders = require("./order.model").Model(initialInstance, create
 const Wallet= DB.wallets = require("./wallet.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const MerchantType = DB.merchantTypes = require("./merchant_type.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const BankAccount = DB.bankAccount = require("./bank_account.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
-const NegotiationOffer = DB.negotiationOffer = require('./negotiation_offer.model').Model(initialInstance, createSequelizeInstance(), Sequelize);
+const NegotiationOffer = DB.negotiationOffer = require('./negotiation.model').Model(initialInstance, createSequelizeInstance(), Sequelize);
 
 
 //Register Relationships
