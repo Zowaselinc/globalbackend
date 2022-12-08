@@ -1,7 +1,7 @@
 //Import validation result
 const { validationResult } = require('express-validator');
 const crypto = require('crypto');
-const { Negotiation, ErrorLog } = require('~database/models');
+const { Negotiation, ErrorLog, CropSpecification } = require('~database/models');
 const { Op } = require('sequelize');
 const { request } = require('http');
 
@@ -15,7 +15,7 @@ class NegotiationController{
     }
 
    
-    /* ---------------------------- * ADD NEGOTIATION * ---------------------------- */
+    /* ---------------------------- * USER ADD NEGOTIATION MESSAGE * ---------------------------- */
     static async add(req , res){
 
         // return res.status(200).json({
@@ -63,7 +63,7 @@ class NegotiationController{
 
         
     }
-    /* ---------------------------- * ADD NEGOTIATION * ---------------------------- */
+    /* ---------------------------- * USER ADD NEGOTIATION MESSAGE * ---------------------------- */
 
 
 
@@ -94,15 +94,7 @@ class NegotiationController{
             
             // console.log(errors.isEmpty());
             let randomid = crypto.randomBytes(8).toString('hex');
-            // const sender_id = "0";
-            // const receiver_id = "0";
-            // const type = "admin";
-            // if(req.body.sender_id){
-            //     req.body.sender_id = sender_id;
-            // }else{req.body.sender_id = sender_id;}
-            // if(req.body.receiver_id){
-            //     req.body.receiver_id = receiver_id;
-            // }else{req.body.receiver_id = receiver_id;}
+         
             
             
             var negotiation = await Negotiation.create(req.body)
@@ -206,7 +198,7 @@ class NegotiationController{
 
 
     /* ---------------------------- * SEND NEGOTIATION * ---------------------------- */
-    static async add(req , res){
+    static async sendNegotiationOffer(req , res){
 
         // return res.status(200).json({
         //     message : "Add Category"
@@ -216,31 +208,114 @@ class NegotiationController{
 
         try{
             
-            if(!errors.isEmpty()){
-                return res.status(400).json({ 
-                    error: true,
-                    message: "All fields required",
-                    data: []
-                });
-            }
-    
+            // if(!errors.isEmpty()){
+            //     return res.status(400).json({ 
+            //          errors: errors.array() 
+            //     });
+            // }
             
+            var obj = new Object();
+            obj = {
+                "required_quantity": req.body.required_quantity,
+                "offer_price": req.body.offer_price,
+                "color": req.body.color,
+                "moisture": req.body.moisture,
+                "foreign_matter": req.body.foreign_matter,
+                "broken_grains": req.body.broken_grains,
+                "weevil": req.body.weevil,
+                "dk": req.body.dk,
+                "rotten_shriveled": req.body.rotten_shriveled,
+                "test_weight": req.body.test_weight,
+                "hectoliter": req.body.hectoliter,
+                "hardness": req.body.hardness,
+                "splits": req.body.splits,
+                "oil_content": req.body.oil_content,
+                "infestation":  req.body.infestation,
+                "grain_size": req.body.grain_size,
+                "total_defects": req.body.total_defects,
+                "dockage": req.body.dockage, 
+                "ash_content": req.body.ash_content, 
+                "acid_ash": req.body.acid_ash,
+                "volatile": req.body.volatile,
+                "mold": req.body.mold, 
+                "drying_process": req.body.drying_process,
+                "dead_insect": req.body.dead_insect, 
+                "mammalian": req.body.mammalian,
+                "infested_by_weight": req.body.infested_by_weight,
+                "curcumin_content": req.body.curcumin_content,
+                "extraneous": req.body.extraneous,
+                "kg": req.body.kg,
+                "liters": req.body.liters
+            }
+
+            let stringifiedObj = JSON.stringify(obj);
+            
+            // return res.send(aa);
+
             // console.log(errors.isEmpty());
             let randomid = crypto.randomBytes(8).toString('hex');
-            let messsagetype = "text";
-            req.body.messsagetype = messsagetype;
-            var negotiation = await Negotiation.create(req.body)
+            
+            var sendnegotiation = await Negotiation.create({
+                sender_id: req.body.sender_id,
+                receiver_id: req.body.receiver_id,
+                crop_id: req.body.crop_id,
+                type: req.body.type,
+                message: stringifiedObj,
+                messagetype: "offer"
+            })
+
+
+            // SEND INFORMATION TO PRODUCT SPECIFICATION TABLE //
+            if(sendnegotiation){
+                var createCropSpecification = await CropSpecification.create({
+                    model_id: sendnegotiation.id,
+                    model_type: "offer",
+                    qty: req.body.required_quantity,
+                    price: req.body.price,
+                    color: req.body.color,
+                    moisture: req.body.moisture,
+                    foreign_matter: req.body.foreign_matter,
+                    broken_grains: req.body.broken_grains,
+                    weevil: req.body.weevil,
+                    dk: req.body.dk,
+                    rotten_shriveled: req.body.rotten_shriveled,
+                    test_weight: req.body.test_weight,
+                    hectoliter: req.body.hectoliter,
+                    hardness: req.body.hardness,
+                    splits: req.body.splits,
+                    oil_content: req.body.oil_content,
+                    infestation: req.body.infestation,
+                    grain_size: req.body.grain_size,
+                    total_defects: req.body.total_defects,
+                    dockage: req.body.dockage,
+                    ash_content: req.body.ash_content,
+                    acid_ash: req.body.acid_ash,
+                    volatile: req.body.volatile,
+                    mold: req.body.mold,
+                    drying_process: req.body.drying_process,
+                    dead_insect: req.body.dead_insect,
+                    mammalian: req.body.mammalian,
+                    infested_by_weight: req.body.infested_by_weight,
+                    curcumin_content: req.body.curcumin_content,
+                    extraneous: req.body.extraneous,
+                    kg: req.body.kg,
+                    liters: req.body.liters
+                })
+            }
+            // SEND INFORMATION TO PRODUCT SPECIFICATION TABLE //
+
+            
     
             return res.status(200).json({
                 "error": false,
-                "message": "Message sent",
-                "data": negotiation
+                "message": "New negotiation offer sent",
+                "data": sendnegotiation
             })
         }catch(e){
             var logError = await ErrorLog.create({
-                error_name: "Error on adding negotiation message",
+                error_name: "Error on sending a new negotiation offer",
                 error_description: e.toString(),
-                route: "/api/crop/negotiation/add",
+                route: "/api/crop/negotiation/sendoffer",
                 error_code: "500"
             });
             if(logError){
@@ -263,15 +338,19 @@ class NegotiationController{
 
     /* --------------------------- ACCEPT NEGOTIATION BY NEGOIATION ID --------------------------- */
     static async acceptNegotiation(req, res){
+
+        // return res.status(200).json({
+        //     message : "Accept Negotiation"
+        // });
         
         try{
 
-            const id = req.params.id;
+            const id = parseInt(req.body.id);
 
             if(id !== "" || id !== null || id !== undefined){
                 
                 var acceptNegotiations = await Negotiation.update({
-                    status: "accept"
+                    status: "accepted"
                 },{ 
                     where: {
                         id: id
@@ -310,7 +389,7 @@ class NegotiationController{
             var logError = await ErrorLog.create({
                 error_name: "Error on accepting negotiation offer",
                 error_description: error.toString(),
-                route: "/api/crop/negotiation/decline/:id",
+                route: "/api/crop/negotiation/accept",
                 error_code: "500"
             });
 
@@ -330,179 +409,74 @@ class NegotiationController{
 
 
 
-    /* --------------------------- GET CATEGORIES BY CATEGORY ID --------------------------- */
-    static async getbyid(req , res){
+    /* --------------------------- DECLINE NEGOTIATION BY NEGOIATION ID --------------------------- */
+    static async declineNegotiation(req, res){
 
         // return res.status(200).json({
-        //     message : "GET Category By Category ID"
+        //     message : "Accept Negotiation"
         // });
-
-        const errors = validationResult(req);
-
+        
         try{
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array() });
-            }
-    
-            var category = await Category.findOne({ where: { category_id: req.body.id } });
-            if(category){
-                return res.status(200).json({
-                    error : false,
-                    message : "Single category grabbed successfully",
-                    category : category
-                })
-            }else{
-                return res.status(400).json({
-                    error : false,
-                    message : "No category found",
-                    category : category
-                })
-            }
-        }catch(e){
-            var logError = await ErrorLog.create({
-                error_name: "Error on getting all categories by id",
-                error_description: e.toString(),
-                route: "/api/crop/category/getbyid",
-                error_code: "500"
-            });
-            if(logError){
-                return res.status(500).json({
-                    error: true,
-                    message: 'Unable to complete request at the moment'
-                })
-            } 
-        }
-    }
-    /* --------------------------- GET CATEGORIES BY CATEGORY ID --------------------------- */
 
+            const id = parseInt(req.body.id);
 
+            if(id !== "" || id !== null || id !== undefined){
+                
+                var declineNegotiations = await Negotiation.update({
+                    status: "declined"
+                },{ 
+                    where: {
+                        id: id
+                    },
+                    attributes: ['sender_id', 'receiver_id', 'crop_id', 'type','message', 'status', 'created_at'],
+                });
 
+                if(declineNegotiations){
 
-
-
-
-    /* --------------------------- EDIT CATEGORIES BY CATEGORY ID --------------------------- */
-    static async editbyid(req , res){
-
-        // return res.status(200).json({
-        //     message : "GET Category By Category ID"
-        // });
-
-        const errors = validationResult(req);
-
-        try{
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array() });
-            }
-            
-            var findcategory = await Category.findOne({ where: { category_id: req.body.id } });
-
-            if(findcategory){
-
-                var category = await Category.update({
-                    name: req.body.name
-                }, { where : { category_id: req.body.id } });
-
-                if(category){
                     return res.status(200).json({
                         error : false,
-                        message : "Category edited successfully",
-                        category : req.body.name
+                        message : "Negotiation offer declined successfully",
+                        data : declineNegotiations
                     })
+
                 }else{
+
                     return res.status(400).json({
                         error : true,
-                        message : "Failed to edit category"
+                        message : "No offer found",
+                        data : []
                     })
+
                 }
-                
             }else{
                 return res.status(400).json({
                     error : true,
-                    message : "No category found",
-                    category : category
+                    message : "Invalid request",
+                    data : []
                 })
             }
-        }catch(e){
+
+
+
+        }catch(error){
             var logError = await ErrorLog.create({
-                error_name: "Error on editing a category",
-                error_description: e.toString(),
-                route: "/api/crop/category/editbyid",
+                error_name: "Error on declining negotiation offer",
+                error_description: error.toString(),
+                route: "/api/crop/negotiation/decline",
                 error_code: "500"
             });
-            if(logError){
-                return res.status(500).json({
-                    error: true,
-                    message: 'Unable to complete request at the moment'
-                })
-            }  
+
+            return res.status(500).json({
+                error: true,
+                message: "Unable to complete the request at the moment",
+                data: []
+            })
         }
     }
-    /* --------------------------- EDIT CATEGORIES BY CATEGORY ID --------------------------- */
+    /* --------------------------- DECLINE NEGOTIATION BY NEGOIATION ID --------------------------- */
 
 
 
-
-
-
-
-
-    /* --------------------------- DELETE CATEGORY BY CATEGORY ID --------------------------- */
-    static async deletebyid(req , res){
-
-        // return res.status(200).json({
-        //     message : "GET Category By Category ID"
-        // });
-
-        const errors = validationResult(req);
-
-        try{
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array() });
-            }
-            
-            var findcategory = await Category.findOne({ where: { category_id: req.body.id } });
-
-            if(findcategory){
-
-                var category = await Category.destroy({ where : { category_id: req.body.id } });
-
-                if(category){
-                    return res.status(200).json({
-                        error : false,
-                        message : "Category deleted successfully",
-                        category : req.body.name
-                    })
-                }else{
-                    return res.status(400).json({
-                        error : true,
-                        message : "Failed to delete category"
-                    })
-                }
-                
-            }else{
-                return res.status(400).json({
-                    error : true,
-                    message : "No category as this is found",
-                    category : category
-                })
-            }
-        }catch(e){
-            var logError = await ErrorLog.create({
-                error_name: "Error on deleting a category",
-                error_description: e.toString(),
-                route: "/api/crop/category/deletebyid",
-                error_code: "500"
-            });
-            if(logError){
-                return res.status(500).json({
-                    error: true,
-                    message: 'Unable to complete request at the moment'
-                })
-            }
-        }
-    }
-    /* --------------------------- DELETE CATEGORY BY CATEGORY ID --------------------------- */
 
 }
 
