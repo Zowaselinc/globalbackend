@@ -1,7 +1,7 @@
 //Import validation result
 const { validationResult } = require('express-validator');
 const crypto = require('crypto');
-const { Crop, CropSpecification, CropRequest, ErrorLog } = require('~database/models');
+const { Crop, CropSpecification, CropRequest, ErrorLog, User, Category } = require('~database/models');
 
 
 
@@ -283,16 +283,12 @@ class CropController{
                 var findCropOffers = await Crop.findAndCountAll({ 
                     include: [{
                         model: CropSpecification,
-                        as: 'crop_specification',
+                        as: 'specification',
                         order: [['id', 'DESC']],
                         limit: 1,
-                    },
-                    {
-                        model: CropRequest,
-                        as: 'crop_request',
-                        order: [['id', 'DESC']],
-                        limit: 1,
-                        
+                    },{
+                        model : User,
+                        as : 'user',
                     }],
                     
                     where: { type: "offer" },
@@ -334,12 +330,8 @@ class CropController{
     /* --------------------------- GET CROP BY ID --------------------------- */
     static async getById(req , res){
 
-        const errors = validationResult(req);
 
         try{
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array() });
-            }
             const cropId = req.params.id;
     
             var crop = await Crop.findOne({ where: { id: cropId } });
@@ -348,9 +340,11 @@ class CropController{
                 var findCrop = await Crop.findOne({ 
                     include: [{
                         model: CropSpecification,
-                        as: 'crop_specification',
-                        order: [['id', 'DESC']],
-                        limit: 1,
+                        as: 'specification',
+                    },
+                    {
+                        model : Category,
+                        as : 'crop_category'
                     },
                     {
                         model: CropRequest,
@@ -358,6 +352,9 @@ class CropController{
                         order: [['id', 'DESC']],
                         limit: 1,
                         
+                    },{
+                        model : User,
+                        as : 'user'
                     }],
                     
                     where: { id: cropId },

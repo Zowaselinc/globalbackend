@@ -70,9 +70,23 @@ Partner.belongsTo(User , { foreignKey : "user_id"});
 
 
 /* ---------------------------------- CROP ---------------------------------- */
-Crop.hasMany(CropSpecification,{
+User.hasMany(Crop,{
+  foreignKey : "user_id",
+  as : "crops"
+})
+Crop.belongsTo(User,{
+  foreignKey : "user_id",
+  as : "user"
+});
+
+Crop.belongsTo(Category,{
+  foreignKey : "category",
+  as : "crop_category"
+});
+
+Crop.hasOne(CropSpecification,{
   foreignKey: 'model_id',
-  as: 'crop_specification'
+  as: 'specification'
 })
 
 CropSpecification.belongsTo(Crop,{
