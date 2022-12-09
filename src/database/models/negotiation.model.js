@@ -19,7 +19,7 @@ let Schema = (Sequelize,mode) => {
             allowNull : false
         },
         message: {
-            type: Sequelize.STRING,
+            type: Sequelize.TEXT,
             allowNull : false
         },
         messagetype: {
