@@ -157,6 +157,7 @@ Router.group((router)=>{
     router.post('/crop/negotiation/sendoffer', NegotiationController.sendNegotiationOffer);
     router.post('/crop/negotiation/accept', NegotiationController.acceptNegotiation);
     router.post('/crop/negotiation/decline', NegotiationController.declineNegotiation);
+    router.get('/crop/negotiation/grabtransactionby/:status/:userid', NegotiationController.getNegotiationTransactionSummary);
 
 });
 
