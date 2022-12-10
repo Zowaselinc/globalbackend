@@ -6,23 +6,11 @@ let Schema = (Sequelize,mode) => {
             type: Sequelize.STRING,
             allowNull : false
         },
-        payment_status : {
-            type : Sequelize.STRING,
-            allowNull : false
-        },
         buyer_id : {
             type : Sequelize.STRING,
             allowNull : false
         },
         buyer_type : {
-            type : Sequelize.STRING,
-            allowNull : false
-        },
-        product : {
-            type : Sequelize.TEXT,
-            allowNull : false
-        },
-        amount : {
             type : Sequelize.STRING,
             allowNull : false
         },
@@ -32,6 +20,14 @@ let Schema = (Sequelize,mode) => {
         },
         payment_option : {
             type: Sequelize.STRING,
+            allowNull : false
+        },
+        payment_status : {
+            type : Sequelize.STRING,
+            allowNull : false
+        },
+        product : {
+            type : Sequelize.TEXT,
             allowNull : false
         },
         tracking_details : {
