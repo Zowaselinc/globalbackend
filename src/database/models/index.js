@@ -54,6 +54,8 @@ const ErrorLog = DB.errorlogs = require("./errorLog.model").Model(initialInstanc
 const Negotiation = DB.negotiation = require("./negotiation.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const InputCart = DB.input_cart = require("./inputCart.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Input = DB.input = require("./input.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
+const DeliveryAddress = DB.delivery_address = require("./deliveryAddress.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
+const InputOrder = DB.input_order = require("./inputOrder.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
 
 //---------------------------------------------------
 //Register Relationships
@@ -125,6 +127,9 @@ Input.hasMany(InputCart,{
   as: 'input_cart'
 })
 
+InputOrder.hasMany(Input, { foreignKey: 'id' })
+InputOrder.hasOne(DeliveryAddress, {foreignKey: 'id'})
+
 module.exports = {
   DB,
   User,
@@ -150,5 +155,7 @@ module.exports = {
   ErrorLog,
   Negotiation,
   InputCart,
-  Input
+  Input,
+  DeliveryAddress,
+  InputOrder
 };

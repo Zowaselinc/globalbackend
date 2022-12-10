@@ -23,6 +23,10 @@ const Inputs = require('~controllers/InputProductController');
 
 const InputsCart = require('~controllers/InputcartController');
 
+const ShippingAddress = require("~controllers/deliveryAddressController");
+
+const InputsOrder = require("~controllers/InputOrderController");
+
 /* ------------------------------- VALIDATORS ------------------------------- */
 
 const { RegisterMerchantCorporateValidator, LoginValidator, RegisterPartnerValidator, RegisterAgentValidator, SendVerificationValidator, ConfirmVerificationValidator, ResetPasswordValidator, VerifyResetTokenValidator} = require('./validators/AuthValidators');
@@ -32,6 +36,8 @@ const SubCategoryValidator = require('./validators/SubCategoryValidator');
 const CropValidation = require('./validators/CropValidation');
 const NegotiationValidator = require('./validators/NegotiationValidator');
 const InputsValidator = require('./validators/InputsValidator');
+const ShippingAddressValidator = require("./validators/ShippingAddressValidator");
+const OrderValidators = require("./validators/OrderValidators");
 
 
 /* -------------------------------- PROVIDERS ------------------------------- */
@@ -194,6 +200,18 @@ Router.group((router) => {
     router.post('/input/cart/add', InputsValidator.addToCartValidator,InputsCart.addtoCart);
     router.get('/input/cart/getallcartbyuserid/:user_id', InputsCart.getUserInputCart);
     router.get('/input/cart/delete/:id', InputsCart.deleteCartItem);
+})
+
+Router.group((router) => {
+    router.post('/input/deliveryaddress/add', ShippingAddressValidator.createAddressValidator, ShippingAddress.createDeliveryAddress);
+    router.get('/input/deliveryaddress/getallbyuserid/:user_id', ShippingAddress.getAllUserDeliveryAdresses)
+    router.get('/input/deliveryaddress/delete/:id', ShippingAddress.deleteDeliveryAddress)
+})
+
+Router.group((router) => {
+    router.post('/input/order/add', OrderValidators.InputOrderValidator, InputsOrder.createInputOrder);
+    router.post('/input/order/updatetransactionid', OrderValidators.UpdateTransactionIdValidator, InputsOrder.updateOrderTransactionId);
+    router.get('/input/order/history/getbyuserid/:user_id', InputsOrder.getOrderHistoryByUserId);
 })
 
 module.exports = Router;
