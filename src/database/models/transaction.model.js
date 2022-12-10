@@ -6,15 +6,15 @@ let Schema = (Sequelize,mode) => {
             type: Sequelize.STRING,
             allowNull : false
         },
-        type : {
+        amount : {
             type : Sequelize.STRING,
             allowNull : false
         },
-        type_id : {
+        method : {
             type: Sequelize.STRING,
             allowNull : false
         },
-        amount_paid : {
+        type : {
             type: Sequelize.STRING,
             allowNull : false
         },
