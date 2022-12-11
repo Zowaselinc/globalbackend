@@ -2,11 +2,11 @@ const { body } = require('express-validator');
 
 module.exports = {
      
-    OrderValidators : [
-        body('orderId').isString(),
-        body('amount').isString(),
-        body('total_product').isString(),
-        body('action').isString(),
+    cropAddOrderValidators : [
+        body('buyer_id').isString(),
+        body('buyer_type').isString(),
+        body('payment_option').isString(),
+        body('payment_status').isString()
     ],
 
     InputOrderValidator: [

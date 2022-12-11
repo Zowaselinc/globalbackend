@@ -32,15 +32,15 @@ let Schema = (Sequelize,mode) => {
         },
         tracking_details : {
             type: Sequelize.TEXT,
-            allowNull : false
+            allowNull : true
         },
         waybill_details : {
             type: Sequelize.TEXT,
-            allowNull : false
+            allowNull : true
         },
         receipt_note : {
             type: Sequelize.TEXT,
-            allowNull : false
+            allowNull : true
         },
         extra_documents : {
             type: Sequelize.TEXT,

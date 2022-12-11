@@ -43,6 +43,7 @@ const OrderValidators = require("./validators/OrderValidators");
 /* -------------------------------- PROVIDERS ------------------------------- */
 
 const RouteProvider = require('~providers/RouteProvider');
+const OrderController = require("~controllers/OrderController");
 
 const Router = RouteProvider.Router;
 
@@ -164,6 +165,10 @@ Router.group((router)=>{
     router.post('/crop/negotiation/decline', NegotiationController.declineNegotiation);
     router.get('/crop/negotiation/grabtransactionby/:status/:userid', NegotiationController.getNegotiationTransactionSummary);
     router.get('/crop/negotiation/getallsummary', NegotiationController.getAllNegotiationTransactionSummary);
+
+
+    /* ---------------------------------- Order --------------------------------- */
+    router.post('/crop/order/add', OrderValidators.cropAddOrderValidators, OrderController.createNewOrder);
 
 });
 
