@@ -201,6 +201,175 @@ class OrderController{
     }
     /* ---------------------------- * CREATE NEW ORDER * ---------------------------- */
 
+
+
+
+
+
+    /* -------------------------- GET ORDER BY ORDER_ID ------------------------- */
+    static async getByOrderId(req , res){
+
+        const errors = validationResult(req);
+
+        try{
+            var findOrder = await Order.findOne({ where: { order_id: req.params.orderid } });
+            if(findOrder){
+                return res.status(200).json({
+                    error : false,
+                    message : "Order retrieved successfully",
+                    data : findOrder
+                })
+            }else{
+                return res.status(400).json({
+                    error : true,
+                    message : "No order found",
+                    data : findOrder
+                })
+            }
+        }catch(e){
+            var logError = await ErrorLog.create({
+                error_name: "Error on getting all orders by order_id",
+                error_description: e.toString(),
+                route: `/api/crop/order/getbyorderid/${req.params.orderid}`,
+                error_code: "500"
+            });
+            if(logError){
+                return res.status(500).json({
+                    error: true,
+                    message: 'Unable to complete request at the moment'
+                })
+            } 
+        }
+    }
+    /* -------------------------- GET ORDER BY ORDER_ID ------------------------- */
+
+
+
+
+
+
+    /* -------------------------- GET ORDER BY BUYER_ID ------------------------- */
+    static async getByBuyer(req , res){
+
+        const errors = validationResult(req);
+
+        try{
+            var findOrder = await Order.findOne({ where: { buyer_id: req.params.buyerid, buyer_type: req.params.buyertype } });
+            if(findOrder){
+                return res.status(200).json({
+                    error : false,
+                    message : "Order retrieved successfully",
+                    data : findOrder
+                })
+            }else{
+                return res.status(400).json({
+                    error : true,
+                    message : "No order found",
+                    data : findOrder
+                })
+            }
+        }catch(e){
+            var logError = await ErrorLog.create({
+                error_name: "Error on getting all orders by buyerid",
+                error_description: e.toString(),
+                route: `/api/crop/order/getbyorder/${req.params.buyerid}/${req.params.buyertype}`,
+                error_code: "500"
+            });
+            if(logError){
+                return res.status(500).json({
+                    error: true,
+                    message: 'Unable to complete request at the moment'
+                })
+            } 
+        }
+    }
+    /* -------------------------- GET ORDER BY BUYER_ID ------------------------- */
+
+
+
+
+
+
+    /* -------------------------- GET ORDER BY NEGOTIATION_ID ------------------------- */
+    static async getByNegotiationId(req , res){
+
+        try{
+            var findOrder = await Order.findOne({ where: { negotiation_id: req.params.negotiationid } });
+            if(findOrder){
+                return res.status(200).json({
+                    error : false,
+                    message : "Order retrieved successfully",
+                    data : findOrder
+                })
+            }else{
+                return res.status(400).json({
+                    error : true,
+                    message : "No order found",
+                    data : findOrder
+                })
+            }
+        }catch(e){
+            var logError = await ErrorLog.create({
+                error_name: "Error on getting all orders by negotiationId",
+                error_description: e.toString(),
+                route: `/api/crop/order/getbynegotiationid/${req.params.negotiationid}`,
+                error_code: "500"
+            });
+            if(logError){
+                return res.status(500).json({
+                    error: true,
+                    message: 'Unable to complete request at the moment'
+                })
+            } 
+        }
+    }
+    /* -------------------------- GET ORDER BY NEGOTIATION_ID ------------------------- */
+
+
+
+
+
+
+
+    /* -------------------------- GET ORDER BY PAYMENT STATUS ------------------------- */
+    static async getByPaymentStatus(req , res){
+
+        try{
+            var findOrder = await Order.findOne({ where: { payment_status: req.params.paymentstatus } });
+            if(findOrder){
+                return res.status(200).json({
+                    error : false,
+                    message : "Order retrieved successfully",
+                    data : findOrder
+                })
+            }else{
+                return res.status(400).json({
+                    error : true,
+                    message : "No order found",
+                    data : findOrder
+                })
+            }
+        }catch(e){
+            var logError = await ErrorLog.create({
+                error_name: "Error on getting all orders by negotiationId",
+                error_description: e.toString(),
+                route: `/api/crop/order/paymentstatus/${req.params.paymentstatus}`,
+                error_code: "500"
+            });
+            if(logError){
+                return res.status(500).json({
+                    error: true,
+                    message: 'Unable to complete request at the moment'
+                })
+            } 
+        }
+    }
+    /* -------------------------- GET ORDER BY PAYMENT STATUS ------------------------- */
+
+
+
+
+
 }
 
 module.exports = OrderController;

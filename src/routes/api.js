@@ -169,6 +169,10 @@ Router.group((router)=>{
 
     /* ---------------------------------- Order --------------------------------- */
     router.post('/crop/order/add', OrderValidators.cropAddOrderValidators, OrderController.createNewOrder);
+    router.get('/crop/order/getbyorderid/:orderid', OrderValidators.cropGetOrderByIdValidators, OrderController.getByOrderId);
+    router.get('/crop/order/getbybuyer/:buyerid/:buyertype', OrderController.getByBuyer);
+    router.get('/crop/order/getbynegotiationid/:negotiationid', OrderController.getByNegotiationId);
+    router.get('/crop/order/getbypaymentstatus/:paymentstatus', OrderController.getByPaymentStatus);
 
 });
 
