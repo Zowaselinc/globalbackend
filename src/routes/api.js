@@ -173,6 +173,9 @@ Router.group((router)=>{
     router.get('/crop/order/getbybuyer/:buyerid/:buyertype', OrderController.getByBuyer);
     router.get('/crop/order/getbynegotiationid/:negotiationid', OrderController.getByNegotiationId);
     router.get('/crop/order/getbypaymentstatus/:paymentstatus', OrderController.getByPaymentStatus);
+    // Tracking Details
+    router.post('/crop/trackingdetails/updatebyorderid', OrderController.updateTrackingDetailsByOrderId);
+
 
 });
 

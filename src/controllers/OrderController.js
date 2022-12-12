@@ -36,11 +36,13 @@ class OrderController{
 
         try{
             
-            // if(!errors.isEmpty()){
-            //     return res.status(400).json({ 
-            //          errors: errors.array() 
-            //     });
-            // }
+            if(!errors.isEmpty()){
+                return res.status(400).json({ 
+                    error: true,
+                    message: "All fields required",
+                    data: []
+                });
+            }
 
             const randomid = crypto.randomBytes(16).toString('hex');
           
@@ -365,6 +367,55 @@ class OrderController{
         }
     }
     /* -------------------------- GET ORDER BY PAYMENT STATUS ------------------------- */
+
+
+
+
+
+    /* -------------------------- UPDATE TRACKING DETAILS BY ORDER_ID ------------------------- */
+    static async updateTrackingDetailsByOrderId(req , res){
+
+        try{
+            var findOrder = await Order.findOne({ where: { order_id: req.body.order_id } });
+            if(findOrder){
+
+                // return res.send(req.body.tracking_details)
+
+                let thetrackingDetails = JSON.stringify(req.body.tracking_details);
+                
+                var updateOrderTrackingDetails = await Order.update({
+                    tracking_details: thetrackingDetails
+                }, { where : { order_id: req.body.order_id } });
+
+                return res.status(400).json({
+                    error : false,
+                    message : "Updated",
+                    data : findOrder
+                })
+
+            }else{
+                return res.status(400).json({
+                    error : true,
+                    message : "No order found",
+                    data : findOrder
+                })
+            }
+        }catch(e){
+            var logError = await ErrorLog.create({
+                error_name: "Error on getting all orders by negotiationId",
+                error_description: e.toString(),
+                route: `/api/crop/order/paymentstatus/${req.params.paymentstatus}`,
+                error_code: "500"
+            });
+            if(logError){
+                return res.status(500).json({
+                    error: true,
+                    message: 'Unable to complete request at the moment'+e.toString()
+                })
+            } 
+        }
+    }
+    /* -------------------------- UPDATE TRACKING DETAILS BY ORDER_ID ------------------------- */
 
 
 
