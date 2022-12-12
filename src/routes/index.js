@@ -2,6 +2,7 @@
 const ApiRouter = require('./api');
 
 const bodyParser = require("body-parser");
+
 const fileUpload = require('express-fileupload');
 
 class Routes{
@@ -12,7 +13,7 @@ class Routes{
         //Here we are configuring express to use body-parser as middle-ware.
         this.app.use(bodyParser.urlencoded({ extended: false }));
         this.app.use(bodyParser.json());
-        this.app.use(fileUpload());
+        this.app.use(fileUpload()); // Don't forget this line!
     }
 
     register(){

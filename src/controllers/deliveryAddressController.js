@@ -1,12 +1,12 @@
 const { request } = require("express");
-const { Inputs, InputCart, ErrorLog } = require("~database/models");
+const { DeliveryAddress, ErrorLog } = require("~database/models");
 const { validationResult } = require("express-validator");
 const crypto = require("crypto");
 // const jwt = require("jsonwebtoken");
 
-class InputsCart{
+class ShippingAddress{
 
-    static async addtoCart(req, res){
+    static async createDeliveryAddress(req, res){
         const errors = validationResult(req);
         try{
 
@@ -19,31 +19,29 @@ class InputsCart{
                 });
             }
 
-            /* ---------------- check if the item is already in the cart ---------------- */
-            var checkCart = await InputCart.findAll({
+            /* ---------------- check if the address already exists for that user ---------------- */
+            var checkAddress = await DeliveryAddress.findOne({
                 where: {
-                    "user_id":req.body.user_id,
-                    "input_id": req.body.input_id
+                    "user_id":req.body.user_id
                 }
             });
 
-            if(checkCart.length > 0){
+            if(checkAddress){
                 /* ------------------------- update existing record ------------------------- */
-                var makeRequest = await InputCart.update(req.body, {
+                var makeRequest = await DeliveryAddress.update(req.body, {
                     where: {
-                        "user_id":req.body.user_id,
-                        "input_id": req.body.input_id
+                        "user_id":req.body.user_id
                     }
                 });
             }else{
                 /* --------------------- insert the product into the DB --------------------- */
-                var makeRequest = await InputCart.create(req.body);
+                var makeRequest = await DeliveryAddress.create(req.body);
             }
                 
             if(makeRequest){
                 return res.status(200).json({
                     error : false,
-                    message : "Item added to cart successfully",
+                    message : "Delivery Address added successfully",
                     data : []
                 })
             }else{
@@ -58,9 +56,9 @@ class InputsCart{
 
         }catch(error){
             var logError = await ErrorLog.create({
-                error_name: "Error on adding input to cart-+",
+                error_name: "Error on creating delivery address",
                 error_description: error.toString(),
-                route: "/api/input/cart/add",
+                route: "/api/input/deliveryaddress/add",
                 error_code: "500"
             });
 
@@ -74,7 +72,7 @@ class InputsCart{
     }
 
     /* ----------------- get all cart added by a specified user ----------------- */
-    static async getUserInputCart(req, res){
+    static async getAllUserDeliveryAdresses(req, res){
         try{
 
             /* ----------------- the user id supplied as a get param ---------------- */
@@ -83,10 +81,7 @@ class InputsCart{
             if(userid !== "" || userid !== null || userid !== undefined){            
 
                 /* ---------------- check if the item is already in the cart ---------------- */
-                var returnedResult = await InputCart.findAll({
-                    include: [{
-                        model: Inputs,
-                    }],
+                var returnedResult = await DeliveryAddress.findAll({
                     where: {
                         "user_id": userid
                     }
@@ -96,7 +91,7 @@ class InputsCart{
                     
                     return res.status(200).json({
                         error : false,
-                        message : "User cart retrieved successfully",
+                        message : "Delivery Address retrieved successfully",
                         data : returnedResult
                     })
 
@@ -104,14 +99,14 @@ class InputsCart{
                     return res.status(200).json({
                         error : true,
                         message : "Unable to complete the request at the moment",
-                        data : returnedResult
+                        data : []
                     })
                 }
             }else{
                 return res.status(200).json({
                     error : true,
                     message : "Invalid user id",
-                    data : returnedResult
+                    data : []
                 })
             }
 
@@ -119,9 +114,9 @@ class InputsCart{
 
         }catch(error){
             var logError = await ErrorLog.create({
-                error_name: "Error on getting all cart items by user",
+                error_name: "Error on getting all user delivery addresses",
                 error_description: error.toString(),
-                route: "/api/input/cart/getallcartbyuserid/:user_id",
+                route: "/api/input/deliveryaddress/getallbyuserid/:user_id",
                 error_code: "500"
             });
 
@@ -134,7 +129,7 @@ class InputsCart{
         
     }
     
-    static async deleteCartItem(req, res){
+    static async deleteDeliveryAddress(req, res){
         try{
 
             /* ----------------- the user id supplied as a get param ---------------- */
@@ -142,8 +137,8 @@ class InputsCart{
 
             if(id !== "" || id !== null || id !== undefined){            
 
-                /* ---------------- check if the item is already in the cart ---------------- */
-                var returnedResult = await InputCart.findOne({
+                /* ---------------- check if the delivery address exists ---------------- */
+                var returnedResult = await DeliveryAddress.findOne({
                     where: {
                         "id": id
                     }
@@ -151,7 +146,7 @@ class InputsCart{
 
                 if(returnedResult){
 
-                    var deleteit = await InputCart.destroy({
+                    var deleteit = await DeliveryAddress.destroy({
                         where: {
                             "id": id
                         }
@@ -161,7 +156,7 @@ class InputsCart{
 
                         return res.status(200).json({
                             error : false,
-                            message : "Cart Item deleted successfully",
+                            message : "Delivery Address deleted successfully",
                             data : []
                         })
 
@@ -179,7 +174,7 @@ class InputsCart{
                 }else{
                     return res.status(200).json({
                         error : true,
-                        message : "Cart Item does not exist",
+                        message : "Delivery Address does not exist",
                         data : []
                     })
                 }
@@ -187,7 +182,7 @@ class InputsCart{
                 return res.status(400).json({
                     error : true,
                     message : "Invalid user id",
-                    data : returnedResult
+                    data : []
                 })
             }
 
@@ -195,9 +190,9 @@ class InputsCart{
 
         }catch(error){
             var logError = await ErrorLog.create({
-                error_name: "Error on getting all cart items by user",
+                error_name: "Error on deleting user delivery address",
                 error_description: error.toString(),
-                route: "/api/input/cart/getallcartbyuserid/:user_id",
+                route: "/api/input/deliveryaddress/delete/:id",
                 error_code: "500"
             });
 
@@ -211,4 +206,4 @@ class InputsCart{
 
 }
 
-module.exports = InputsCart;
+module.exports = ShippingAddress;

@@ -52,8 +52,8 @@ const Category = DB.categories = require("./category.model.js").Model(initialIns
 const SubCategory = DB.subcategories = require("./subcategory.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const ErrorLog = DB.errorlogs = require("./errorLog.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Negotiation = DB.negotiation = require("./negotiation.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
-const InputCart = DB.input_cart = require("./inputCart.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
-const Inputs = DB.input = require("./inputs.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
+const Cart = DB.cart = require("./cart.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
+const Input = DB.input = require("./input.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
 
 //---------------------------------------------------
 //Register Relationships
@@ -67,33 +67,63 @@ Agent.belongsTo(User , { foreignKey : "user_id"});
 
 Partner.belongsTo(User , { foreignKey : "user_id"});
 
+
+
+/* ---------------------------------- CROP ---------------------------------- */
+// 1
 Crop.hasMany(CropSpecification,{
   foreignKey: 'model_id',
-  as: 'product_specification'
+  as: 'crop_specification'
 })
 
 CropSpecification.belongsTo(Crop,{
   foreignKey: 'model_id',
-  as: 'product'
-})
+  as: 'crop'
+});
 
 Crop.hasMany(CropRequest,{
   foreignKey: 'crop_id',
-  as: 'product_request'
+  as: 'crop_request'
 })
 
 CropRequest.belongsTo(Crop,{
   foreignKey: 'crop_id',
-  as: 'product'
+  as: 'crop'
+});
+
+
+
+// 2
+Negotiation.hasMany(CropSpecification,{
+  foreignKey: 'model_id',
+  as: 'crop_specification'
 })
 
-InputCart.hasOne(Inputs,{ foreignKey: 'id' })
 
-Inputs.hasMany(InputCart,{
+
+
+Category.hasMany(Crop ,{
+  foreignKey : "category",
+});
+
+Category.hasMany(Input ,{
+  foreignKey : "category",
+});
+
+SubCategory.hasMany(Input,{
+  foreignKey : "sub_category",
+});
+
+SubCategory.hasMany(Crop,{
+  foreignKey : "sub_category",
+});
+
+Cart.hasOne(Input,{ foreignKey: 'id' })
+
+Input.hasMany(Cart,{
   foreignKey: 'input_id',
   as: 'input_cart'
 })
-
 
 module.exports = {
   DB,
@@ -119,6 +149,6 @@ module.exports = {
   SubCategory,
   ErrorLog,
   Negotiation,
-  InputCart,
-  Inputs
+  Cart,
+  Input
 };

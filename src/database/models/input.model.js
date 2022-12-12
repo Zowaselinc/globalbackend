@@ -84,9 +84,9 @@ let Schema = (Sequelize,mode) => {
 
 const Model = (sequelize, instance, Sequelize) => {
     // Define initial for DB sync
-    sequelize.define("input", Schema(Sequelize,1),{ timestamps: false });
+    sequelize.define("inputs", Schema(Sequelize,1),{ timestamps: false });
     // Bypass initial instance to cater for timestamps
-    const Inputs = instance.define("input", Schema(Sequelize,2),{ 
+    const Inputs = instance.define("inputs", Schema(Sequelize,2),{ 
         timestamps: false,
     });
     return Inputs;
