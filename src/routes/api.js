@@ -39,7 +39,6 @@ const SubCategoryValidator = require('./validators/SubCategoryValidator');
 const CropValidation = require('./validators/CropValidation');
 const NegotiationValidator = require('./validators/NegotiationValidator');
 const InputsValidator = require('./validators/InputsValidator');
-const ShippingAddressValidator = require("./validators/ShippingAddressValidator");
 const OrderValidators = require("./validators/OrderValidators");
 
 
@@ -213,3 +212,6 @@ Router.group((router) => {
 })
 
 module.exports = Router;
+
+
+
