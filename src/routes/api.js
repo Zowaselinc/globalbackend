@@ -174,7 +174,9 @@ Router.group((router)=>{
     router.get('/crop/order/getbynegotiationid/:negotiationid', OrderController.getByNegotiationId);
     router.get('/crop/order/getbypaymentstatus/:paymentstatus', OrderController.getByPaymentStatus);
     // Tracking Details
-    router.post('/crop/trackingdetails/updatebyorderid', OrderController.updateTrackingDetailsByOrderId);
+    router.post('/crop/trackingdetails/updatebyorderid', OrderValidators.updateTrackingDetailsValidators, OrderController.updateTrackingDetailsByOrderId);
+    // Waybill Details
+    router.post('/crop/waybilldetails/updatebyorderid', OrderValidators.updateWaybillDetailsValidators, OrderController.updateWaybillDetailsByOrderId);
 
 
 });

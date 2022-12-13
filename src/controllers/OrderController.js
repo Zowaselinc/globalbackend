@@ -375,7 +375,18 @@ class OrderController{
     /* -------------------------- UPDATE TRACKING DETAILS BY ORDER_ID ------------------------- */
     static async updateTrackingDetailsByOrderId(req , res){
 
+        const errors = validationResult(req);
+
         try{
+            
+            if(!errors.isEmpty()){
+                return res.status(400).json({ 
+                    error: true,
+                    message: "All fields required",
+                    data: []
+                });
+            }
+
             var findOrder = await Order.findOne({ where: { order_id: req.body.order_id } });
             if(findOrder){
 
@@ -389,8 +400,8 @@ class OrderController{
 
                 return res.status(400).json({
                     error : false,
-                    message : "Updated",
-                    data : findOrder
+                    message : "Tracking details updated successfully",
+                    data : []
                 })
 
             }else{
@@ -402,20 +413,69 @@ class OrderController{
             }
         }catch(e){
             var logError = await ErrorLog.create({
-                error_name: "Error on getting all orders by negotiationId",
+                error_name: "Error on updating oder tracking details by orderId",
                 error_description: e.toString(),
-                route: `/api/crop/order/paymentstatus/${req.params.paymentstatus}`,
+                route: `/api/crop/order/trackingdetails/updatebyorderid`,
                 error_code: "500"
             });
             if(logError){
                 return res.status(500).json({
                     error: true,
-                    message: 'Unable to complete request at the moment'+e.toString()
+                    message: 'Unable to complete request at the moment'
                 })
             } 
         }
     }
     /* -------------------------- UPDATE TRACKING DETAILS BY ORDER_ID ------------------------- */
+
+
+
+
+
+    /* -------------------------- UPDATE WAYBILL DETAILS BY ORDER_ID  ------------------------- */
+    static async updateWaybillDetailsByOrderId(req , res){
+
+        try{
+            var findOrder = await Order.findOne({ where: { order_id: req.body.order_id } });
+            if(findOrder){
+
+                // return res.send(req.body.tracking_details)
+
+                let theWaybillDetails = JSON.stringify(req.body.waybill_details);
+                
+                var updateOrderWaybillDetails = await Order.update({
+                    waybill_details: theWaybillDetails
+                }, { where : { order_id: req.body.order_id } });
+
+                return res.status(400).json({
+                    error : false,
+                    message : "Waybill order details updated successfully",
+                    data : []
+                })
+
+            }else{
+                return res.status(400).json({
+                    error : true,
+                    message : "No order found",
+                    data : findOrder
+                })
+            }
+        }catch(e){
+            var logError = await ErrorLog.create({
+                error_name: "Error on updated waybill order by orderId",
+                error_description: e.toString(),
+                route: `/api/crop/order/waybilldetails/updatebyorderid`,
+                error_code: "500"
+            });
+            if(logError){
+                return res.status(500).json({
+                    error: true,
+                    message: 'Unable to complete request at the moment'
+                })
+            } 
+        }
+    }
+    /* -------------------------- UPDATE WAYBILL DETAILS BY ORDER_ID  ------------------------- */
 
 
 
