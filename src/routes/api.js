@@ -19,11 +19,7 @@ const CropRequestController = require('../controllers/CropRequestController');
 const CropSpecificationController = require('../controllers/CropSpecificationController');
 
 const NegotiationController = require('../controllers/NegotiationController');
-<<<<<<< HEAD
 const Input = require('~controllers/InputProductController');
-=======
-const Inputs = require('~controllers/InputProductController');
->>>>>>> 17179f2aa4016078234ac0a749c499e7e6f4e8dd
 
 const Cart = require('~controllers/CartController');
 
@@ -40,10 +36,6 @@ const SubCategoryValidator = require('./validators/SubCategoryValidator');
 const CropValidation = require('./validators/CropValidation');
 const NegotiationValidator = require('./validators/NegotiationValidator');
 const InputsValidator = require('./validators/InputsValidator');
-<<<<<<< HEAD
-=======
-const ShippingAddressValidator = require("./validators/ShippingAddressValidator");
->>>>>>> 17179f2aa4016078234ac0a749c499e7e6f4e8dd
 const OrderValidators = require("./validators/OrderValidators");
 
 
@@ -191,14 +183,6 @@ Router.group((router)=>{
 /*                             INPUT MARKET PLACE                             */
 /* -------------------------------------------------------------------------- */
 
-<<<<<<< HEAD
-=======
-
-
-/* -------------------------------------------------------------------------- */
-/*                                INPUT PRODUCT                               */
-/* -------------------------------------------------------------------------- */
->>>>>>> 17179f2aa4016078234ac0a749c499e7e6f4e8dd
 /* ---------------------------------- INPUT --------------------------------- */
 Router.group((router) => {
     /* ---------------------------------- Input ---------------------------------- */
@@ -215,42 +199,11 @@ Router.group((router) => {
     router.get('/input/cart/getallcartbyuserid/:user_id', Cart.getUserInputCart);
     router.get('/input/cart/delete/:id', Cart.deleteCartItem);
 
-<<<<<<< HEAD
     
     /* ---------------------------------- Order --------------------------------- */
     router.post('/input/order/add', OrderValidators.InputOrderValidator, OrderController.createInputOrder);
     router.post('/input/order/updateinputorder', OrderValidators.updateOrderValidator, OrderController.updateOrderPayment);
     router.get('/input/order/history/getbyuserid/:user_id', OrderController.getOrderHistoryByUserId);
-=======
-/* ---------------------------------- CART ---------------------------------- */
-Router.group((router) => {
-
-    router.post('/input/add', InputsValidator.createInputValidator,Inputs.createInput);
-    router.get('/input/getallbyuserid/:user_id', Inputs.getallInputsByUser);
-    router.get('/input/getall', Inputs.getallInputs);
-    router.get('/input/getallbycategory/:category', Inputs.getallInputsByCategory);
-    router.get('/input/getallbymanufacturer/:manufacturer', Inputs.getallInputsByManufacturer);
-    router.get('/input/getallbypackaging/:packaging', Inputs.getallInputsByPackaging);
-})
-
-/* ---------------------------------- CART ---------------------------------- */
-Router.group((router) => {
-    router.post('/input/cart/add', InputsValidator.addToCartValidator,InputsCart.addtoCart);
-    router.get('/input/cart/getallcartbyuserid/:user_id', InputsCart.getUserInputCart);
-    router.get('/input/cart/delete/:id', InputsCart.deleteCartItem);
-})
-
-Router.group((router) => {
-    router.post('/input/deliveryaddress/add', ShippingAddressValidator.createAddressValidator, ShippingAddress.createDeliveryAddress);
-    router.get('/input/deliveryaddress/getallbyuserid/:user_id', ShippingAddress.getAllUserDeliveryAdresses)
-    router.get('/input/deliveryaddress/delete/:id', ShippingAddress.deleteDeliveryAddress)
-})
-
-Router.group((router) => {
-    router.post('/input/order/add', OrderValidators.InputOrderValidator, InputsOrder.createInputOrder);
-    router.post('/input/order/updatetransactionid', OrderValidators.UpdateTransactionIdValidator, InputsOrder.updateOrderTransactionId);
-    router.get('/input/order/history/getbyuserid/:user_id', InputsOrder.getOrderHistoryByUserId);
->>>>>>> 17179f2aa4016078234ac0a749c499e7e6f4e8dd
 })
 
 module.exports = Router;
