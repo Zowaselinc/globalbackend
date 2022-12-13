@@ -19,7 +19,10 @@ const CropRequestController = require('../controllers/CropRequestController');
 const CropSpecificationController = require('../controllers/CropSpecificationController');
 
 const NegotiationController = require('../controllers/NegotiationController');
-const Inputs = require('~controllers/InputProductController');
+const Input = require('~controllers/InputProductController');
+const Cart = require('~controllers/CartController');
+
+
 
 const InputsCart = require('~controllers/InputcartController');
 
@@ -186,48 +189,27 @@ Router.group((router)=>{
 /*                             INPUT MARKET PLACE                             */
 /* -------------------------------------------------------------------------- */
 
-
-
-/* -------------------------------------------------------------------------- */
-/*                                INPUT PRODUCT                               */
-/* -------------------------------------------------------------------------- */
 /* ---------------------------------- INPUT --------------------------------- */
 Router.group((router) => {
+    /* ---------------------------------- Input ---------------------------------- */
+    router.post('/input/add', InputsValidator.createInputValidator,Input.createInput);
+    router.get('/input/getallbyuserid/:user_id', Input.getallInputsByUser);
+    router.get('/input/getall', Input.getallInputs);
+    router.get('/input/getallbycategory/:category', Input.getallInputsByCategory);
+    router.get('/input/getallbymanufacturer/:manufacturer', Input.getallInputsByManufacturer);
+    router.get('/input/getallbypackaging/:packaging', Input.getallInputsByPackaging);
 
     
-})
+    /* ---------------------------------- CART ---------------------------------- */
+    router.post('/input/cart/add', InputsValidator.addToCartValidator,Cart.addtoCart);
+    router.get('/input/cart/getallcartbyuserid/:user_id', Cart.getUserInputCart);
+    router.get('/input/cart/delete/:id', Cart.deleteCartItem);
 
-/* ---------------------------------- CART ---------------------------------- */
-Router.group((router) => {
-
-    router.post('/input/add', InputsValidator.createInputValidator,Inputs.createInput);
-    router.get('/input/getallbyuserid/:user_id', Inputs.getallInputsByUser);
-    router.get('/input/getall', Inputs.getallInputs);
-    router.get('/input/getallbycategory/:category', Inputs.getallInputsByCategory);
-    router.get('/input/getallbymanufacturer/:manufacturer', Inputs.getallInputsByManufacturer);
-    router.get('/input/getallbypackaging/:packaging', Inputs.getallInputsByPackaging);
-})
-
-/* ---------------------------------- CART ---------------------------------- */
-Router.group((router) => {
-    router.post('/input/cart/add', InputsValidator.addToCartValidator,InputsCart.addtoCart);
-    router.get('/input/cart/getallcartbyuserid/:user_id', InputsCart.getUserInputCart);
-    router.get('/input/cart/delete/:id', InputsCart.deleteCartItem);
-})
-
-Router.group((router) => {
-    router.post('/input/deliveryaddress/add', ShippingAddressValidator.createAddressValidator, ShippingAddress.createDeliveryAddress);
-    router.get('/input/deliveryaddress/getallbyuserid/:user_id', ShippingAddress.getAllUserDeliveryAdresses)
-    router.get('/input/deliveryaddress/delete/:id', ShippingAddress.deleteDeliveryAddress)
-})
-
-Router.group((router) => {
-    router.post('/input/order/add', OrderValidators.InputOrderValidator, InputsOrder.createInputOrder);
-    router.post('/input/order/updatetransactionid', OrderValidators.UpdateTransactionIdValidator, InputsOrder.updateOrderTransactionId);
-    router.get('/input/order/history/getbyuserid/:user_id', InputsOrder.getOrderHistoryByUserId);
+    
+    /* ---------------------------------- Order --------------------------------- */
+    router.post('/input/order/add', OrderValidators.InputOrderValidator, OrderController.createInputOrder);
+    router.post('/input/order/updateinputorder', OrderValidators.updateOrderValidator, OrderController.updateOrderPayment);
+    router.get('/input/order/history/getbyuserid/:user_id', OrderController.getOrderHistoryByUserId);
 })
 
 module.exports = Router;
-
-
-
