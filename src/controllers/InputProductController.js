@@ -1,5 +1,5 @@
 const { request } = require("express");
-const { Inputs, ErrorLog } = require("~database/models");
+const { Input, ErrorLog } = require("~database/models");
 const { validationResult } = require("express-validator");
 const crypto = require("crypto");
 // const jwt = require("jsonwebtoken");
@@ -53,7 +53,7 @@ class InputProducts{
 
                 /* ------------------------ INSERT INTO PRODUCT TABLE ----------------------- */
                
-                var input = await Inputs.create({
+                var input = await Input.create({
                     user_id: req.body.user_id,
                     category: req.body.category,
                     sub_category: req.body.sub_category,
@@ -111,7 +111,7 @@ class InputProducts{
 
     static async getallInputsByUser(req , res){
         try{
-            var alluserinputs = await Inputs.findAll({
+            var alluserinputs = await Input.findAll({
                 where: {
                     user_id: req.params.user_id
                 }
@@ -152,7 +152,7 @@ class InputProducts{
 
     static async getallInputs(req , res){
         try{
-            var alluserinputs = await Inputs.findAll();
+            var alluserinputs = await Input.findAll();
 
             if(alluserinputs.length > 0){
 
@@ -189,7 +189,7 @@ class InputProducts{
 
     static async getallInputsByCategory(req , res){
         try{
-            var allInputs = await Inputs.findAll({
+            var allInputs = await Input.findAll({
                 where: {
                     category: req.params.category
                 }
@@ -229,7 +229,7 @@ class InputProducts{
     }
     static async getallInputsByManufacturer(req , res){
         try{
-            var allInputs = await Inputs.findAll({
+            var allInputs = await Input.findAll({
                 where: {
                     manufacture_name: req.params.manufacturer
                 }
@@ -269,7 +269,7 @@ class InputProducts{
     }
     static async getallInputsByPackaging(req , res){
         try{
-            var allInputs = await Inputs.findAll({
+            var allInputs = await Input.findAll({
                 where: {
                     packaging: req.params.packaging
                 }

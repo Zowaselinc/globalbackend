@@ -52,9 +52,9 @@ module.exports = {
         body('orders').isString().not().isEmpty()
     ],
 
-    UpdateTransactionIdValidator: [
-        body('user_id').isNumeric().not().isEmpty(),
-        body('transaction_id').isString().not().isEmpty()
+    updateOrderValidator: [
+        body('order_id').isString().not().isEmpty(),
+        body('payment_status').isString().not().isEmpty()
     ]
 
 }

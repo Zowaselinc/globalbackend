@@ -52,10 +52,8 @@ const Category = DB.categories = require("./category.model.js").Model(initialIns
 const SubCategory = DB.subcategories = require("./subcategory.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const ErrorLog = DB.errorlogs = require("./errorLog.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Negotiation = DB.negotiation = require("./negotiation.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
-const InputCart = DB.input_cart = require("./inputCart.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
+const Cart = DB.cart = require("./cart.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Input = DB.input = require("./input.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
-const DeliveryAddress = DB.delivery_address = require("./deliveryAddress.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
-const InputOrder = DB.input_order = require("./inputOrder.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
 
 //---------------------------------------------------
 //Register Relationships
@@ -120,15 +118,12 @@ SubCategory.hasMany(Crop,{
   foreignKey : "sub_category",
 });
 
-InputCart.hasOne(Input,{ foreignKey: 'id' })
+Cart.hasOne(Input,{ foreignKey: 'id' })
 
-Input.hasMany(InputCart,{
+Input.hasMany(Cart,{
   foreignKey: 'input_id',
   as: 'input_cart'
 })
-
-InputOrder.hasMany(Input, { foreignKey: 'id' })
-InputOrder.hasOne(DeliveryAddress, {foreignKey: 'id'})
 
 module.exports = {
   DB,
@@ -154,8 +149,6 @@ module.exports = {
   SubCategory,
   ErrorLog,
   Negotiation,
-  InputCart,
-  Input,
-  DeliveryAddress,
-  InputOrder
+  Cart,
+  Input
 };

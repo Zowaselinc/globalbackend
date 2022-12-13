@@ -478,7 +478,197 @@ class OrderController{
     /* -------------------------- UPDATE WAYBILL DETAILS BY ORDER_ID  ------------------------- */
 
 
+    /* -------------------------------------------------------------------------- */
+    /*                                    INPUT                                   */
+    /* -------------------------------------------------------------------------- */
+    static async createInputOrder(req , res){
 
+        // return res.send(req.body);
+
+        const errors = validationResult(req);
+
+        try{
+            
+            if(!errors.isEmpty()){
+                return res.status(400).json({ 
+                    error: true,
+                    message: "All fields required",
+                    data: []
+                });
+            }
+
+            const randomid = crypto.randomBytes(16).toString('hex');
+                        
+            var findtheInput = await Input.findOne({
+                where: { id: req.body.input_id }
+            });
+
+            if(!findtheInput){
+                return res.status(200).json({
+                    error: true,
+                    message : "Sorry Input does not exist.",
+                    data: []
+                });
+            }
+
+            
+            var createOrder = await Order.create({
+                order_id: "ORD"+randomid,
+                buyer_id: req.body.buyer_id,
+                buyer_type: req.body.buyer_type,
+                payment_option: req.body.payment_option,
+                product: req.body.input_id,
+                waybill_details: req.body.waybill_details,
+                payment_status: req.body.payment_status,
+                extra_documents: "payment processor data"
+            })
+
+            
+    
+            return res.status(200).json({
+                "error": false,
+                "message": "New input order created",
+                "data": { order_id: createOrder.order_id }
+            })
+        }catch(e){
+            var logError = await ErrorLog.create({
+                error_name: "Error on creating an order",
+                error_description: e.toString(),
+                route: "/api/input/order/add",
+                error_code: "500"
+            });
+            if(logError){
+                return res.status(500).json({
+                    error: true,
+                    message: 'Unable to complete request at the moment'
+                })
+            }
+        }
+    }
+
+
+    /* ----------------- get all cart added by a specified user ----------------- */
+    static async updateOrderPayment(req, res){
+        const errors = validationResult(req);
+        try{
+
+            /* ----------------- checking the req.body for empty fields ----------------- */
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ 
+                    error: true,
+                    message: "All fields required",
+                    data: []
+                });
+            }        
+
+            /* ---------------- check if the item is already in the cart ---------------- */
+            var returnedResult = await Order.findOne(req.body,{
+                where: {
+                    "order_id": req.body.order_id
+                }
+            });
+
+            if(returnedResult){
+
+                var executeCommand = await Order.update({
+                    "payment_status": req.body.payment_status,
+                    "extra_documents": JSON.stringify(req.body.extra_documents)
+                },{
+                    where: {
+                        "order_id": req.body.order_id
+                    }
+                });
+                
+                return res.status(200).json({
+                    error : false,
+                    message : "Order updated successfully",
+                    data : executeCommand
+                })
+
+            }else{
+                return res.status(200).json({
+                    error : true,
+                    message : "Order does not exist",
+                    data : []
+                })
+            }
+
+
+
+        }catch(error){
+            var logError = await ErrorLog.create({
+                error_name: "Error on updating input order",
+                error_description: error.toString(),
+                route: "/api/input/order/updateinputorder",
+                error_code: "500"
+            });
+
+            return res.status(500).json({
+                error: true,
+                message: "Unable to complete the request at the moment",
+                data: []
+            })
+        }
+        
+    }
+
+    static async getOrderHistoryByUserId(req, res){
+        try{
+
+            /* ----------------- the user id supplied as a get param ---------------- */
+            const user_id = req.params.user_id;
+
+            if(user_id !== "" || user_id !== null || user_id !== undefined){            
+
+                /* ---------------- check if the delivery address exists ---------------- */
+                var returnedResult = await Order.findAll({
+                    attributes:['id','order_id','buyer_id', 'buyer_type', 'payment_option', 'payment_status', 'product', 'tracking_details', 'extra_documents', 'created_at'],
+                    where: {
+                        "buyer_id": user_id
+                    }
+                });
+
+                if(returnedResult){
+
+                    return res.status(200).json({
+                        error : false,
+                        message : "Order history retrieved successfully",
+                        data : returnedResult
+                    })
+                    
+
+                }else{
+                    return res.status(200).json({
+                        error : true,
+                        message : "No order history found for this user",
+                        data : []
+                    })
+                }
+            }else{
+                return res.status(400).json({
+                    error : true,
+                    message : "Invalid user id",
+                    data : []
+                })
+            }
+
+
+
+        }catch(error){
+            var logError = await ErrorLog.create({
+                error_name: "Error on getting order history",
+                error_description: error.toString(),
+                route: "/api/input/order/history/getbyuserid/:user_id",
+                error_code: "500"
+            });
+
+            return res.status(500).json({
+                error: true,
+                message: "Unable to complete the request at the moment",
+                data: []
+            })
+        }
+    }
 
 
 }
