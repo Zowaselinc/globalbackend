@@ -30,6 +30,7 @@ module.exports = {
     ],
 
     updateWaybillDetailsValidators : [
+        
         body('order_id').isString().not().isEmpty(),
         body('waybill_details.dispatch_section.from_seller_id').isNumeric().not().isEmpty(),
         body('waybill_details.dispatch_section.seller_title').isString().not().isEmpty(),
