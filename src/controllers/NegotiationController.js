@@ -644,6 +644,196 @@ class NegotiationController{
 
 
 
+
+
+
+    /* --------------------------- TRANSACTION SUMMARY -------------------------- */
+    /*****************************************************************************
+     * THIS CONTAINS INFORMATION OF FINAL AGREEMENT IE. THE ACCEPTED OFFER_PRICE *
+     *      GET TRANSACTIONS FOR USER, THEN VIEW SINGLE TRANSACTION DETAILS      *
+     *****************************************************************************/
+
+    /********************************************************************
+     * GET ALL NEGOTIATION BY TRANSACTIONS BY STATUS(ACCEPTED/DECLINED) *
+     *                            AND USERID                            *
+     ********************************************************************/
+     static async getNegotiationTransactionSummary(req , res){
+
+        const userId = req.params.userid;
+        const negotiationStatus = req.params.status;
+        try{
+            
+            const { count, rows } = await Negotiation.findAndCountAll({ 
+                where: { 
+                    messagetype: "offer",
+                    status: negotiationStatus,
+                    [Op.or]: [
+                        { receiver_id: userId },
+                        { sender_id: userId }
+                    ]   
+                } 
+            });
+
+            if(count<1){
+                return res.status(200).json({
+                    error : true,
+                    message : `No ${negotiationStatus} negotiation offer found`,
+                    data : []
+                })
+            }else{
+                var findCropNegotiationOffers = await Negotiation.findAndCountAll({ 
+                    include: [{
+                        model: CropSpecification,
+                        as: 'crop_specification',
+                        order: [['id', 'DESC']],
+                        limit: 1,
+                    }],
+                    
+                    
+                    where: { 
+                        messagetype: "offer",
+                        status: negotiationStatus,
+                        [Op.or]: [
+                            { receiver_id: userId },
+                            { sender_id: userId }
+                        ]
+                    },
+                    order: [['id', 'DESC']]
+                });
+    
+            
+                /* --------------------- If fetched the accepted/declined Negotiation Transaction --------------------- */
+                
+
+                const findCrop = await Crop.findOne({ 
+                    where: { 
+                        id: findCropNegotiationOffers.rows[0].crop_id
+                    } 
+                });
+
+                const findCropRequest = await CropRequest.findOne({ 
+                    where: { 
+                        crop_id: findCropNegotiationOffers.rows[0].crop_id
+                    } 
+                });
+
+
+                return res.status(200).json({
+                    error : false,
+                    message : `Negotiation for ${negotiationStatus} Crops offer retrieved successfully`,
+                    data : findCropNegotiationOffers, 
+                    cropData: findCrop,
+                    cropSpecificationData: findCropRequest
+                })
+            }
+            
+            
+        }catch(e){
+            var logError = await ErrorLog.create({
+                error_name: `Error on fetching ${negotiationStatus} crops negotiation offer`,
+                error_description: e.toString(),
+                route: `/api/crop/grabtransactionby/${negotiationStatus}/${userId}`,
+                error_code: "500"
+            });
+            if(logError){
+                return res.status(500).json({
+                    error: true,
+                    message: e.toString()
+                })
+            } 
+        }
+    }
+
+
+    /* --------------------------- TRANSACTION SUMMARY -------------------------- */
+
+
+
+
+
+
+
+
+
+    /* ----------- GET ALL ACCEPTED AND DECLINED NEGOTIATIONS SUMMARY ----------- */
+    static async getAllNegotiationTransactionSummary(req , res){
+
+        try{
+            
+            const { count, rows } = await Negotiation.findAndCountAll({ 
+                where: { 
+                    messagetype: "offer" 
+                } 
+            });
+
+            if(count<1){
+                return res.status(200).json({
+                    error : true,
+                    message : `No transactions for negotiation offer found`,
+                    data : []
+                })
+            }else{
+                var findCropNegotiationOffers = await Negotiation.findAndCountAll({ 
+                    include: [{
+                        model: CropSpecification,
+                        as: 'crop_specification',
+                        order: [['id', 'DESC']],
+                        limit: 1,
+                    }],
+                    
+                    
+                    where: { 
+                        messagetype: "offer"
+                    },
+                    order: [['id', 'DESC']]
+                });
+    
+            
+                /* --------------------- If fetched the accepted/declined Negotiation Transaction --------------------- */
+                
+
+                const findCrop = await Crop.findOne({ 
+                    where: { 
+                        id: findCropNegotiationOffers.rows[0].crop_id
+                    } 
+                });
+
+                const findCropRequest = await CropRequest.findOne({ 
+                    where: { 
+                        crop_id: findCropNegotiationOffers.rows[0].crop_id
+                    } 
+                });
+
+
+                return res.status(200).json({
+                    error : false,
+                    message : `Negotiation for Crops offer retrieved successfully`,
+                    data : findCropNegotiationOffers, 
+                    cropData: findCrop,
+                    cropSpecificationData: findCropRequest
+                })
+            }
+            
+            
+        }catch(e){
+            var logError = await ErrorLog.create({
+                error_name: `Error on fetching crops negotiation offer`,
+                error_description: e.toString(),
+                route: `/api/crop/negotiation/getallsummary`,
+                error_code: "500"
+            });
+            if(logError){
+                return res.status(500).json({
+                    error: true,
+                    message: e.toString()
+                })
+            } 
+        }
+    }
+    /* ----------- GET ALL ACCEPTED AND DECLINED NEGOTIATIONS SUMMARY ----------- */
+
+
+
 }
 
 module.exports = NegotiationController;

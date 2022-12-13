@@ -2,35 +2,38 @@ const generateTimestamps = require("./timestamps");
 
 let Schema = (Sequelize,mode) => {
     return {
-        transaction_id : {
-            type: Sequelize.STRING,
+        user_id : {
+            type: Sequelize.INTEGER,
             allowNull : false
         },
-        type : {
+        address : {
             type : Sequelize.STRING,
             allowNull : false
         },
-        type_id : {
-            type: Sequelize.STRING,
+        zip : {
+            type : Sequelize.STRING,
             allowNull : false
         },
-        amount_paid : {
-            type: Sequelize.STRING,
+        state : {
+            type : Sequelize.STRING,
             allowNull : false
         },
-        status : {
-            type: Sequelize.STRING,
+        country : {
+            type : Sequelize.STRING,
             allowNull : false
         },
-        ...generateTimestamps(Sequelize,mode)
+        ...generateTimestamps(Sequelize, mode)
     }
 }
 const Model = (sequelize, instance, Sequelize) => {
     // Define initial for DB sync
-    sequelize.define("transactions", Schema(Sequelize,1),{ timestamps: false });
+    sequelize.define("delivery_address", Schema(Sequelize,1),{ timestamps: false });
     // Bypass initial instance to cater for timestamps
-    const Transaction = instance.define("transactions", Schema(Sequelize,2),{ timestamps: false });
-    return Transaction;
+    
+    const DeliveryAddress = instance.define("delivery_address", Schema(Sequelize,2),{ 
+        timestamps: false 
+    });
+    return DeliveryAddress;
 }
 
 module.exports = { Schema , Model};

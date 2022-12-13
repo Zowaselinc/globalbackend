@@ -6,18 +6,47 @@ let Schema = (Sequelize,mode) => {
             type: Sequelize.STRING,
             allowNull : false
         },
-        amount : {
+        buyer_id : {
             type : Sequelize.STRING,
             allowNull : false
         },
-        total_product : {
+        buyer_type : {
+            type : Sequelize.STRING,
+            allowNull : false
+        },
+        negotiation_id : {
+            type: Sequelize.STRING,
+            allowNull : true
+        },
+        payment_option : {
             type: Sequelize.STRING,
             allowNull : false
         },
-        action : {
-            type: Sequelize.STRING,
+        payment_status : {
+            type : Sequelize.STRING,
             allowNull : false
         },
+        product : {
+            type : Sequelize.TEXT,
+            allowNull : false
+        },
+        tracking_details : {
+            type: Sequelize.TEXT,
+            allowNull : true
+        },
+        waybill_details : {
+            type: Sequelize.TEXT,
+            allowNull : true
+        },
+        receipt_note : {
+            type: Sequelize.TEXT,
+            allowNull : true
+        },
+        extra_documents : {
+            type: Sequelize.TEXT,
+            allowNull : true
+        },
+
         ...generateTimestamps(Sequelize,mode)
     }
 }

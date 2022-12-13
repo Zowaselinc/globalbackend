@@ -25,12 +25,12 @@ let Schema = (Sequelize,mode) => {
 
 const Model = (sequelize, instance, Sequelize) => {
     // Define initial for DB sync
-    sequelize.define("input_cart", Schema(Sequelize,1),{ timestamps: false });
+    sequelize.define("cart", Schema(Sequelize,1),{ timestamps: false });
     // Bypass initial instance to cater for timestamps
-    const InputCart = instance.define("input_cart", Schema(Sequelize,2),{ 
+    const Cart = instance.define("cart", Schema(Sequelize,2),{ 
         timestamps: false,
     });
-    return InputCart;
+    return Cart;
 }
 
 module.exports = { Schema , Model};
