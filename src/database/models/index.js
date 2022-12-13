@@ -52,10 +52,15 @@ const Category = DB.categories = require("./category.model.js").Model(initialIns
 const SubCategory = DB.subcategories = require("./subcategory.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const ErrorLog = DB.errorlogs = require("./errorLog.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Negotiation = DB.negotiation = require("./negotiation.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
+<<<<<<< HEAD
+const Cart = DB.cart = require("./cart.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
+const Input = DB.input = require("./input.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
+=======
 const InputCart = DB.input_cart = require("./inputCart.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Input = DB.input = require("./input.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const DeliveryAddress = DB.delivery_address = require("./deliveryAddress.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const InputOrder = DB.input_order = require("./inputOrder.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
+>>>>>>> 17179f2aa4016078234ac0a749c499e7e6f4e8dd
 
 //---------------------------------------------------
 //Register Relationships
@@ -120,16 +125,25 @@ SubCategory.hasMany(Crop,{
   foreignKey : "sub_category",
 });
 
+<<<<<<< HEAD
+Cart.hasOne(Input,{ foreignKey: 'id' })
+
+Input.hasMany(Cart,{
+=======
 InputCart.hasOne(Input,{ foreignKey: 'id' })
 
 Input.hasMany(InputCart,{
+>>>>>>> 17179f2aa4016078234ac0a749c499e7e6f4e8dd
   foreignKey: 'input_id',
   as: 'input_cart'
 })
 
+<<<<<<< HEAD
+=======
 InputOrder.hasMany(Input, { foreignKey: 'id' })
 InputOrder.hasOne(DeliveryAddress, {foreignKey: 'id'})
 
+>>>>>>> 17179f2aa4016078234ac0a749c499e7e6f4e8dd
 module.exports = {
   DB,
   User,
@@ -154,8 +168,13 @@ module.exports = {
   SubCategory,
   ErrorLog,
   Negotiation,
+<<<<<<< HEAD
+  Cart,
+  Input
+=======
   InputCart,
   Input,
   DeliveryAddress,
   InputOrder
+>>>>>>> 17179f2aa4016078234ac0a749c499e7e6f4e8dd
 };
