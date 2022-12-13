@@ -61,7 +61,7 @@ class InputProducts{
                     packaging: req.body.packaging,
                     description: req.body.description,
                     usage_instruction: req.body.usage_instruction,
-                    kg: req.body.kg,
+                    unit: req.body.unit,
                     liters: req.body.liters,
                     images: my_object.toString(),
                     price: req.body.price,

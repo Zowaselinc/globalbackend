@@ -154,7 +154,8 @@ Router.group((router)=>{
     /* ------------------------------- Negotiation ------------------------------ */
     router.post('/crop/negotiation/add', NegotiationValidator.addNegotiationValidator, NegotiationController.add);
     router.post('/crop/negotiation/admin/add', NegotiationValidator.addNegotiationValidator, NegotiationController.addmsgbyadmin);
-    router.get('/crop/negotiation/getbyuserid/:userid', NegotiationController.getbyuserid);
+    router.get('/crop/:cropId/negotiation/getbyuserid/:userid', NegotiationController.getbyuserid);
+    router.get('/crop/negotiation/:userid', NegotiationController.getListByUser);
     router.post('/crop/negotiation/sendoffer', NegotiationController.sendNegotiationOffer);
     router.post('/crop/negotiation/accept', NegotiationController.acceptNegotiation);
     router.post('/crop/negotiation/decline', NegotiationController.declineNegotiation);

@@ -141,7 +141,7 @@ class CropController{
                         infested_by_weight: req.body.infested_by_weight,
                         curcumin_content: req.body.curcumin_content,
                         extraneous: req.body.extraneous,
-                        kg: req.body.kg,
+                        unit: req.body.unit,
                         liters: req.body.liters
                     })
 
@@ -217,8 +217,6 @@ class CropController{
                 include: [{
                     model: CropSpecification,
                     as: 'crop_specification',
-                    order: [['id', 'DESC']],
-                    limit: 1,
                 },
                 {
                     model: CropRequest,
@@ -284,8 +282,6 @@ class CropController{
                     include: [{
                         model: CropSpecification,
                         as: 'specification',
-                        order: [['id', 'DESC']],
-                        limit: 1,
                     },{
                         model : User,
                         as : 'user',
@@ -488,7 +484,7 @@ class CropController{
                         infested_by_weight: req.body.infested_by_weight,
                         curcumin_content: req.body.curcumin_content,
                         extraneous: req.body.extraneous,
-                        kg: req.body.kg,
+                        unit: req.body.unit,
                         liters: req.body.liters
                     }, { where : { model_id: req.body.crop_id  } });
 

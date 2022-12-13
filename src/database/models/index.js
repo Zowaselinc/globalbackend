@@ -7,14 +7,25 @@ const createSequelizeInstance = () => {
     host: process.env.DATABASE_HOST,
     dialect: process.env.DATABASE_DIALECT,
     operatorsAliases: false,
-    port : process.env.DATABASE_PORT ?? 3306,
-  
+    port: process.env.DATABASE_PORT ?? 3306,
+
     pool: {
       max: eval(process.env.DATABASE_POOL_MAX),
       min: eval(process.env.DATABASE_POOL_MIN),
       acquire: eval(process.env.DATABASE_POOL_ACQUIRE),
       idle: eval(process.env.DATABASE_POOL_IDLE)
-    }
+    },
+    dialectOptions: {
+      useUTC: false, //for reading from database
+      dateStrings: true,
+      typeCast: function (field, next) { // for reading from database
+        if (field.type === 'DATETIME') {
+          return field.string()
+        }
+        return next()
+      },
+    },
+    timezone: "+01:00"
   });
 
   return sequelize;
@@ -45,7 +56,7 @@ const Crop = DB.crops = require("./crop.model").Model(initialInstance, createSeq
 const CropRequest = DB.cropRequests = require("./cropRequest.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Auction = DB.auctions = require("./auction.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Order = DB.orders = require("./order.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
-const Wallet= DB.wallets = require("./wallet.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
+const Wallet = DB.wallets = require("./wallet.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const MerchantType = DB.merchantTypes = require("./merchantType.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const BankAccount = DB.bankAccount = require("./bankAccount.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Category = DB.categories = require("./category.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
@@ -54,78 +65,107 @@ const ErrorLog = DB.errorlogs = require("./errorLog.model").Model(initialInstanc
 const Negotiation = DB.negotiation = require("./negotiation.model").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const InputCart = DB.input_cart = require("./inputCart.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Input = DB.input = require("./input.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
+const Conversation = DB.conversation = require("./conversation.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
+
 
 //---------------------------------------------------
 //Register Relationships
 //---------------------------------------------------
 
-Merchant.belongsTo(User , { foreignKey : "user_id"});
+Merchant.belongsTo(User, { foreignKey: "user_id" });
 
-Corporate.belongsTo(User , { foreignKey : "user_id"});
+Corporate.belongsTo(User, { foreignKey: "user_id" });
 
-Agent.belongsTo(User , { foreignKey : "user_id"});
+Agent.belongsTo(User, { foreignKey: "user_id" });
 
-Partner.belongsTo(User , { foreignKey : "user_id"});
+Partner.belongsTo(User, { foreignKey: "user_id" });
 
 
 
 /* ---------------------------------- CROP ---------------------------------- */
-User.hasMany(Crop,{
-  foreignKey : "user_id",
-  as : "crops"
+User.hasMany(Crop, {
+  foreignKey: "user_id",
+  as: "crops"
 })
-Crop.belongsTo(User,{
-  foreignKey : "user_id",
-  as : "user"
+Crop.belongsTo(User, {
+  foreignKey: "user_id",
+  as: "user"
 });
 
-Crop.belongsTo(Category,{
-  foreignKey : "category",
-  as : "crop_category"
+Crop.belongsTo(Category, {
+  foreignKey: "category",
+  as: "crop_category"
 });
 
-Crop.hasOne(CropSpecification,{
+Crop.hasOne(CropSpecification, {
   foreignKey: 'model_id',
   as: 'specification'
 })
 
-CropSpecification.belongsTo(Crop,{
+CropSpecification.belongsTo(Crop, {
   foreignKey: 'model_id',
   as: 'product'
 });
 
-Crop.hasMany(CropRequest,{
+Crop.hasMany(CropRequest, {
   foreignKey: 'crop_id',
   as: 'crop_request'
 })
 
-CropRequest.belongsTo(Crop,{
+CropRequest.belongsTo(Crop, {
   foreignKey: 'crop_id',
   as: 'product'
 });
 
-Category.hasMany(Crop ,{
-  foreignKey : "category",
+Category.hasMany(Crop, {
+  foreignKey: "category",
 });
 
-Category.hasMany(Input ,{
-  foreignKey : "category",
+Category.hasMany(Input, {
+  foreignKey: "category",
 });
 
-SubCategory.hasMany(Input,{
-  foreignKey : "sub_category",
+SubCategory.hasMany(Input, {
+  foreignKey: "sub_category",
 });
 
-SubCategory.hasMany(Crop,{
-  foreignKey : "sub_category",
+SubCategory.hasMany(Crop, {
+  foreignKey: "sub_category",
 });
 
-InputCart.hasOne(Input,{ foreignKey: 'id' })
+InputCart.hasOne(Input, { foreignKey: 'id' })
 
-Input.hasMany(InputCart,{
+Input.hasMany(InputCart, {
   foreignKey: 'input_id',
   as: 'input_cart'
 })
+
+Negotiation.hasOne(CropSpecification, {
+  foreignKey: "model_id",
+  as: "specification"
+});
+
+Conversation.hasMany(Negotiation, {
+  foreignKey : "conversation_id",
+  as : "negotiations"
+});
+
+Conversation.belongsTo(Crop, {
+  foreignKey : "crop_id",
+  as : "crop"
+});
+
+Conversation.belongsTo(User , {
+  foreignKey : "user_one",
+  as : "initiator",
+  constraints : false
+});
+
+Conversation.belongsTo(User , {
+  foreignKey : "user_two",
+  as : "participant",
+  constraints : false
+});
 
 module.exports = {
   DB,
@@ -152,5 +192,6 @@ module.exports = {
   ErrorLog,
   Negotiation,
   InputCart,
-  Input
+  Input,
+  Conversation
 };

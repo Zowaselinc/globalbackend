@@ -65,13 +65,13 @@ class AuthController{
                 message : "Login Successful",
                 token : token,
                 user : user
-               });
+            });
 
         }else{
             return res.status(400).json({
                 error : true,
                 message : "Invalid credentials"
-               });
+            });
         }
 
 
@@ -113,7 +113,7 @@ class AuthController{
         }
 
         var UserTypeModel = data.user_type == "merchant" ? Merchant : Corporate;
-        UserTypeModel.user_id = user.id;
+        // UserTypeModel.user_id = user.id;
         let change;
         if(data.user_type == "merchant"){
             // var merchantType = await MerchantType.findOne({ where : { title : data.merchant_type}});
@@ -126,7 +126,7 @@ class AuthController{
             // UserTypeModel.type = "red-hot";
         }
 
-        await UserTypeModel.update(change , { where : {user_id : user.id}}).catch((error => {
+        await UserTypeModel.create({ ...change, ...{user_id : user.id}}).catch((error => {
             return res.status(400).json({
                 error : true,
                 message : error.sqlMessage

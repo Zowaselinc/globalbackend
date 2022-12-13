@@ -1,9 +1,10 @@
 //Import validation result
 const { validationResult } = require('express-validator');
 const crypto = require('crypto');
-const { Negotiation, ErrorLog, CropSpecification } = require('~database/models');
+const { Negotiation, ErrorLog, CropSpecification, Crop, Conversation, User, Category } = require('~database/models');
 const { Op } = require('sequelize');
 const { request } = require('http');
+const ConversationController = require('./ConversationController');
 
 class NegotiationController{
 
@@ -34,11 +35,34 @@ class NegotiationController{
                 });
             }
     
-            
+            var conversation = await Conversation.findOne({
+                where : {
+                    [Op.or]: [
+                        { user_one: req.body.sender_id , user_two : req.body.receiver_id },
+                        { user_two: req.body.sender_id , user_one : req.body.receiver_id },
+                    ],
+                    type : "negotiation",
+                    crop_id : req.body.crop_id
+                }
+            });
+
+            if(!conversation){
+                conversation = await Conversation.create({
+                    user_one : req.body.sender_id,
+                    user_two : req.body.receiver_id,
+                    type : "negotiation",
+                    crop_id : req.body.crop_id
+                });
+                req.body.conversation_id = conversation.id;
+            }else{
+                req.body.conversation_id = conversation.id;
+            }
+
+
             // console.log(errors.isEmpty());
             let randomid = crypto.randomBytes(8).toString('hex');
-            let messsagetype = "text";
-            req.body.messsagetype = messsagetype;
+            let messagetype = "text";
+            req.body.messagetype = messagetype;
             var negotiation = await Negotiation.create(req.body)
     
             return res.status(200).json({
@@ -130,32 +154,45 @@ class NegotiationController{
     /* --------------------------- GET ALL NEGOTIATION BY USERID --------------------------- */
     static async getbyuserid(req , res){
 
-        // return res.status(200).json({
-        //     message : "GET ALL Negootiation by userid"
-        // });
-
         try{
             const userId = req.params.userid;
+            const cropId = req.params.cropId;
 
             if(userId !== "" || userId !== null || userId !== undefined){
                 
-                /* --------------------- insert the product into the DB --------------------- */
-                var requestbyuerid = await Negotiation.findAll({ 
-                    where: {
-                        [Op.or]: [
-                            { receiver_id: userId },
-                            { sender_id: userId }
-                        ]
+
+                var conversation = await Conversation.findOne({
+                    where : {
+                        [Op.or] : [
+                            { user_one : userId},
+                            {user_two : userId}
+                        ],
+                        crop_id : cropId
                     },
-                    attributes: ['sender_id', 'receiver_id', 'crop_id', 'type','message', 'messagetype', 'status', 'created_at'],
-                });
+                    include : [
+                        {
+                            model : Negotiation,
+                            as : "negotiations",
+                            include :[
+                                {
+                                    model : CropSpecification,
+                                    where : { model_type : "negotiation" },
+                                    as : "specification",
+                                    required : false
+                                }
+                            ],
+                            order :[['id' ,"DESC"]],
+                            attributes: ['sender_id', 'receiver_id', 'type','message', 'messagetype', 'status', 'created_at']
+                        }
+                    ]
+                })
 
-                if(requestbyuerid){
 
+                if(conversation){
                     return res.status(200).json({
                         error : false,
                         message : "Negotiations and messages retrieved successfully",
-                        data : requestbyuerid
+                        data : conversation.negotiations
                     })
 
                 }else{
@@ -194,6 +231,112 @@ class NegotiationController{
 
 
 
+   /* ------------------ GET ALL NEGOTIATION LIST BY USER ID ----------------- */
+
+    static async getListByUser(req , res){
+
+        try{
+            const userId = req.params.userid;
+
+            if(userId !== "" || userId !== null || userId !== undefined){
+
+                var conversations  = await Conversation.findAll({
+                    where : {
+                        [Op.or] : [
+                            { user_one : userId},
+                            {user_two : userId}
+                        ],
+                        type : "negotiation",
+                    },
+                    include : [
+                        {
+                            model : Crop,
+                            as : "crop",
+                            include : [
+                                {
+                                    model : CropSpecification,
+                                    as : "specification"
+                                },
+                                {
+                                    model : User,
+                                    as : "user"
+                                },
+                                {
+                                    model : Category,
+                                    as : "crop_category"
+                                }
+                            ]
+                        },
+                        {
+                            model : User,
+                            as : "initiator",
+                            required : true
+                        },
+                        {
+                            model : User,
+                            as : "participant",
+                            required : true
+                        },
+                        {
+                            model : Negotiation,
+                            as : "negotiations",
+                            include :[
+                                {
+                                    model : CropSpecification,
+                                    where : { model_type : "negotiation" },
+                                    as : "specification",
+                                    required : false
+                                }
+                            ],
+                            order :[['id' ,"DESC"]],
+                            attributes: ['sender_id', 'receiver_id', 'type','message', 'messagetype', 'status', 'created_at']
+                        }
+                    ],
+                });
+
+                if(conversations){
+
+                    return res.status(200).json({
+                        error : false,
+                        message : "Conversations retrieved successfully",
+                        data : conversations
+                    })
+
+                }else{
+
+                    return res.status(400).json({
+                        error : true,
+                        message : "No negotiations made by this user",
+                        data : []
+                    })
+
+                }
+            }else{
+                return res.status(400).json({
+                    error : true,
+                    message : "Invalid user ID",
+                    data : []
+                })
+            }
+        }catch(e){
+            var logError = await ErrorLog.create({
+                error_name: "Error on getting negotiation",
+                error_description: e.toString(),
+                route: "/api/crop/negotiation/getlist/:userid",
+                error_code: "500"
+            });
+            if(logError){
+                return res.status(500).json({
+                    error: true,
+                    message: 'Unable to complete request at the moment'
+                })
+            }  
+        }
+    }
+    /* --------------------------- GET ALL NEGOTIATION BY USERID --------------------------- */
+
+
+
 
 
 
@@ -216,8 +359,8 @@ class NegotiationController{
             
             var obj = new Object();
             obj = {
-                "required_quantity": req.body.required_quantity,
-                "offer_price": req.body.offer_price,
+                "qty": req.body.qty,
+                "price": req.body.price,
                 "color": req.body.color,
                 "moisture": req.body.moisture,
                 "foreign_matter": req.body.foreign_matter,
@@ -244,11 +387,34 @@ class NegotiationController{
                 "infested_by_weight": req.body.infested_by_weight,
                 "curcumin_content": req.body.curcumin_content,
                 "extraneous": req.body.extraneous,
-                "kg": req.body.kg,
-                "liters": req.body.liters
+                "unit": req.body.unit,
             }
 
             let stringifiedObj = JSON.stringify(obj);
+
+
+            var conversation = await Conversation.findOne({
+                where : {
+                    [Op.or]: [
+                        { user_one: req.body.sender_id , user_two : req.body.receiver_id },
+                        { user_two: req.body.sender_id , user_one : req.body.receiver_id },
+                    ],
+                    type : "negotiation",
+                    crop_id : req.body.crop_id
+                }
+            });
+
+            if(!conversation){
+                conversation = await Conversation.create({
+                    user_one : req.body.sender_id,
+                    user_two : req.body.receiver_id,
+                    type : "negotiation",
+                    crop_id : req.body.crop_id
+                });
+                req.body.conversation_id = conversation.id;
+            }else{
+                req.body.conversation_id = conversation.id;
+            }
             
             // return res.send(aa);
 
@@ -258,6 +424,7 @@ class NegotiationController{
             var sendnegotiation = await Negotiation.create({
                 sender_id: req.body.sender_id,
                 receiver_id: req.body.receiver_id,
+                conversation_id : req.body.conversation_id,
                 crop_id: req.body.crop_id,
                 type: req.body.type,
                 message: stringifiedObj,
@@ -270,7 +437,7 @@ class NegotiationController{
                 var createCropSpecification = await CropSpecification.create({
                     model_id: sendnegotiation.id,
                     model_type: "offer",
-                    qty: req.body.required_quantity,
+                    qty: req.body.qty,
                     price: req.body.price,
                     color: req.body.color,
                     moisture: req.body.moisture,
@@ -298,8 +465,7 @@ class NegotiationController{
                     infested_by_weight: req.body.infested_by_weight,
                     curcumin_content: req.body.curcumin_content,
                     extraneous: req.body.extraneous,
-                    kg: req.body.kg,
-                    liters: req.body.liters
+                    unit: req.body.unit,
                 })
             }
             // SEND INFORMATION TO PRODUCT SPECIFICATION TABLE //

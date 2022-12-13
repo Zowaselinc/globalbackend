@@ -123,15 +123,10 @@ let Schema = (Sequelize,mode) => {
             type: Sequelize.STRING,
             allowNull : false
         },
-        kg : {
+        unit : {
             type: Sequelize.STRING,
             allowNull : false
         },
-        liters : {
-            type: Sequelize.STRING,
-            allowNull : false
-        },
-        
         ...generateTimestamps(Sequelize,mode)
     }
 }
