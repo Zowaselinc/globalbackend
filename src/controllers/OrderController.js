@@ -36,11 +36,13 @@ class OrderController{
 
         try{
             
-            // if(!errors.isEmpty()){
-            //     return res.status(400).json({ 
-            //          errors: errors.array() 
-            //     });
-            // }
+            if(!errors.isEmpty()){
+                return res.status(400).json({ 
+                    error: true,
+                    message: "All fields required",
+                    data: []
+                });
+            }
 
             const randomid = crypto.randomBytes(16).toString('hex');
           
@@ -200,6 +202,561 @@ class OrderController{
         
     }
     /* ---------------------------- * CREATE NEW ORDER * ---------------------------- */
+
+
+
+
+
+
+    /* -------------------------- GET ORDER BY ORDER_ID ------------------------- */
+    static async getByOrderId(req , res){
+
+        const errors = validationResult(req);
+
+        try{
+            var findOrder = await Order.findOne({ where: { order_id: req.params.orderid } });
+            if(findOrder){
+                return res.status(200).json({
+                    error : false,
+                    message : "Order retrieved successfully",
+                    data : findOrder
+                })
+            }else{
+                return res.status(400).json({
+                    error : true,
+                    message : "No order found",
+                    data : findOrder
+                })
+            }
+        }catch(e){
+            var logError = await ErrorLog.create({
+                error_name: "Error on getting all orders by order_id",
+                error_description: e.toString(),
+                route: `/api/crop/order/getbyorderid/${req.params.orderid}`,
+                error_code: "500"
+            });
+            if(logError){
+                return res.status(500).json({
+                    error: true,
+                    message: 'Unable to complete request at the moment'
+                })
+            } 
+        }
+    }
+    /* -------------------------- GET ORDER BY ORDER_ID ------------------------- */
+
+
+
+
+
+
+    /* -------------------------- GET ORDER BY BUYER_ID ------------------------- */
+    static async getByBuyer(req , res){
+
+        const errors = validationResult(req);
+
+        try{
+            var findOrder = await Order.findOne({ where: { buyer_id: req.params.buyerid, buyer_type: req.params.buyertype } });
+            if(findOrder){
+                return res.status(200).json({
+                    error : false,
+                    message : "Order retrieved successfully",
+                    data : findOrder
+                })
+            }else{
+                return res.status(400).json({
+                    error : true,
+                    message : "No order found",
+                    data : findOrder
+                })
+            }
+        }catch(e){
+            var logError = await ErrorLog.create({
+                error_name: "Error on getting all orders by buyerid",
+                error_description: e.toString(),
+                route: `/api/crop/order/getbyorder/${req.params.buyerid}/${req.params.buyertype}`,
+                error_code: "500"
+            });
+            if(logError){
+                return res.status(500).json({
+                    error: true,
+                    message: 'Unable to complete request at the moment'
+                })
+            } 
+        }
+    }
+    /* -------------------------- GET ORDER BY BUYER_ID ------------------------- */
+
+
+
+
+
+
+    /* -------------------------- GET ORDER BY NEGOTIATION_ID ------------------------- */
+    static async getByNegotiationId(req , res){
+
+        try{
+            var findOrder = await Order.findOne({ where: { negotiation_id: req.params.negotiationid } });
+            if(findOrder){
+                return res.status(200).json({
+                    error : false,
+                    message : "Order retrieved successfully",
+                    data : findOrder
+                })
+            }else{
+                return res.status(400).json({
+                    error : true,
+                    message : "No order found",
+                    data : findOrder
+                })
+            }
+        }catch(e){
+            var logError = await ErrorLog.create({
+                error_name: "Error on getting all orders by negotiationId",
+                error_description: e.toString(),
+                route: `/api/crop/order/getbynegotiationid/${req.params.negotiationid}`,
+                error_code: "500"
+            });
+            if(logError){
+                return res.status(500).json({
+                    error: true,
+                    message: 'Unable to complete request at the moment'
+                })
+            } 
+        }
+    }
+    /* -------------------------- GET ORDER BY NEGOTIATION_ID ------------------------- */
+
+
+
+
+
+
+
+    /* -------------------------- GET ORDER BY PAYMENT STATUS ------------------------- */
+    static async getByPaymentStatus(req , res){
+
+        try{
+            var findOrder = await Order.findOne({ where: { payment_status: req.params.paymentstatus } });
+            if(findOrder){
+                return res.status(200).json({
+                    error : false,
+                    message : "Order retrieved successfully",
+                    data : findOrder
+                })
+            }else{
+                return res.status(400).json({
+                    error : true,
+                    message : "No order found",
+                    data : findOrder
+                })
+            }
+        }catch(e){
+            var logError = await ErrorLog.create({
+                error_name: "Error on getting all orders by negotiationId",
+                error_description: e.toString(),
+                route: `/api/crop/order/paymentstatus/${req.params.paymentstatus}`,
+                error_code: "500"
+            });
+            if(logError){
+                return res.status(500).json({
+                    error: true,
+                    message: 'Unable to complete request at the moment'
+                })
+            } 
+        }
+    }
+    /* -------------------------- GET ORDER BY PAYMENT STATUS ------------------------- */
+
+
+
+
+
+    /* -------------------------- UPDATE TRACKING DETAILS BY ORDER_ID ------------------------- */
+    static async updateTrackingDetailsByOrderId(req , res){
+
+        const errors = validationResult(req);
+
+        try{
+            
+            if(!errors.isEmpty()){
+                return res.status(400).json({ 
+                    error: true,
+                    message: "All fields required",
+                    data: []
+                });
+            }
+
+            var findOrder = await Order.findOne({ where: { order_id: req.body.order_id } });
+            if(findOrder){
+
+                // return res.send(req.body.tracking_details)
+
+                let thetrackingDetails = JSON.stringify(req.body.tracking_details);
+                
+                var updateOrderTrackingDetails = await Order.update({
+                    tracking_details: thetrackingDetails
+                }, { where : { order_id: req.body.order_id } });
+
+                return res.status(400).json({
+                    error : false,
+                    message : "Tracking details updated successfully",
+                    data : []
+                })
+
+            }else{
+                return res.status(400).json({
+                    error : true,
+                    message : "No order found",
+                    data : findOrder
+                })
+            }
+        }catch(e){
+            var logError = await ErrorLog.create({
+                error_name: "Error on updating oder tracking details by orderId",
+                error_description: e.toString(),
+                route: `/api/crop/order/trackingdetails/updatebyorderid`,
+                error_code: "500"
+            });
+            if(logError){
+                return res.status(500).json({
+                    error: true,
+                    message: 'Unable to complete request at the moment'
+                })
+            } 
+        }
+    }
+    /* -------------------------- UPDATE TRACKING DETAILS BY ORDER_ID ------------------------- */
+
+
+
+
+
+    /* -------------------------- UPDATE WAYBILL DETAILS BY ORDER_ID  ------------------------- */
+    static async updateWaybillDetailsByOrderId(req , res){
+
+        const errors = validationResult(req);
+
+        try{
+            
+            if(!errors.isEmpty()){
+                return res.status(400).json({ 
+                    error: true,
+                    message: "All fields required",
+                    data: []
+                });
+            }
+
+            var findOrder = await Order.findOne({ where: { order_id: req.body.order_id } });
+            if(findOrder){
+
+                // return res.send(req.body.tracking_details)
+
+                let theWaybillDetails = JSON.stringify(req.body.waybill_details);
+                
+                var updateOrderWaybillDetails = await Order.update({
+                    waybill_details: theWaybillDetails
+                }, { where : { order_id: req.body.order_id } });
+
+                return res.status(400).json({
+                    error : false,
+                    message : "Waybill order details updated successfully",
+                    data : []
+                })
+
+            }else{
+                return res.status(400).json({
+                    error : true,
+                    message : "No order found",
+                    data : findOrder
+                })
+            }
+        }catch(e){
+            var logError = await ErrorLog.create({
+                error_name: "Error on updated waybill order by orderId",
+                error_description: e.toString(),
+                route: `/api/crop/order/waybilldetails/updatebyorderid`,
+                error_code: "500"
+            });
+            if(logError){
+                return res.status(500).json({
+                    error: true,
+                    message: 'Unable to complete request at the moment'
+                })
+            } 
+        }
+    }
+    /* -------------------------- UPDATE WAYBILL DETAILS BY ORDER_ID  ------------------------- */
+
+
+
+
+    /* -------------------------- UPDATE GOOD RECEIPT NOTE BY ORDER_ID  ------------------------- */
+    static async updateGoodReceiptNoteByOrderId(req , res){
+
+        const errors = validationResult(req);
+
+        try{
+            
+            if(!errors.isEmpty()){
+                return res.status(400).json({ 
+                    error: true,
+                    message: "All fields required",
+                    data: []
+                });
+            }
+
+            var findOrder = await Order.findOne({ where: { order_id: req.body.order_id } });
+            if(findOrder){
+
+                // return res.send(req.body.tracking_details)
+
+                let theGoodReceiptDetails = JSON.stringify(req.body.good_receipt_note);
+                
+                var updateGoodReceiptDetails = await Order.update({
+                    receipt_note: theGoodReceiptDetails
+                }, { where : { order_id: req.body.order_id } });
+
+                return res.status(400).json({
+                    error : false,
+                    message : "Receipt note updated successfully",
+                    data : []
+                })
+
+            }else{
+                return res.status(400).json({
+                    error : true,
+                    message : "No order found",
+                    data : findOrder
+                })
+            }
+        }catch(e){
+            var logError = await ErrorLog.create({
+                error_name: "Error on updating receipt note by orderId",
+                error_description: e.toString(),
+                route: `/api/crop/goodreceiptnote/updatebyorderid`,
+                error_code: "500"
+            });
+            if(logError){
+                return res.status(500).json({
+                    error: true,
+                    message: 'Unable to complete request at the moment'
+                })
+            } 
+        }
+    }
+    /* -------------------------- UPDATE GOOD RECEIPT NOTE BY ORDER_ID  ------------------------- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /* -------------------------------------------------------------------------- */
+    /*                                    INPUT                                   */
+    /* -------------------------------------------------------------------------- */
+    static async createInputOrder(req , res){
+
+        // return res.send(req.body);
+
+        const errors = validationResult(req);
+
+        try{
+            
+            if(!errors.isEmpty()){
+                return res.status(400).json({ 
+                    error: true,
+                    message: "All fields required",
+                    data: []
+                });
+            }
+
+            const randomid = crypto.randomBytes(16).toString('hex');
+                        
+            var findtheInput = await Input.findOne({
+                where: { id: req.body.input_id }
+            });
+
+            if(!findtheInput){
+                return res.status(200).json({
+                    error: true,
+                    message : "Sorry Input does not exist.",
+                    data: []
+                });
+            }
+
+            
+            var createOrder = await Order.create({
+                order_id: "ORD"+randomid,
+                buyer_id: req.body.buyer_id,
+                buyer_type: req.body.buyer_type,
+                payment_option: req.body.payment_option,
+                product: req.body.input_id,
+                waybill_details: req.body.waybill_details,
+                payment_status: req.body.payment_status,
+                extra_documents: "payment processor data"
+            })
+
+            
+    
+            return res.status(200).json({
+                "error": false,
+                "message": "New input order created",
+                "data": { order_id: createOrder.order_id }
+            })
+        }catch(e){
+            var logError = await ErrorLog.create({
+                error_name: "Error on creating an order",
+                error_description: e.toString(),
+                route: "/api/input/order/add",
+                error_code: "500"
+            });
+            if(logError){
+                return res.status(500).json({
+                    error: true,
+                    message: 'Unable to complete request at the moment'
+                })
+            }
+        }
+    }
+
+
+    /* ----------------- get all cart added by a specified user ----------------- */
+    static async updateOrderPayment(req, res){
+        const errors = validationResult(req);
+        try{
+
+            /* ----------------- checking the req.body for empty fields ----------------- */
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ 
+                    error: true,
+                    message: "All fields required",
+                    data: []
+                });
+            }        
+
+            /* ---------------- check if the item is already in the cart ---------------- */
+            var returnedResult = await Order.findOne(req.body,{
+                where: {
+                    "order_id": req.body.order_id
+                }
+            });
+
+            if(returnedResult){
+
+                var executeCommand = await Order.update({
+                    "payment_status": req.body.payment_status,
+                    "extra_documents": JSON.stringify(req.body.extra_documents)
+                },{
+                    where: {
+                        "order_id": req.body.order_id
+                    }
+                });
+                
+                return res.status(200).json({
+                    error : false,
+                    message : "Order updated successfully",
+                    data : executeCommand
+                })
+
+            }else{
+                return res.status(200).json({
+                    error : true,
+                    message : "Order does not exist",
+                    data : []
+                })
+            }
+
+
+
+        }catch(error){
+            var logError = await ErrorLog.create({
+                error_name: "Error on updating input order",
+                error_description: error.toString(),
+                route: "/api/input/order/updateinputorder",
+                error_code: "500"
+            });
+
+            return res.status(500).json({
+                error: true,
+                message: "Unable to complete the request at the moment",
+                data: []
+            })
+        }
+        
+    }
+
+    static async getOrderHistoryByUserId(req, res){
+        try{
+
+            /* ----------------- the user id supplied as a get param ---------------- */
+            const user_id = req.params.user_id;
+
+            if(user_id !== "" || user_id !== null || user_id !== undefined){            
+
+                /* ---------------- check if the delivery address exists ---------------- */
+                var returnedResult = await Order.findAll({
+                    attributes:['id','order_id','buyer_id', 'buyer_type', 'payment_option', 'payment_status', 'product', 'tracking_details', 'extra_documents', 'created_at'],
+                    where: {
+                        "buyer_id": user_id
+                    }
+                });
+
+                if(returnedResult){
+
+                    return res.status(200).json({
+                        error : false,
+                        message : "Order history retrieved successfully",
+                        data : returnedResult
+                    })
+                    
+
+                }else{
+                    return res.status(200).json({
+                        error : true,
+                        message : "No order history found for this user",
+                        data : []
+                    })
+                }
+            }else{
+                return res.status(400).json({
+                    error : true,
+                    message : "Invalid user id",
+                    data : []
+                })
+            }
+
+
+
+        }catch(error){
+            var logError = await ErrorLog.create({
+                error_name: "Error on getting order history",
+                error_description: error.toString(),
+                route: "/api/input/order/history/getbyuserid/:user_id",
+                error_code: "500"
+            });
+
+            return res.status(500).json({
+                error: true,
+                message: "Unable to complete the request at the moment",
+                data: []
+            })
+        }
+    }
+
 
 }
 

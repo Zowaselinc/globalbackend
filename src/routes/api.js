@@ -19,13 +19,9 @@ const CropRequestController = require('../controllers/CropRequestController');
 const CropSpecificationController = require('../controllers/CropSpecificationController');
 
 const NegotiationController = require('../controllers/NegotiationController');
-const Inputs = require('~controllers/InputProductController');
+const Input = require('~controllers/InputProductController');
 
-const InputsCart = require('~controllers/InputcartController');
-
-const ShippingAddress = require("~controllers/deliveryAddressController");
-
-const InputsOrder = require("~controllers/InputOrderController");
+const Cart = require('~controllers/CartController');
 
 /* ------------------------------- VALIDATORS ------------------------------- */
 
@@ -36,7 +32,6 @@ const SubCategoryValidator = require('./validators/SubCategoryValidator');
 const CropValidation = require('./validators/CropValidation');
 const NegotiationValidator = require('./validators/NegotiationValidator');
 const InputsValidator = require('./validators/InputsValidator');
-const ShippingAddressValidator = require("./validators/ShippingAddressValidator");
 const OrderValidators = require("./validators/OrderValidators");
 
 
@@ -169,6 +164,17 @@ Router.group((router)=>{
 
     /* ---------------------------------- Order --------------------------------- */
     router.post('/crop/order/add', OrderValidators.cropAddOrderValidators, OrderController.createNewOrder);
+    router.get('/crop/order/getbyorderid/:orderid', OrderValidators.cropGetOrderByIdValidators, OrderController.getByOrderId);
+    router.get('/crop/order/getbybuyer/:buyerid/:buyertype', OrderController.getByBuyer);
+    router.get('/crop/order/getbynegotiationid/:negotiationid', OrderController.getByNegotiationId);
+    router.get('/crop/order/getbypaymentstatus/:paymentstatus', OrderController.getByPaymentStatus);
+    // Tracking Details
+    router.post('/crop/trackingdetails/updatebyorderid', OrderValidators.updateTrackingDetailsValidators, OrderController.updateTrackingDetailsByOrderId);
+    // Waybill Details
+    router.post('/crop/waybilldetails/updatebyorderid', OrderValidators.updateWaybillDetailsValidators, OrderController.updateWaybillDetailsByOrderId);
+    // Good Receipt Notes Details
+    router.post('/crop/goodreceiptnote/updatebyorderid', OrderValidators.updateGoodReceiptValidators, OrderController.updateGoodReceiptNoteByOrderId);
+
 
 });
 
@@ -180,42 +186,29 @@ Router.group((router)=>{
 
 
 /* -------------------------------------------------------------------------- */
-/*                                INPUT PRODUCT                               */
+/*                             INPUT MARKET PLACE                             */
 /* -------------------------------------------------------------------------- */
-/* ---------------------------------- INPUT --------------------------------- */
+
 Router.group((router) => {
+    /* ---------------------------------- Input ---------------------------------- */
+    router.post('/input/add', InputsValidator.createInputValidator,Input.createInput);
+    router.get('/input/getallbyuserid/:user_id', Input.getallInputsByUser);
+    router.get('/input/getall', Input.getallInputs);
+    router.get('/input/getallbycategory/:category', Input.getallInputsByCategory);
+    router.get('/input/getallbymanufacturer/:manufacturer', Input.getallInputsByManufacturer);
+    router.get('/input/getallbypackaging/:packaging', Input.getallInputsByPackaging);
 
     
-})
+    /* ---------------------------------- CART ---------------------------------- */
+    router.post('/input/cart/add', InputsValidator.addToCartValidator,Cart.addtoCart);
+    router.get('/input/cart/getallcartbyuserid/:user_id', Cart.getUserInputCart);
+    router.get('/input/cart/delete/:id', Cart.deleteCartItem);
 
-/* ---------------------------------- CART ---------------------------------- */
-Router.group((router) => {
-
-    router.post('/input/add', InputsValidator.createInputValidator,Inputs.createInput);
-    router.get('/input/getallbyuserid/:user_id', Inputs.getallInputsByUser);
-    router.get('/input/getall', Inputs.getallInputs);
-    router.get('/input/getallbycategory/:category', Inputs.getallInputsByCategory);
-    router.get('/input/getallbymanufacturer/:manufacturer', Inputs.getallInputsByManufacturer);
-    router.get('/input/getallbypackaging/:packaging', Inputs.getallInputsByPackaging);
-})
-
-/* ---------------------------------- CART ---------------------------------- */
-Router.group((router) => {
-    router.post('/input/cart/add', InputsValidator.addToCartValidator,InputsCart.addtoCart);
-    router.get('/input/cart/getallcartbyuserid/:user_id', InputsCart.getUserInputCart);
-    router.get('/input/cart/delete/:id', InputsCart.deleteCartItem);
-})
-
-Router.group((router) => {
-    router.post('/input/deliveryaddress/add', ShippingAddressValidator.createAddressValidator, ShippingAddress.createDeliveryAddress);
-    router.get('/input/deliveryaddress/getallbyuserid/:user_id', ShippingAddress.getAllUserDeliveryAdresses)
-    router.get('/input/deliveryaddress/delete/:id', ShippingAddress.deleteDeliveryAddress)
-})
-
-Router.group((router) => {
-    router.post('/input/order/add', OrderValidators.InputOrderValidator, InputsOrder.createInputOrder);
-    router.post('/input/order/updatetransactionid', OrderValidators.UpdateTransactionIdValidator, InputsOrder.updateOrderTransactionId);
-    router.get('/input/order/history/getbyuserid/:user_id', InputsOrder.getOrderHistoryByUserId);
+    
+    /* ---------------------------------- Order --------------------------------- */
+    router.post('/input/order/add', OrderValidators.InputOrderValidator, OrderController.createInputOrder);
+    router.post('/input/order/updateinputorder', OrderValidators.updateOrderValidator, OrderController.updateOrderPayment);
+    router.get('/input/order/history/getbyuserid/:user_id', OrderController.getOrderHistoryByUserId);
 })
 
 module.exports = Router;
