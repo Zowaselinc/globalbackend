@@ -1,7 +1,7 @@
 //Import validation result
 const { validationResult } = require('express-validator');
 const crypto = require('crypto');
-const { Crop, CropSpecification, CropRequest, ErrorLog, User, Category } = require('~database/models');
+const { Crop, CropSpecification, CropRequest, ErrorLog, User, Category, Auction } = require('~database/models');
 
 
 
@@ -216,7 +216,7 @@ class CropController{
             var findWantedCrops = await Crop.findAll({ 
                 include: [{
                     model: CropSpecification,
-                    as: 'crop_specification',
+                    as: 'specification',
                 },
                 {
                     model: CropRequest,
@@ -259,6 +259,67 @@ class CropController{
 
 
 
+    /* --------------------------- GET ALL AUCTION CROPS --------------------------- */
+    static async getByCropAuctions(req , res){
+
+        // return res.status(200).json({
+        //     message : "GET Wanted Crops"
+        // });
+
+        const errors = validationResult(req);
+
+        try{
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array() });
+            }
+    
+            var findWantedCrops = await Crop.findAll({ 
+                include: [{
+                    model: CropSpecification,
+                    as: 'specification',
+                },
+                {
+                    model: CropRequest,
+                    as: 'crop_request',
+                    order: [['id', 'DESC']],
+                    limit: 1,
+                    
+                },
+                {
+                    model : Auction,
+                    as : "auction"
+                }],
+                
+                where: { type: "auction" },
+                order: [['id', 'DESC']]
+            });
+
+        
+            /* --------------------- If fetched the Wanted Crops --------------------- */
+            
+            return res.status(200).json({
+                error : false,
+                message : "Crops auctions grabbed successfully",
+                data : findWantedCrops
+            })
+            
+        }catch(error){
+            var logError = await ErrorLog.create({
+                error_name: "Error on fetching crop wanted",
+                error_description: error.toString(),
+                route: "/api/crop/getbycropauction",
+                error_code: "500"
+            });
+            if(logError){
+                return res.status(500).json({
+                    error: true,
+                    message: 'Unable to complete request at the moment'
+                })
+            } 
+        }
+    }
+    /* --------------------------- GET ALL WANTED CROPS --------------------------- */
+
 
 
 
@@ -282,6 +343,7 @@ class CropController{
                     include: [{
                         model: CropSpecification,
                         as: 'specification',
+                        where : { model_type : "crop"},
                     },{
                         model : User,
                         as : 'user',
