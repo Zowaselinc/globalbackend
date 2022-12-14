@@ -30,7 +30,6 @@ module.exports = {
     ],
 
     updateWaybillDetailsValidators : [
-        
         body('order_id').isString().not().isEmpty(),
         body('waybill_details.dispatch_section.from_seller_id').isNumeric().not().isEmpty(),
         body('waybill_details.dispatch_section.seller_title').isString().not().isEmpty(),
@@ -42,6 +41,22 @@ module.exports = {
         body('waybill_details.details.no1').isNumeric().not().isEmpty(),
         body('waybill_details.details.description1').isString().not().isEmpty(),
         body('waybill_details.details.quantity1').isString()
+    ],
+
+    updateGoodReceiptValidators : [
+        body('order_id').isString().not().isEmpty(),
+        body('good_receipt_note.crop_description').isString().not().isEmpty(),
+        body('good_receipt_note.packaging').isString().not().isEmpty(),
+        body('good_receipt_note.no_of_bags').isNumeric().not().isEmpty(),
+        body('good_receipt_note.scale_type').isString().not().isEmpty(),
+        body('good_receipt_note.gross_weight').isNumeric().not().isEmpty(),
+        body('good_receipt_note.tare_weight').isNumeric().not().isEmpty(),
+        body('good_receipt_note.net_weight').isNumeric().not().isEmpty(),
+        body('good_receipt_note.rejected_quantity').isString().not().isEmpty(),
+        body('good_receipt_note.accepted_quantity').isString().not().isEmpty(),
+        body('good_receipt_note.rate').isString().not().isEmpty(),
+        body('good_receipt_note.discount').isString().not().isEmpty(),
+        body('good_receipt_note.total_value').isString().not().isEmpty(),
     ],
 
     InputOrderValidator: [

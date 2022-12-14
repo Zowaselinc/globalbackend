@@ -174,6 +174,8 @@ Router.group((router)=>{
     router.post('/crop/trackingdetails/updatebyorderid', OrderValidators.updateTrackingDetailsValidators, OrderController.updateTrackingDetailsByOrderId);
     // Waybill Details
     router.post('/crop/waybilldetails/updatebyorderid', OrderValidators.updateWaybillDetailsValidators, OrderController.updateWaybillDetailsByOrderId);
+    // Good Receipt Notes Details
+    router.post('/crop/goodreceiptnote/updatebyorderid', OrderValidators.updateGoodReceiptValidators, OrderController.updateGoodReceiptNoteByOrderId);
 
 
 });
