@@ -171,12 +171,6 @@ Conversation.belongsTo(User , {
   as : "participant",
   constraints : false
 });
-Cart.hasOne(Input,{ foreignKey: 'id' })
-
-Input.hasMany(Cart,{
-  foreignKey: 'input_id',
-  as: 'input_cart'
-})
 
 
 
