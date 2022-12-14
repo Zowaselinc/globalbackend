@@ -102,6 +102,11 @@ Crop.hasOne(CropSpecification, {
   as: 'specification'
 })
 
+Crop.hasOne(Auction,{
+  foreignKey : "crop_id",
+  as : "auction"
+})
+
 CropSpecification.belongsTo(Crop, {
   foreignKey: 'model_id',
   as: 'crop'
@@ -172,6 +177,8 @@ Input.hasMany(Cart,{
   foreignKey: 'input_id',
   as: 'input_cart'
 })
+
+
 
 module.exports = {
   DB,
