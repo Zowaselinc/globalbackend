@@ -439,7 +439,18 @@ class OrderController{
     /* -------------------------- UPDATE WAYBILL DETAILS BY ORDER_ID  ------------------------- */
     static async updateWaybillDetailsByOrderId(req , res){
 
+        const errors = validationResult(req);
+
         try{
+            
+            if(!errors.isEmpty()){
+                return res.status(400).json({ 
+                    error: true,
+                    message: "All fields required",
+                    data: []
+                });
+            }
+            
             var findOrder = await Order.findOne({ where: { order_id: req.body.order_id } });
             if(findOrder){
 
@@ -480,6 +491,83 @@ class OrderController{
         }
     }
     /* -------------------------- UPDATE WAYBILL DETAILS BY ORDER_ID  ------------------------- */
+
+
+
+
+
+    /* -------------------------- UPDATE GOOD RECEIPT NOTE BY ORDER_ID  ------------------------- */
+    static async updateGoodReceiptNoteByOrderId(req , res){
+
+        const errors = validationResult(req);
+
+        try{
+            
+            if(!errors.isEmpty()){
+                return res.status(400).json({ 
+                    error: true,
+                    message: "All fields required",
+                    data: []
+                });
+            }
+
+            var findOrder = await Order.findOne({ where: { order_id: req.body.order_id } });
+            if(findOrder){
+
+                // return res.send(req.body.tracking_details)
+
+                let theGoodReceiptDetails = JSON.stringify(req.body.good_receipt_note);
+                
+                var updateGoodReceiptDetails = await Order.update({
+                    receipt_note: theGoodReceiptDetails
+                }, { where : { order_id: req.body.order_id } });
+
+                return res.status(400).json({
+                    error : false,
+                    message : "Receipt note updated successfully",
+                    data : []
+                })
+
+            }else{
+                return res.status(400).json({
+                    error : true,
+                    message : "No order found",
+                    data : findOrder
+                })
+            }
+        }catch(e){
+            var logError = await ErrorLog.create({
+                error_name: "Error on updating receipt note by orderId",
+                error_description: e.toString(),
+                route: `/api/crop/goodreceiptnote/updatebyorderid`,
+                error_code: "500"
+            });
+            if(logError){
+                return res.status(500).json({
+                    error: true,
+                    message: 'Unable to complete request at the moment'
+                })
+            } 
+        }
+    }
+    /* -------------------------- UPDATE GOOD RECEIPT NOTE BY ORDER_ID  ------------------------- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /* -------------------------------------------------------------------------- */
