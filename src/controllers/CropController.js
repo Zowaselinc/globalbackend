@@ -213,7 +213,7 @@ class CropController{
                 return res.status(400).json({ errors: errors.array() });
             }
     
-            var findWantedCrops = await Crop.findAll({ 
+            var findWantedCrops = await Crop.findAndCountAll({ 
                 include: [{
                     model: CropSpecification,
                     as: 'specification',
@@ -221,11 +221,15 @@ class CropController{
                 {
                     model: CropRequest,
                     as: 'crop_request',
-                    order: [['id', 'DESC']],
-                    limit: 1,
-                    
+                },
+                {
+                    model : Category,
+                    as : "category"
+                },
+                {
+                    model : User,
+                    as : 'user',
                 }],
-                
                 where: { type: "wanted" },
                 order: [['id', 'DESC']]
             });
@@ -262,28 +266,19 @@ class CropController{
     /* --------------------------- GET ALL AUCTION CROPS --------------------------- */
     static async getByCropAuctions(req , res){
 
-        // return res.status(200).json({
-        //     message : "GET Wanted Crops"
-        // });
-
-        const errors = validationResult(req);
-
         try{
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array() });
-            }
-    
-            var findWantedCrops = await Crop.findAll({ 
+            var findCropAuctions = await Crop.findAndCountAll({ 
                 include: [{
                     model: CropSpecification,
                     as: 'specification',
                 },
                 {
-                    model: CropRequest,
-                    as: 'crop_request',
-                    order: [['id', 'DESC']],
-                    limit: 1,
-                    
+                    model : Category,
+                    as : "category"
+                },
+                {
+                    model : User,
+                    as : 'user',
                 },
                 {
                     model : Auction,
@@ -300,7 +295,7 @@ class CropController{
             return res.status(200).json({
                 error : false,
                 message : "Crops auctions grabbed successfully",
-                data : findWantedCrops
+                data : findCropAuctions
             })
             
         }catch(error){
@@ -344,11 +339,15 @@ class CropController{
                         model: CropSpecification,
                         as: 'specification',
                         where : { model_type : "crop"},
-                    },{
+                    },
+                    {
+                        model : Category,
+                        as : "category"
+                    },
+                    {
                         model : User,
                         as : 'user',
                     }],
-                    
                     where: { type: "offer" },
                     order: [['id', 'DESC']]
                 });
@@ -402,7 +401,7 @@ class CropController{
                     },
                     {
                         model : Category,
-                        as : 'crop_category'
+                        as : 'category'
                     },
                     {
                         model: CropRequest,

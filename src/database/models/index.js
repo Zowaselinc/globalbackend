@@ -93,8 +93,8 @@ Crop.belongsTo(User, {
 });
 
 Crop.belongsTo(Category, {
-  foreignKey: "category",
-  as: "crop_category"
+  foreignKey: "category_id",
+  as: "category"
 });
 
 Crop.hasOne(CropSpecification, {
@@ -123,19 +123,19 @@ CropRequest.belongsTo(Crop, {
 });
 
 Category.hasMany(Crop, {
-  foreignKey: "category",
+  foreignKey: "category_id",
 });
 
 Category.hasMany(Input, {
-  foreignKey: "category",
+  foreignKey: "category_id",
 });
 
 SubCategory.hasMany(Input, {
-  foreignKey: "sub_category",
+  foreignKey: "subcategory_id",
 });
 
 SubCategory.hasMany(Crop, {
-  foreignKey: "sub_category",
+  foreignKey: "subcategory_id",
 });
 
 Cart.hasOne(Input,{ foreignKey: 'id' })

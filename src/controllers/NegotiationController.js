@@ -263,7 +263,7 @@ class NegotiationController{
                                 },
                                 {
                                     model : Category,
-                                    as : "crop_category"
+                                    as : "category"
                                 }
                             ]
                         },
@@ -514,14 +514,14 @@ class NegotiationController{
             const id = parseInt(req.body.id);
 
             if(id !== "" || id !== null || id !== undefined){
-                
+        
                 var acceptNegotiations = await Negotiation.update({
                     status: "accepted"
                 },{ 
                     where: {
                         id: id
                     },
-                    attributes: ['sender_id', 'receiver_id', 'crop_id', 'type','message', 'status', 'created_at'],
+                    attributes: ['sender_id', 'receiver_id','type','message', 'status', 'created_at'],
                 });
 
                 if(acceptNegotiations){
