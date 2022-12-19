@@ -155,18 +155,19 @@ Router.group((router)=>{
 
     /* ------------------------------- Negotiation ------------------------------ */
     router.post('/crop/negotiation/add', NegotiationValidator.addNegotiationValidator, NegotiationController.add);
-    router.post('/crop/negotiation/admin/add', NegotiationValidator.addNegotiationValidator, NegotiationController.addmsgbyadmin);
+    // router.post('/crop/negotiation/admin/add', NegotiationValidator.addNegotiationValidator, NegotiationController.addmsgbyadmin);
     router.get('/crop/:cropId/negotiation/getbyuserid/:userid', NegotiationController.getbyuserid);
     router.get('/crop/negotiation/:userid', NegotiationController.getListByUser);
     router.post('/crop/negotiation/sendoffer', NegotiationController.sendNegotiationOffer);
-    router.post('/crop/negotiation/accept', NegotiationController.acceptNegotiation);
-    router.post('/crop/negotiation/decline', NegotiationController.declineNegotiation);
+    router.post('/crop/negotiation/accept', NegotiationValidator.negotiation, NegotiationController.acceptNegotiation);
+    router.post('/crop/negotiation/decline',NegotiationValidator.negotiation, NegotiationController.declineNegotiation);
+    router.post('/crop/negotiation/close',NegotiationValidator.negotiation, NegotiationController.closeNegotiation);
     router.get('/crop/negotiation/grabtransactionby/:status/:userid', NegotiationController.getNegotiationTransactionSummary);
     router.get('/crop/negotiation/getallsummary', NegotiationController.getAllNegotiationTransactionSummary);
 
 
     /* ---------------------------------- Order --------------------------------- */
-    router.post('/crop/order/add', OrderValidators.cropAddOrderValidators, OrderController.createNewOrder);
+    router.post('/crop/order/add', OrderValidators.createOrderValidator, OrderController.createNewOrder);
     router.get('/crop/order/getbyorderid/:orderid', OrderValidators.cropGetOrderByIdValidators, OrderController.getByOrderId);
     router.get('/crop/order/getbybuyer/:buyerid/:buyertype', OrderController.getByBuyer);
     router.get('/crop/order/getbynegotiationid/:negotiationid', OrderController.getByNegotiationId);

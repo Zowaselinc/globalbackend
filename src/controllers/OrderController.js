@@ -27,7 +27,7 @@ class OrderController{
 
     // createNewOrder
     /* ---------------------------- * CREATE NEW ORDER * ---------------------------- */
-    static async createNewOrder(req , res){
+    static async createNewOrderOld(req , res){
 
         // return res.status(200).json({
             // message : "Create New Order"
@@ -209,6 +209,68 @@ class OrderController{
 
 
 
+
+    /* ---------------------------- * CREATE NEW ORDER * ---------------------------- */
+    static async createNewOrder(req , res){
+
+        // return res.status(200).json({
+            // message : "Create New Order"
+            
+        // });
+
+        // return res.send(req.body);
+
+        const errors = validationResult(req);
+
+        try{
+            
+            if(!errors.isEmpty()){
+                return res.status(400).json({ 
+                    error: true,
+                    message: "All fields required",
+                    data: []
+                });
+            }
+
+            const randomid = crypto.randomBytes(16).toString('hex');
+
+            
+            var createOrder = await Order.create({
+                order_hash: "ORD"+randomid,
+                buyer_id: req.body.buyer_id,
+                buyer_type: req.body.buyer_type,
+                negotiation_id: negotiation_id,
+                payment_option: req.body.payment_option,
+                payment_status: req.body.payment_status,
+                product: JSON.stringify(theproduct),
+                tracking_details: req.body.tracking_details,
+                waybill_details: req.body.waybill_details,
+                receipt_note: req.body.receipt_note,
+                extra_documents: req.body.extra_documents
+            })
+
+    
+            return res.status(200).json({
+                "error": false,
+                "message": "New order created",
+                "data": createOrder
+            })
+        }catch(e){
+            var logError = await ErrorLog.create({
+                error_name: "Error on creating an order",
+                error_description: e.toString(),
+                route: "/api/crop/order/add",
+                error_code: "500"
+            });
+            return res.status(500).json({
+                error: true,
+                message: 'Unable to complete request at the moment '+e.toString()
+            })
+        }
+
+        
+    }
+    /* ---------------------------- * CREATE NEW ORDER * ---------------------------- */
 
 
 

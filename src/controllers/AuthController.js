@@ -53,7 +53,7 @@ class AuthController{
             const token = jwt.sign(
                 {user_id: user.id},
                 process.env.TOKEN_KEY,
-                {expiresIn: "48h"}
+                {expiresIn: "5d"}
             );
     
             await AuthController.saveToken(user,token);

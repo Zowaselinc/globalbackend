@@ -8,6 +8,7 @@ const createSequelizeInstance = () => {
     dialect: process.env.DATABASE_DIALECT,
     operatorsAliases: false,
     port: process.env.DATABASE_PORT ?? 3306,
+    logging: false,
 
     pool: {
       max: eval(process.env.DATABASE_POOL_MAX),
@@ -16,7 +17,7 @@ const createSequelizeInstance = () => {
       idle: eval(process.env.DATABASE_POOL_IDLE)
     },
     dialectOptions: {
-      useUTC: false, //for reading from database
+      // useUTC: false, //for reading from database
       dateStrings: true,
       typeCast: function (field, next) { // for reading from database
         if (field.type === 'DATETIME') {
@@ -148,6 +149,11 @@ Input.hasMany(Cart,{
 Negotiation.hasOne(CropSpecification, {
   foreignKey: "model_id",
   as: "specification"
+});
+
+Negotiation.hasOne(Order, {
+  foreignKey : "negotiation_id",
+  as : "order"
 });
 
 Conversation.hasMany(Negotiation, {

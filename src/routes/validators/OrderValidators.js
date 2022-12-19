@@ -2,13 +2,11 @@ const { body } = require('express-validator');
 
 module.exports = {
      
-    cropAddOrderValidators : [
-        body('accept_offer_type').isString().not().isEmpty(),
+    createOrderValidator : [
         body('buyer_id').isNumeric().not().isEmpty(),
         body('buyer_type').isString().not().isEmpty(),
-        body('crop_id').isNumeric().not().isEmpty(),
         body('negotiation_id').isString(),
-        body('payment_option').isString().not().isEmpty(),
+        body('payment_option').isString(),
         body('payment_status').isString().not().isEmpty()
     ],
 

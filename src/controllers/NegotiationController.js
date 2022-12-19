@@ -1,23 +1,24 @@
 //Import validation result
 const { validationResult } = require('express-validator');
 const crypto = require('crypto');
-const { Negotiation, ErrorLog, CropSpecification, Crop, Conversation, User, Category } = require('~database/models');
+const { Negotiation, ErrorLog, CropSpecification, Crop, Conversation, User, Category, Order, CropRequest } = require('~database/models');
 const { Op } = require('sequelize');
 const { request } = require('http');
 const ConversationController = require('./ConversationController');
+const { IncludeNegotiations, IncludeCrop, CropIncludes } = require('~database/helpers/Modelncludes');
 
-class NegotiationController{
+class NegotiationController {
 
-    static async hello(req , res){
+    static async hello(req, res) {
 
         return res.status(200).json({
-            message : "Hello Negotiation"
+            message: "Hello Negotiation"
         });
     }
 
-   
+
     /* ---------------------------- * USER ADD NEGOTIATION MESSAGE * ---------------------------- */
-    static async add(req , res){
+    static async add(req, res) {
 
         // return res.status(200).json({
         //     message : "Add Category"
@@ -25,36 +26,36 @@ class NegotiationController{
 
         const errors = validationResult(req);
 
-        try{
-            
-            if(!errors.isEmpty()){
-                return res.status(400).json({ 
+        try {
+
+            if (!errors.isEmpty()) {
+                return res.status(400).json({
                     error: true,
                     message: "All fields required",
                     data: []
                 });
             }
-    
+
             var conversation = await Conversation.findOne({
-                where : {
+                where: {
                     [Op.or]: [
-                        { user_one: req.body.sender_id , user_two : req.body.receiver_id },
-                        { user_two: req.body.sender_id , user_one : req.body.receiver_id },
+                        { user_one: req.body.sender_id, user_two: req.body.receiver_id },
+                        { user_two: req.body.sender_id, user_one: req.body.receiver_id },
                     ],
-                    type : "negotiation",
-                    crop_id : req.body.crop_id
+                    type: "negotiation",
+                    crop_id: req.body.crop_id
                 }
             });
 
-            if(!conversation){
+            if (!conversation) {
                 conversation = await Conversation.create({
-                    user_one : req.body.sender_id,
-                    user_two : req.body.receiver_id,
-                    type : "negotiation",
-                    crop_id : req.body.crop_id
+                    user_one: req.body.sender_id,
+                    user_two: req.body.receiver_id,
+                    type: "negotiation",
+                    crop_id: req.body.crop_id
                 });
                 req.body.conversation_id = conversation.id;
-            }else{
+            } else {
                 req.body.conversation_id = conversation.id;
             }
 
@@ -64,20 +65,20 @@ class NegotiationController{
             let messagetype = "text";
             req.body.messagetype = messagetype;
             var negotiation = await Negotiation.create(req.body)
-    
+
             return res.status(200).json({
                 "error": false,
                 "message": "Message sent",
                 "data": negotiation
             })
-        }catch(e){
+        } catch (e) {
             var logError = await ErrorLog.create({
                 error_name: "Error on adding negotiation message",
                 error_description: e.toString(),
                 route: "/api/crop/negotiation/add",
                 error_code: "500"
             });
-            if(logError){
+            if (logError) {
                 return res.status(500).json({
                     error: true,
                     message: 'Unable to complete request at the moment'
@@ -85,7 +86,7 @@ class NegotiationController{
             }
         }
 
-        
+
     }
     /* ---------------------------- * USER ADD NEGOTIATION MESSAGE * ---------------------------- */
 
@@ -94,136 +95,66 @@ class NegotiationController{
 
 
 
-
-
-    /* ---------------------------- * ADMIN SENDS NEGOTIATION MESSAGE * ---------------------------- */
-    static async addmsgbyadmin(req , res){
-
-        // return res.status(200).json({
-        //     message : "Add Category"
-        // });
-
-        const errors = validationResult(req);
-
-        try{
-            
-            if(!errors.isEmpty()){
-                return res.status(400).json({ 
-                    error: true,
-                    message: "All fields required",
-                    data: []
-                });
-            }
-    
-            
-            // console.log(errors.isEmpty());
-            let randomid = crypto.randomBytes(8).toString('hex');
-         
-            
-            
-            var negotiation = await Negotiation.create(req.body)
-    
-            return res.status(200).json({
-                "error": false,
-                "message": "Message sent",
-                "data": negotiation
-            })
-        }catch(e){
-            var logError = await ErrorLog.create({
-                error_name: "Error on adding admin negotiation message",
-                error_description: e.toString(),
-                route: "/api/crop/negotiation/admin/add",
-                error_code: "500"
-            });
-            if(logError){
-                return res.status(500).json({
-                    error: true,
-                    message: 'Unable to complete request at the moment'
-                })
-            }
-        }
-
-        
-    }
-    /* ---------------------------- * ADMIN SENDS NEGOTIATION MESSAGE * ---------------------------- */
-
-
-
-
-
     /* --------------------------- GET ALL NEGOTIATION BY USERID --------------------------- */
-    static async getbyuserid(req , res){
+    static async getbyuserid(req, res) {
 
-        try{
+        try {
             const userId = req.params.userid;
             const cropId = req.params.cropId;
 
-            if(userId !== "" || userId !== null || userId !== undefined){
-                
+            if (userId !== "" || userId !== null || userId !== undefined) {
+
 
                 var conversation = await Conversation.findOne({
-                    where : {
-                        [Op.or] : [
-                            { user_one : userId},
-                            {user_two : userId}
+                    where: {
+                        [Op.or]: [
+                            { user_one: userId },
+                            { user_two: userId }
                         ],
-                        crop_id : cropId
+                        crop_id: cropId
                     },
-                    include : [
-                        {
-                            model : Negotiation,
-                            as : "negotiations",
-                            include :[
-                                {
-                                    model : CropSpecification,
-                                    where : { model_type : "negotiation" },
-                                    as : "specification",
-                                    required : false
-                                }
-                            ],
-                            order :[['id' ,"DESC"]],
-                            attributes: ['sender_id', 'receiver_id', 'type','message', 'messagetype', 'status', 'created_at']
-                        }
+                    include: [
+                        IncludeNegotiations
                     ]
                 })
 
 
-                if(conversation){
+                if (conversation) {
                     return res.status(200).json({
-                        error : false,
-                        message : "Negotiations and messages retrieved successfully",
-                        data : conversation.negotiations
+                        error: false,
+                        message: "Negotiations and messages retrieved successfully",
+                        data: conversation.negotiations
                     })
 
-                }else{
+                } else {
 
                     return res.status(400).json({
-                        error : true,
-                        message : "No negotiations made by this user",
-                        data : []
+                        error: true,
+                        message: "No negotiations made by this user",
+                        data: []
                     })
 
                 }
-            }else{
+            } else {
                 return res.status(400).json({
-                    error : true,
-                    message : "Invalid user ID",
-                    data : []
+                    error: true,
+                    message: "Invalid user ID",
+                    data: []
                 })
             }
-        }catch(e){
+        } catch (e) {
             var logError = await ErrorLog.create({
                 error_name: "Error on getting negotiation",
                 error_description: e.toString(),
                 route: "/api/crop/negotiation/getbyuserid/:userid",
                 error_code: "500"
             });
-            if(logError){
+            if (logError) {
                 return res.status(500).json({
                     error: true,
                     message: 'Unable to complete request at the moment'
                 })
-            }  
+            }
         }
     }
     /* --------------------------- GET ALL NEGOTIATION BY USERID --------------------------- */
@@ -231,106 +162,68 @@ class NegotiationController{
 
 
 
-   /* ------------------ GET ALL NEGOTIATION LIST BY USER ID ----------------- */
+    /* ------------------ GET ALL NEGOTIATION LIST BY USER ID ----------------- */
 
-    static async getListByUser(req , res){
+    static async getListByUser(req, res) {
 
-        try{
+        try {
             const userId = req.params.userid;
 
-            if(userId !== "" || userId !== null || userId !== undefined){
+            if (userId !== "" || userId !== null || userId !== undefined) {
 
-                var conversations  = await Conversation.findAll({
-                    where : {
-                        [Op.or] : [
-                            { user_one : userId},
-                            {user_two : userId}
+                var conversations = await Conversation.findAll({
+                    where: {
+                        [Op.or]: [
+                            { user_one: userId },
+                            { user_two: userId }
                         ],
-                        type : "negotiation",
+                        type: "negotiation",
                     },
-                    include : [
-                        {
-                            model : Crop,
-                            as : "crop",
-                            include : [
-                                {
-                                    model : CropSpecification,
-                                    as : "specification"
-                                },
-                                {
-                                    model : User,
-                                    as : "user"
-                                },
-                                {
-                                    model : Category,
-                                    as : "category"
-                                }
-                            ]
-                        },
-                        {
-                            model : User,
-                            as : "initiator",
-                            required : true
-                        },
-                        {
-                            model : User,
-                            as : "participant",
-                            required : true
-                        },
-                        {
-                            model : Negotiation,
-                            as : "negotiations",
-                            include :[
-                                {
-                                    model : CropSpecification,
-                                    where : { model_type : "negotiation" },
-                                    as : "specification",
-                                    required : false
-                                }
-                            ],
-                            order :[['id' ,"DESC"]],
-                            attributes: ['sender_id', 'receiver_id', 'type','message', 'messagetype', 'status', 'created_at']
-                        }
+                    include: [
+                        IncludeCrop,
+                        { model: User, as: "initiator", required: true },
+                        { model: User, as: "participant", required: true},
+                        IncludeNegotiations
                     ],
                 });
 
-                if(conversations){
+                if (conversations) {
 
                     return res.status(200).json({
-                        error : false,
-                        message : "Conversations retrieved successfully",
-                        data : conversations
+                        error: false,
+                        message: "Conversations retrieved successfully",
+                        data: conversations
                     })
 
-                }else{
+                } else {
 
                     return res.status(400).json({
-                        error : true,
-                        message : "No negotiations made by this user",
-                        data : []
+                        error: true,
+                        message: "No negotiations made by this user",
+                        data: []
                     })
 
                 }
-            }else{
+            } else {
                 return res.status(400).json({
-                    error : true,
-                    message : "Invalid user ID",
-                    data : []
+                    error: true,
+                    message: "Invalid user ID",
+                    data: []
                 })
             }
-        }catch(e){
+        } catch (e) {
             var logError = await ErrorLog.create({
                 error_name: "Error on getting negotiation",
                 error_description: e.toString(),
                 route: "/api/crop/negotiation/getlist/:userid",
                 error_code: "500"
             });
-            if(logError){
+            if (logError) {
                 return res.status(500).json({
                     error: true,
                     message: 'Unable to complete request at the moment'
                 })
-            }  
+            }
         }
     }
     /* --------------------------- GET ALL NEGOTIATION BY USERID --------------------------- */
@@ -341,7 +234,7 @@ class NegotiationController{
 
 
     /* ---------------------------- * SEND NEGOTIATION * ---------------------------- */
-    static async sendNegotiationOffer(req , res){
+    static async sendNegotiationOffer(req, res) {
 
         // return res.status(200).json({
         //     message : "Add Category"
@@ -349,14 +242,14 @@ class NegotiationController{
 
         const errors = validationResult(req);
 
-        try{
-            
+        try {
+
             // if(!errors.isEmpty()){
             //     return res.status(400).json({ 
             //          errors: errors.array() 
             //     });
             // }
-            
+
             var obj = new Object();
             obj = {
                 "qty": req.body.qty,
@@ -373,16 +266,16 @@ class NegotiationController{
                 "hardness": req.body.hardness,
                 "splits": req.body.splits,
                 "oil_content": req.body.oil_content,
-                "infestation":  req.body.infestation,
+                "infestation": req.body.infestation,
                 "grain_size": req.body.grain_size,
                 "total_defects": req.body.total_defects,
-                "dockage": req.body.dockage, 
-                "ash_content": req.body.ash_content, 
+                "dockage": req.body.dockage,
+                "ash_content": req.body.ash_content,
                 "acid_ash": req.body.acid_ash,
                 "volatile": req.body.volatile,
-                "mold": req.body.mold, 
+                "mold": req.body.mold,
                 "drying_process": req.body.drying_process,
-                "dead_insect": req.body.dead_insect, 
+                "dead_insect": req.body.dead_insect,
                 "mammalian": req.body.mammalian,
                 "infested_by_weight": req.body.infested_by_weight,
                 "curcumin_content": req.body.curcumin_content,
@@ -394,37 +287,37 @@ class NegotiationController{
 
 
             var conversation = await Conversation.findOne({
-                where : {
+                where: {
                     [Op.or]: [
-                        { user_one: req.body.sender_id , user_two : req.body.receiver_id },
-                        { user_two: req.body.sender_id , user_one : req.body.receiver_id },
+                        { user_one: req.body.sender_id, user_two: req.body.receiver_id },
+                        { user_two: req.body.sender_id, user_one: req.body.receiver_id },
                     ],
-                    type : "negotiation",
-                    crop_id : req.body.crop_id
+                    type: "negotiation",
+                    crop_id: req.body.crop_id
                 }
             });
 
-            if(!conversation){
+            if (!conversation) {
                 conversation = await Conversation.create({
-                    user_one : req.body.sender_id,
-                    user_two : req.body.receiver_id,
-                    type : "negotiation",
-                    crop_id : req.body.crop_id
+                    user_one: req.body.sender_id,
+                    user_two: req.body.receiver_id,
+                    type: "negotiation",
+                    crop_id: req.body.crop_id
                 });
                 req.body.conversation_id = conversation.id;
-            }else{
+            } else {
                 req.body.conversation_id = conversation.id;
             }
-            
+
             // return res.send(aa);
 
             // console.log(errors.isEmpty());
             let randomid = crypto.randomBytes(8).toString('hex');
-            
+
             var sendnegotiation = await Negotiation.create({
                 sender_id: req.body.sender_id,
                 receiver_id: req.body.receiver_id,
-                conversation_id : req.body.conversation_id,
+                conversation_id: req.body.conversation_id,
                 crop_id: req.body.crop_id,
                 type: req.body.type,
                 message: stringifiedObj,
@@ -433,7 +326,7 @@ class NegotiationController{
 
 
             // SEND INFORMATION TO PRODUCT SPECIFICATION TABLE //
-            if(sendnegotiation){
+            if (sendnegotiation) {
                 var createCropSpecification = await CropSpecification.create({
                     model_id: sendnegotiation.id,
                     model_type: "offer",
@@ -470,21 +363,21 @@ class NegotiationController{
             }
             // SEND INFORMATION TO PRODUCT SPECIFICATION TABLE //
 
-            
-    
+
+
             return res.status(200).json({
                 "error": false,
                 "message": "New negotiation offer sent",
                 "data": sendnegotiation
             })
-        }catch(e){
+        } catch (e) {
             var logError = await ErrorLog.create({
                 error_name: "Error on sending a new negotiation offer",
                 error_description: e.toString(),
                 route: "/api/crop/negotiation/sendoffer",
                 error_code: "500"
             });
-            if(logError){
+            if (logError) {
                 return res.status(500).json({
                     error: true,
                     message: 'Unable to complete request at the moment'
@@ -492,7 +385,7 @@ class NegotiationController{
             }
         }
 
-        
+
     }
     /* ---------------------------- * SEND NEGOTIATION * ---------------------------- */
 
@@ -503,55 +396,62 @@ class NegotiationController{
 
 
     /* --------------------------- ACCEPT NEGOTIATION BY NEGOIATION ID --------------------------- */
-    static async acceptNegotiation(req, res){
+    static async acceptNegotiation(req, res) {
 
-        // return res.status(200).json({
-        //     message : "Accept Negotiation"
-        // });
-        
-        try{
+        const errors = validationResult(req);
 
-            const id = parseInt(req.body.id);
+        try {
 
-            if(id !== "" || id !== null || id !== undefined){
-        
-                var acceptNegotiations = await Negotiation.update({
-                    status: "accepted"
-                },{ 
-                    where: {
-                        id: id
-                    },
-                    attributes: ['sender_id', 'receiver_id','type','message', 'status', 'created_at'],
-                });
-
-                if(acceptNegotiations){
-
-                    return res.status(200).json({
-                        error : false,
-                        message : "Negotiation offer accepted successfully",
-                        data : acceptNegotiations
-                    })
-
-                }else{
-
-                    return res.status(400).json({
-                        error : true,
-                        message : "No offer found",
-                        data : []
-                    })
-
-                }
-            }else{
-                return res.status(400).json({
-                    error : true,
-                    message : "Invalid request",
-                    data : []
-                })
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array() });
             }
 
+            var offer = await Negotiation.findByPk(req.body.id);
+
+            if (offer) {
+
+                offer.status = "accepted";
+
+                await offer.save();
+
+                // Create Order For Offer
+
+                const randomId = crypto.randomBytes(8).toString('hex').toUpperCase();
+
+                const conversation = await Conversation.findByPk(offer.conversation_id);
 
 
-        }catch(error){
+                const product = await Crop.findOne({
+                    where: { id: conversation.crop_id },
+                    include: CropIncludes
+                });
+
+                var order = await Order.create({
+                    order_hash: "ORD" + randomId,
+                    buyer_id: offer.type == "corporate" ? offer.sender_id : offer.receiver_id,
+                    buyer_type: "corporate",
+                    negotiation_id: offer.id,
+                    payment_status: "UNPAID",
+                    product: JSON.stringify(product),
+                })
+
+                return res.status(200).json({
+                    error: false,
+                    message: "Negotiation offer accepted successfully",
+                    data: { offer : offer, order : order }
+                })
+
+            } else {
+
+                return res.status(400).json({
+                    error: true,
+                    message: "No offer found",
+                    data: []
+                })
+
+            }
+
+        } catch (error) {
             var logError = await ErrorLog.create({
                 error_name: "Error on accepting negotiation offer",
                 error_description: error.toString(),
@@ -576,55 +476,55 @@ class NegotiationController{
 
 
     /* --------------------------- DECLINE NEGOTIATION BY NEGOIATION ID --------------------------- */
-    static async declineNegotiation(req, res){
+    static async declineNegotiation(req, res) {
 
         // return res.status(200).json({
         //     message : "Accept Negotiation"
         // });
-        
-        try{
+
+        try {
 
             const id = parseInt(req.body.id);
 
-            if(id !== "" || id !== null || id !== undefined){
-                
+            if (id !== "" || id !== null || id !== undefined) {
+
                 var declineNegotiations = await Negotiation.update({
                     status: "declined"
-                },{ 
+                }, {
                     where: {
                         id: id
                     },
-                    attributes: ['sender_id', 'receiver_id', 'crop_id', 'type','message', 'status', 'created_at'],
+                    attributes: ['sender_id', 'receiver_id', 'type', 'message', 'status', 'created_at'],
                 });
 
-                if(declineNegotiations){
+                if (declineNegotiations) {
 
                     return res.status(200).json({
-                        error : false,
-                        message : "Negotiation offer declined successfully",
-                        data : declineNegotiations
+                        error: false,
+                        message: "Negotiation offer declined successfully",
+                        data: declineNegotiations
                     })
 
-                }else{
+                } else {
 
                     return res.status(400).json({
-                        error : true,
-                        message : "No offer found",
-                        data : []
+                        error: true,
+                        message: "No offer found",
+                        data: []
                     })
 
                 }
-            }else{
+            } else {
                 return res.status(400).json({
-                    error : true,
-                    message : "Invalid request",
-                    data : []
+                    error: true,
+                    message: "Invalid request",
+                    data: []
                 })
             }
 
 
 
-        }catch(error){
+        } catch (error) {
             var logError = await ErrorLog.create({
                 error_name: "Error on declining negotiation offer",
                 error_description: error.toString(),
@@ -642,6 +542,67 @@ class NegotiationController{
     /* --------------------------- DECLINE NEGOTIATION BY NEGOIATION ID --------------------------- */
 
 
+    /* --------------------------- CLOSE NEGOTIATION BY NEGOIATION ID --------------------------- */
+    static async closeNegotiation(req, res) {
+
+        try {
+
+            const id = parseInt(req.body.id);
+
+            if (id !== "" || id !== null || id !== undefined) {
+
+                var closeNegotiation = await Negotiation.update({
+                    status: "closed"
+                }, {
+                    where: {
+                        id: id
+                    },
+                    attributes: ['sender_id', 'receiver_id', 'type', 'message', 'status', 'created_at'],
+                });
+
+                if (closeNegotiation) {
+
+                    return res.status(200).json({
+                        error: false,
+                        message: "Negotiation offer closed successfully",
+                        data: declineNegotiations
+                    })
+
+                } else {
+
+                    return res.status(400).json({
+                        error: true,
+                        message: "No offer found",
+                        data: []
+                    })
+
+                }
+            } else {
+                return res.status(400).json({
+                    error: true,
+                    message: "Invalid request",
+                    data: []
+                })
+            }
+
+
+
+        } catch (error) {
+            var logError = await ErrorLog.create({
+                error_name: "Error on declining negotiation offer",
+                error_description: error.toString(),
+                route: "/api/crop/negotiation/close",
+                error_code: "500"
+            });
+
+            return res.status(500).json({
+                error: true,
+                message: "Unable to complete the request at the moment",
+                data: []
+            })
+        }
+    }
+    /* --------------------------- CLOSE NEGOTIATION BY NEGOIATION ID --------------------------- */
 
 
 
@@ -657,40 +618,40 @@ class NegotiationController{
      * GET ALL NEGOTIATION BY TRANSACTIONS BY STATUS(ACCEPTED/DECLINED) *
      *                            AND USERID                            *
      ********************************************************************/
-     static async getNegotiationTransactionSummary(req , res){
+    static async getNegotiationTransactionSummary(req, res) {
 
         const userId = req.params.userid;
         const negotiationStatus = req.params.status;
-        try{
-            
-            const { count, rows } = await Negotiation.findAndCountAll({ 
-                where: { 
+        try {
+
+            const { count, rows } = await Negotiation.findAndCountAll({
+                where: {
                     messagetype: "offer",
                     status: negotiationStatus,
                     [Op.or]: [
                         { receiver_id: userId },
                         { sender_id: userId }
-                    ]   
-                } 
+                    ]
+                }
             });
 
-            if(count<1){
+            if (count < 1) {
                 return res.status(200).json({
-                    error : true,
-                    message : `No ${negotiationStatus} negotiation offer found`,
-                    data : []
+                    error: true,
+                    message: `No ${negotiationStatus} negotiation offer found`,
+                    data: []
                 })
-            }else{
-                var findCropNegotiationOffers = await Negotiation.findAndCountAll({ 
+            } else {
+                var findCropNegotiationOffers = await Negotiation.findAndCountAll({
                     include: [{
                         model: CropSpecification,
                         as: 'crop_specification',
                         order: [['id', 'DESC']],
                         limit: 1,
                     }],
-                    
-                    
-                    where: { 
+
+
+                    where: {
                         messagetype: "offer",
                         status: negotiationStatus,
                         [Op.or]: [
@@ -700,47 +661,47 @@ class NegotiationController{
                     },
                     order: [['id', 'DESC']]
                 });
-    
-            
-                /* --------------------- If fetched the accepted/declined Negotiation Transaction --------------------- */
-                
 
-                const findCrop = await Crop.findOne({ 
-                    where: { 
+
+                /* --------------------- If fetched the accepted/declined Negotiation Transaction --------------------- */
+
+
+                const findCrop = await Crop.findOne({
+                    where: {
                         id: findCropNegotiationOffers.rows[0].crop_id
-                    } 
+                    }
                 });
 
-                const findCropRequest = await CropRequest.findOne({ 
-                    where: { 
+                const findCropRequest = await CropRequest.findOne({
+                    where: {
                         crop_id: findCropNegotiationOffers.rows[0].crop_id
-                    } 
+                    }
                 });
 
 
                 return res.status(200).json({
-                    error : false,
-                    message : `Negotiation for ${negotiationStatus} Crops offer retrieved successfully`,
-                    data : findCropNegotiationOffers, 
+                    error: false,
+                    message: `Negotiation for ${negotiationStatus} Crops offer retrieved successfully`,
+                    data: findCropNegotiationOffers,
                     cropData: findCrop,
                     cropSpecificationData: findCropRequest
                 })
             }
-            
-            
-        }catch(e){
+
+
+        } catch (e) {
             var logError = await ErrorLog.create({
                 error_name: `Error on fetching ${negotiationStatus} crops negotiation offer`,
                 error_description: e.toString(),
                 route: `/api/crop/grabtransactionby/${negotiationStatus}/${userId}`,
                 error_code: "500"
             });
-            if(logError){
+            if (logError) {
                 return res.status(500).json({
                     error: true,
                     message: e.toString()
                 })
-            } 
+            }
         }
     }
 
@@ -756,78 +717,78 @@ class NegotiationController{
 
 
     /* ----------- GET ALL ACCEPTED AND DECLINED NEGOTIATIONS SUMMARY ----------- */
-    static async getAllNegotiationTransactionSummary(req , res){
+    static async getAllNegotiationTransactionSummary(req, res) {
 
-        try{
-            
-            const { count, rows } = await Negotiation.findAndCountAll({ 
-                where: { 
-                    messagetype: "offer" 
-                } 
+        try {
+
+            const { count, rows } = await Negotiation.findAndCountAll({
+                where: {
+                    messagetype: "offer"
+                }
             });
 
-            if(count<1){
+            if (count < 1) {
                 return res.status(200).json({
-                    error : true,
-                    message : `No transactions for negotiation offer found`,
-                    data : []
+                    error: true,
+                    message: `No transactions for negotiation offer found`,
+                    data: []
                 })
-            }else{
-                var findCropNegotiationOffers = await Negotiation.findAndCountAll({ 
+            } else {
+                var findCropNegotiationOffers = await Negotiation.findAndCountAll({
                     include: [{
                         model: CropSpecification,
                         as: 'crop_specification',
                         order: [['id', 'DESC']],
                         limit: 1,
                     }],
-                    
-                    
-                    where: { 
+
+
+                    where: {
                         messagetype: "offer"
                     },
                     order: [['id', 'DESC']]
                 });
-    
-            
-                /* --------------------- If fetched the accepted/declined Negotiation Transaction --------------------- */
-                
 
-                const findCrop = await Crop.findOne({ 
-                    where: { 
+
+                /* --------------------- If fetched the accepted/declined Negotiation Transaction --------------------- */
+
+
+                const findCrop = await Crop.findOne({
+                    where: {
                         id: findCropNegotiationOffers.rows[0].crop_id
-                    } 
+                    }
                 });
 
-                const findCropRequest = await CropRequest.findOne({ 
-                    where: { 
+                const findCropRequest = await CropRequest.findOne({
+                    where: {
                         crop_id: findCropNegotiationOffers.rows[0].crop_id
-                    } 
+                    }
                 });
 
 
                 return res.status(200).json({
-                    error : false,
-                    message : `Negotiation for Crops offer retrieved successfully`,
-                    data : findCropNegotiationOffers, 
+                    error: false,
+                    message: `Negotiation for Crops offer retrieved successfully`,
+                    data: findCropNegotiationOffers,
                     cropData: findCrop,
                     cropSpecificationData: findCropRequest
                 })
             }
-            
-            
-        }catch(e){
+
+
+        } catch (e) {
             var logError = await ErrorLog.create({
                 error_name: `Error on fetching crops negotiation offer`,
                 error_description: e.toString(),
                 route: `/api/crop/negotiation/getallsummary`,
                 error_code: "500"
             });
-            if(logError){
+            if (logError) {
                 return res.status(500).json({
                     error: true,
                     message: e.toString()
                 })
-            } 
+            }
         }
     }
     /* ----------- GET ALL ACCEPTED AND DECLINED NEGOTIATIONS SUMMARY ----------- */
