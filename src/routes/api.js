@@ -39,6 +39,9 @@ const OrderValidators = require("./validators/OrderValidators");
 
 const RouteProvider = require('~providers/RouteProvider');
 const OrderController = require("~controllers/OrderController");
+const TransactionValidator = require("./validators/TransactionValidator");
+const TransactionController = require("~controllers/TransactionController");
+
 
 const Router = RouteProvider.Router;
 
@@ -176,8 +179,12 @@ Router.group((router)=>{
     router.post('/crop/trackingdetails/updatebyorderid', OrderValidators.updateTrackingDetailsValidators, OrderController.updateTrackingDetailsByOrderId);
     // Waybill Details
     router.post('/crop/waybilldetails/updatebyorderid', OrderValidators.updateWaybillDetailsValidators, OrderController.updateWaybillDetailsByOrderId);
+    // Goodreceiptnote Details
+    router.post('/crop/goodreceiptnote/updatebyorderid', OrderValidators.updateGoodReceiptDetailsValidators, OrderController.updateWaybillDetailsByOrderId);
 
 
+    /* ---------------------------------- Transaction --------------------------------- */
+    router.post('/crop/transaction/add', TransactionValidator.addTransactionValidator, TransactionController.createNewTransaction );
 });
 
 

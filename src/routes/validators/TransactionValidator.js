@@ -8,12 +8,11 @@ module.exports = {
         body('type').isString()
     ],
     
-    TransactionValidator : [
-        body('transaction_ref').isString(),
-        body('amount').isString(),
-        body('method').isString(),
+    addTransactionValidator : [
         body('type').isString(),
-        body('status').isString(),
+        body('type_id').isString(),
+        body('amount_paid').isNumeric(),
+        body('status').isString()
     ],
 
 }
