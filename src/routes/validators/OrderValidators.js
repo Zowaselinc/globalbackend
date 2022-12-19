@@ -44,6 +44,29 @@ module.exports = {
         body('waybill_details.details.quantity1').isString()
     ],
 
+    updateGoodReceiptDetailsValidators : [
+        
+        body('order_id').isString().not().isEmpty(),
+        body('good_receipt_note.crop_description').isString().not().isEmpty(),
+        body('good_receipt_note.packaging').isString().not().isEmpty(),
+        body('good_receipt_note.no_of_bags').isNumeric().not().isEmpty(),
+        body('good_receipt_note.gross_weight').isNumeric().not().isEmpty(),
+        body('good_receipt_note.tare_weight').isNumeric().not().isEmpty(),
+        body('good_receipt_note.net_weight').isNumeric().not().isEmpty(),
+        body('good_receipt_note.rejected_quantity').isString().not().isEmpty(),
+        body('good_receipt_note.accepted_quantity').isString().not().isEmpty(),
+        body('good_receipt_note.rate').isString().not().isEmpty(),
+        body('good_receipt_note.discount').isString().not().isEmpty(),
+        body('good_receipt_note.total_value').isString().not().isEmpty()
+    ],
+
+
+
+
+
+
+
+
     InputOrderValidator: [
         body('user_id').isString().not().isEmpty(),
         body('delivery_address_id').isString().not().isEmpty(),
