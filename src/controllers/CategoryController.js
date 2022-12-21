@@ -30,7 +30,8 @@ class CategoryController{
                     model: req.params.type == "crop" ? Crop : Input,
                     attributes: []
                 }],
-                group: ['Category.id']
+                group: ['id']
+                
             };
 
             var categories = await Category.findAll({
@@ -41,7 +42,7 @@ class CategoryController{
             });
 
             if(categories.length > 0){
-    
+``    
                 return res.status(200).json({
                     error : false,
                     message: "Categories returned successfully",
@@ -126,7 +127,7 @@ class CategoryController{
     static async getById(req , res){
 
         try{
-            var category = await Category.findOne({ where: { id: req.body.id } });
+            var category = await Category.findOne({ where: { id: req.params.id } });
             if(category){
                 return res.status(200).json({
                     error : false,

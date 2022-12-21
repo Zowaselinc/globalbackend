@@ -5,7 +5,7 @@ const { Negotiation, ErrorLog, CropSpecification, Crop, Conversation, User, Cate
 const { Op } = require('sequelize');
 const { request } = require('http');
 const ConversationController = require('./ConversationController');
-const { IncludeNegotiations, IncludeCrop, CropIncludes } = require('~database/helpers/Modelncludes');
+const { IncludeNegotiations, IncludeCrop, CropIncludes } = require('~database/helpers/modelncludes');
 
 class NegotiationController {
 
@@ -98,9 +98,10 @@ class NegotiationController {
     /* --------------------------- GET ALL NEGOTIATION BY USERID --------------------------- */
     static async getbyuserid(req, res) {
 
+        const userId = req.params.userid;
+        const cropId = req.params.cropId;
+
         try {
-            const userId = req.params.userid;
-            const cropId = req.params.cropId;
 
             if (userId !== "" || userId !== null || userId !== undefined) {
 
@@ -146,7 +147,7 @@ class NegotiationController {
             var logError = await ErrorLog.create({
                 error_name: "Error on getting negotiation",
                 error_description: e.toString(),
-                route: "/api/crop/negotiation/getbyuserid/:userid",
+                route: `/api/crop/${cropId}/negotiation/getbyuserid/${userId}`,
                 error_code: "500"
             });
             if (logError) {

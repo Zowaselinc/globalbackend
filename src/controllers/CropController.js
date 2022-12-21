@@ -68,7 +68,7 @@ class CropController{
 
                     sampleFile.mv(uploadPath, function(err) {
                         if (err){
-                            return res.status(500).send(err);
+                            return res.status(500).send(err+" Error in uploading file");
                         }else{
                             
                             // res.send('File uploaded!');
@@ -88,9 +88,10 @@ class CropController{
                
                 var crop = await Crop.create({
                     user_id: req.body.user_id,
+                    title: req.body.title,
                     type: req.body.type,
-                    category: req.body.category,
-                    sub_category: req.body.sub_category,
+                    category_id: req.body.category_id,
+                    subcategory_id: req.body.subcategory_id,
                     active: 0,
                     market: "crop",
                     description: req.body.description,
@@ -243,7 +244,7 @@ class CropController{
                 data : findWantedCrops
             })
             
-        }catch(error){
+        }catch(e){
             var logError = await ErrorLog.create({
                 error_name: "Error on fetching crop wanted",
                 error_description: e.toString(),
@@ -546,7 +547,7 @@ class CropController{
                         curcumin_content: req.body.curcumin_content,
                         extraneous: req.body.extraneous,
                         unit: req.body.unit,
-                        liters: req.body.liters
+                        // liters: req.body.liters
                     }, { where : { model_id: req.body.crop_id  } });
 
 
