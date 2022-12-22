@@ -133,11 +133,11 @@ Router.group((router)=>{
 
     /* ------------------------------- Crop ------------------------------ */
 
+    router.post('/crop/add', CropValidation.addCropValidator, CropController.add);
     router.get('/crop/getbycropwanted', CropController.getByCropWanted);
     router.get('/crop/getbycropauction', CropController.getByCropAuctions);
     router.get('/crop/getbycropoffer', CropController.getByCropOffer);
     router.get('/crop/getbyid/:id', CropController.getById);
-    // router.post('/crop/add', CropValidation.addCropValidator, CropController.add);
     // router.post('/crop/editbyid', CropValidation.addCropValidator, CropController.EditById);
 
 

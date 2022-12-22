@@ -3,9 +3,9 @@ const { body } = require('express-validator');
 module.exports = {
 
     addCropValidator : [
-        // body('type').isString(),
-        body('user_id').isString(),
         body('type').isString(),
+        body('user_id').isString(),
+        body('title').isString(),
         body('category_id').isString(),
         body('subcategory_id').isString(),
         // body('active').isString(),

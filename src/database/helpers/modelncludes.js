@@ -17,7 +17,7 @@ const ModelIncludes = {
         as: "negotiations",
         include: [
             { model: CropSpecification, where: { model_type: "negotiation" }, as: "specification", required: false },
-            { model: Order, as: "order",required: false }
+            // { model: Order, as: "order",required: false }
         ],
         order: [['id', "DESC"]],
     },

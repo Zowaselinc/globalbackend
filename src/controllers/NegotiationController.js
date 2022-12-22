@@ -566,7 +566,7 @@ class NegotiationController {
                     return res.status(200).json({
                         error: false,
                         message: "Negotiation offer closed successfully",
-                        data: declineNegotiations
+                        data: closeNegotiation
                     })
 
                 } else {
@@ -616,7 +616,7 @@ class NegotiationController {
      *****************************************************************************/
 
     /********************************************************************
-     * GET ALL NEGOTIATION BY TRANSACTIONS BY STATUS(ACCEPTED/DECLINED) *
+     * GET ALL NEGOTIATION BY TRANSACTIONS BY STATUS(ACCEPTED/DECLINED/CLOSED) *
      *                            AND USERID                            *
      ********************************************************************/
     static async getNegotiationTransactionSummary(req, res) {
