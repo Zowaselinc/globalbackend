@@ -10,10 +10,6 @@ module.exports = {
         body('payment_status').isString().not().isEmpty()
     ],
 
-    cropGetOrderByIdValidators: [
-        body('orderid').isString().not().isEmpty()
-    ],
-
     updateTrackingDetailsValidators : [
         body('order_id').isString().not().isEmpty(),
         body('tracking_details.pickupstation.tracking_description').isString().not().isEmpty(),

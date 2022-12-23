@@ -18,6 +18,14 @@ let Schema = (Sequelize,mode) => {
             type: Sequelize.STRING,
             allowNull : true
         },
+        total : {
+            type : Sequelize.STRING,
+            allowNull : false
+        },
+        currency : {
+            type : Sequelize.STRING,
+            allowNull : false
+        },
         payment_option : {
             type: Sequelize.STRING,
         },

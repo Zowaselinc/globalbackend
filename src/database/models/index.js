@@ -98,6 +98,11 @@ Crop.belongsTo(Category, {
   as: "category"
 });
 
+Crop.belongsTo(SubCategory, {
+  foreignKey: "subcategory_id",
+  as: "subcategory"
+});
+
 Crop.hasOne(CropSpecification, {
   foreignKey: 'model_id',
   as: 'specification'
@@ -177,6 +182,16 @@ Conversation.belongsTo(User , {
   as : "participant",
   constraints : false
 });
+
+Order.belongsTo(User, {
+  foreignKey : 'buyer_id',
+  as : "buyer"
+})
+
+Order.belongsTo(Negotiation,{
+  foreignKey : "negotiation_id",
+  as : "negotiation"
+})
 
 
 

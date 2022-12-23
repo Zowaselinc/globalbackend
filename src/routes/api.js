@@ -86,27 +86,25 @@ Router.middleware(['isAuthenticated']).group((router)=>{
 
 
 /* -------------------------------------------------------------------------- */
-/*                         GENERAL MARKETPLACE ROUTES                         */
+/*                         GENERAL ROUTES                         */
 /* -------------------------------------------------------------------------- */
 
 Router.group((router) => {
 
         /* -------------------------------- Category -------------------------------- */
+
         router.get('/category/:type/getall', CategoryController.getAllCategories);
         router.get('/category/:type/getall/:offset/:limit', CategoryController.getAllByLimit);
         router.get('/category/:id', CategoryController.getById);
-        // router.post('/crop/category/add', CategoryValidator.addCategoryValidator, CategoryController.add);
-        // router.post('/crop/category/editbyid', CategoryValidator.addCategoryValidator, CategoryController.editbyid);
-        // router.post('/crop/category/deletebyid', CategoryController.deletebyid);
     
         /* ------------------------------- SubCategory ------------------------------ */
 
         router.get('/subcategory/getbycategory/:categoryId', SubCategoryController.getByCategory);
         router.get('/subcategory/:id', SubCategoryController.getById);
-        // router.post('/crop/subcategory/add', SubCategoryValidator.addSubCategoryValidator, SubCategoryController.add);
-        // router.post('/crop/subcategory/editbyid', SubCategoryValidator.addSubCategoryValidator, SubCategoryController.editbyid);
-        // router.post('/crop/subcategory/deletebyid', SubCategoryController.deletebyid);
 
+        /* ------------------------------- Transaction ------------------------------ */
+
+    router.post('/transaction/verify', TransactionValidator.verifyTransaction, TransactionController.verifyTransaction );
 
 })
 
@@ -171,7 +169,7 @@ Router.group((router)=>{
 
     /* ---------------------------------- Order --------------------------------- */
     router.post('/crop/order/add', OrderValidators.createOrderValidator, OrderController.createNewOrder);
-    router.get('/crop/order/getbyorderid/:orderid', OrderValidators.cropGetOrderByIdValidators, OrderController.getByOrderId);
+    router.get('/order/:order', OrderController.getByOrderHash);
     router.get('/crop/order/getbybuyer/:buyerid/:buyertype', OrderController.getByBuyer);
     router.get('/crop/order/getbynegotiationid/:negotiationid', OrderController.getByNegotiationId);
     router.get('/crop/order/getbypaymentstatus/:paymentstatus', OrderController.getByPaymentStatus);

@@ -5,8 +5,7 @@ const { Negotiation, ErrorLog, CropSpecification, Crop, Conversation, User, Cate
 const { Op } = require('sequelize');
 const { request } = require('http');
 const ConversationController = require('./ConversationController');
-const { IncludeNegotiations, IncludeCrop, CropIncludes } = require('~database/helpers/modelncludes');
-const { table } = require('console');
+const { IncludeNegotiations, IncludeCrop, CropIncludes, IncludeSpecification } = require('~database/helpers/modelncludes');
 
 class NegotiationController {
 
@@ -331,7 +330,7 @@ class NegotiationController {
             if (sendnegotiation) {
                 var createCropSpecification = await CropSpecification.create({
                     model_id: sendnegotiation.id,
-                    model_type: "offer",
+                    model_type: "negotiation",
                     qty: req.body.qty,
                     price: req.body.price,
                     color: req.body.color,
@@ -408,7 +407,12 @@ class NegotiationController {
                 return res.status(400).json({ errors: errors.array() });
             }
 
-            var offer = await Negotiation.findByPk(req.body.id);
+            var offer = await Negotiation.findOne({
+                where : req.body.id,
+                includes : [
+                    IncludeSpecification
+                ]
+            });
 
             if (offer) {
 
@@ -433,6 +437,8 @@ class NegotiationController {
                     buyer_id: offer.type == "corporate" ? offer.sender_id : offer.receiver_id,
                     buyer_type: "corporate",
                     negotiation_id: offer.id,
+                    total : eval(offer.specification.qty) * eval(offer.specification.price),
+                    currency : product.currency,
                     payment_status: "UNPAID",
                     product: JSON.stringify(product),
                 })
