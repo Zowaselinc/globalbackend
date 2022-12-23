@@ -15,4 +15,10 @@ module.exports = {
         body('status').isString()
     ],
 
+    verifyTransaction : [
+        body('transaction_id').isString(),
+        body('transaction_ref').isString(),
+        body('order').isString().optional(),
+        body('subscription').isString().optional()
+    ]
 }

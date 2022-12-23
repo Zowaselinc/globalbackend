@@ -12,6 +12,7 @@ const { use } = require("~routes/api");
 
 
 const crypto = require('crypto');
+const { IncludeBuyer, IncludeNegotiation } = require("~database/helpers/modelncludes");
 
 
 
@@ -275,12 +276,18 @@ class OrderController{
 
 
     /* -------------------------- GET ORDER BY ORDER_ID ------------------------- */
-    static async getByOrderId(req , res){
+    static async getByOrderHash(req , res){
 
         const errors = validationResult(req);
 
         try{
-            var findOrder = await Order.findOne({ where: { order_id: req.params.orderid } });
+            var findOrder = await Order.findOne({ 
+                where: { order_hash: req.params.order },
+                include : [
+                    IncludeBuyer,
+                    IncludeNegotiation
+                ]
+            });
             if(findOrder){
                 return res.status(200).json({
                     error : false,
