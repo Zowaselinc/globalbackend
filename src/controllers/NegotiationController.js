@@ -98,9 +98,10 @@ class NegotiationController {
     /* --------------------------- GET ALL NEGOTIATION BY USERID --------------------------- */
     static async getbyuserid(req, res) {
 
+        const userId = req.params.userid;
+        const cropId = req.params.cropId;
+
         try {
-            const userId = req.params.userid;
-            const cropId = req.params.cropId;
 
             if (userId !== "" || userId !== null || userId !== undefined) {
 
@@ -146,7 +147,7 @@ class NegotiationController {
             var logError = await ErrorLog.create({
                 error_name: "Error on getting negotiation",
                 error_description: e.toString(),
-                route: "/api/crop/negotiation/getbyuserid/:userid",
+                route: `/api/crop/${cropId}/negotiation/getbyuserid/${userId}`,
                 error_code: "500"
             });
             if (logError) {
@@ -572,7 +573,7 @@ class NegotiationController {
                     return res.status(200).json({
                         error: false,
                         message: "Negotiation offer closed successfully",
-                        data: declineNegotiations
+                        data: closeNegotiation
                     })
 
                 } else {
@@ -622,7 +623,7 @@ class NegotiationController {
      *****************************************************************************/
 
     /********************************************************************
-     * GET ALL NEGOTIATION BY TRANSACTIONS BY STATUS(ACCEPTED/DECLINED) *
+     * GET ALL NEGOTIATION BY TRANSACTIONS BY STATUS(ACCEPTED/DECLINED/CLOSED) *
      *                            AND USERID                            *
      ********************************************************************/
     static async getNegotiationTransactionSummary(req, res) {
