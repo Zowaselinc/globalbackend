@@ -8,7 +8,7 @@ const md5  = require('md5');
 const { reset } = require("nodemon");
 const { use } = require("~routes/api");
 const Flutterwave = require('flutterwave-node-v3');
-// const flw = new Flutterwave(process.env.FLW_PUBLIC_KEY, process.env.FLW_SECRET_KEY);
+const flw = new Flutterwave(process.env.FLW_PUBLIC_KEY, process.env.FLW_SECRET_KEY);
 
 const crypto = require('crypto');
 
