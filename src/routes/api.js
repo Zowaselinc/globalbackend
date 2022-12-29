@@ -92,7 +92,6 @@ Router.middleware(['isAuthenticated']).group((router)=>{
 Router.group((router) => {
 
         /* -------------------------------- Category -------------------------------- */
-
         router.get('/category/:type/getall', CategoryController.getAllCategories);
         router.get('/category/:type/getall/:offset/:limit', CategoryController.getAllByLimit);
         router.get('/category/:id', CategoryController.getById);

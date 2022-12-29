@@ -18,6 +18,10 @@ let Schema = (Sequelize,mode) => {
             type: Sequelize.STRING,
             allowNull : false
         },
+        user_id: {
+            type : Sequelize.STRING,
+            allowNull : false
+        },
         amount_paid : {
             type: Sequelize.STRING,
             allowNull : false

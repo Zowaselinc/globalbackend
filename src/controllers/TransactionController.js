@@ -27,6 +27,7 @@ class TransactionController{
 
         const thetype = req.body.type;
         const type_id = req.body.type_id;
+        const user_id = req.body.user_id;
 
         try{
             
@@ -56,7 +57,8 @@ class TransactionController{
             var transaction = await Transaction.findOne({
                 where : {
                     type : thetype,
-                    type_id : type_id
+                    type_id : type_id,
+                    user_id : user_id
                 }
             });
             
@@ -67,6 +69,7 @@ class TransactionController{
                     transaction_id : "TRANS"+randomid,
                     type : thetype,
                     type_id : type_id,
+                    user_id : user_id,
                     amount_paid : req.body.amount_paid,
                     status : req.body.status
                 });
