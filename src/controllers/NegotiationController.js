@@ -5,7 +5,7 @@ const { Negotiation, ErrorLog, CropSpecification, Crop, Conversation, User, Cate
 const { Op } = require('sequelize');
 const { request } = require('http');
 const ConversationController = require('./ConversationController');
-const { IncludeNegotiations, IncludeCrop, CropIncludes, IncludeSpecification } = require('~database/helpers/Modelncludes');
+const { IncludeNegotiations, IncludeCrop, CropIncludes, IncludeSpecification } = require('~database/helpers/modelncludes');
 
 class NegotiationController {
 
@@ -650,12 +650,12 @@ class NegotiationController {
                     data: []
                 })
             } else {
-                var findCropNegotiationOffers = await Negotiation.findAndCountAll({
+                var findCropNegotiationOffers = await Negotiation.findAll({
                     include: [{
                         model: CropSpecification,
-                        as: 'crop_specification',
+                        as: 'specification',
                         order: [['id', 'DESC']],
-                        limit: 1,
+                        // limit: 1,
                     }],
 
 
@@ -669,20 +669,30 @@ class NegotiationController {
                     },
                     order: [['id', 'DESC']]
                 });
-
+                
 
                 /* --------------------- If fetched the accepted/declined Negotiation Transaction --------------------- */
 
+                /*******************************************************************************************************
+                 *       TO GET THE CROP_ID, I STARTED FROM THE NEGOTIATION TABLE. THE TABLE HAS CONVERSATION_ID       *
+                 * I USED THE CONVERSATION_ID TO TAKE ME TO THE CONVERSATION TABLE. IN THIS TABLE,I GRABBED THE CROP_ID *
+                 *******************************************************************************************************/
+
+                const findConversation = await Conversation.findOne({
+                    where: {
+                        id: findCropNegotiationOffers[0].conversation_id
+                    }
+                });
 
                 const findCrop = await Crop.findOne({
                     where: {
-                        id: findCropNegotiationOffers.rows[0].crop_id
+                        id: findConversation.crop_id
                     }
                 });
 
                 const findCropRequest = await CropRequest.findOne({
                     where: {
-                        crop_id: findCropNegotiationOffers.rows[0].crop_id
+                        crop_id: findConversation.crop_id
                     }
                 });
 
@@ -692,12 +702,14 @@ class NegotiationController {
                     message: `Negotiation for ${negotiationStatus} Crops offer retrieved successfully`,
                     data: findCropNegotiationOffers,
                     cropData: findCrop,
-                    cropSpecificationData: findCropRequest
+                    cropRequestData: findCropRequest
                 })
             }
 
 
         } catch (e) {
+
+            console.log(e);
             var logError = await ErrorLog.create({
                 error_name: `Error on fetching ${negotiationStatus} crops negotiation offer`,
                 error_description: e.toString(),
@@ -745,9 +757,9 @@ class NegotiationController {
                 var findCropNegotiationOffers = await Negotiation.findAndCountAll({
                     include: [{
                         model: CropSpecification,
-                        as: 'crop_specification',
+                        as: 'specification',
                         order: [['id', 'DESC']],
-                        limit: 1,
+                        // limit: 1,
                     }],
 
 
@@ -760,16 +772,27 @@ class NegotiationController {
 
                 /* --------------------- If fetched the accepted/declined Negotiation Transaction --------------------- */
 
+                /*******************************************************************************************************
+                 *       TO GET THE CROP_ID, I STARTED FROM THE NEGOTIATION TABLE. THE TABLE HAS CONVERSATION_ID       *
+                 * I USED THE CONVERSATION_ID TO TAKE ME TO THE CONVERSATION TABLE. IN THIS TABLE,I GRABBED THE CROP_ID *
+                 *******************************************************************************************************/
+
+                 const findConversation = await Conversation.findOne({
+                    where: {
+                        id: findCropNegotiationOffers.rows[0].conversation_id
+                    }
+                });
+
 
                 const findCrop = await Crop.findOne({
                     where: {
-                        id: findCropNegotiationOffers.rows[0].crop_id
+                        id: findConversation.crop_id
                     }
                 });
 
                 const findCropRequest = await CropRequest.findOne({
                     where: {
-                        crop_id: findCropNegotiationOffers.rows[0].crop_id
+                        crop_id: findConversation.crop_id
                     }
                 });
 
@@ -779,7 +802,7 @@ class NegotiationController {
                     message: `Negotiation for Crops offer retrieved successfully`,
                     data: findCropNegotiationOffers,
                     cropData: findCrop,
-                    cropSpecificationData: findCropRequest
+                    cropRequestData: findCropRequest
                 })
             }
 
