@@ -13,4 +13,8 @@ module.exports = {
         // body('status').isString(),
     ],
 
+    negotiation : [
+        body('id').isNumeric()
+    ]
+
 }

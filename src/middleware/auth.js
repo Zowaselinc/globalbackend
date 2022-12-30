@@ -15,6 +15,7 @@ class AuthMiddleware{
         let auth =  headers.authorization;
         try{
             if(auth){
+                var error = "";
                 const decoded = jwt.verify(auth, process.env.TOKEN_KEY);
                 var getToken = await AccessToken.findOne({ where : {user_id : decoded.user_id}});
                 getToken = getToken ? getToken.dataValues : {};
@@ -28,8 +29,13 @@ class AuthMiddleware{
             }
         }
         catch(error){
-            res.status(403);
-            res.send('Forbidden');
+            if(error.name == "TokenExpiredError"){
+                res.status(403);
+                res.send('Expired');
+            }else{
+                res.status(403);
+                res.send('Forbidden');
+            }
         }
 
     }

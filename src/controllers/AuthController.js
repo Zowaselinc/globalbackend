@@ -1,6 +1,6 @@
 
 const jwt = require("jsonwebtoken");
-const { User, Company, AccessToken, Merchant, Partner, Corporate, Agent, UserCode, MerchantType } = require("~database/models");
+const { User, Company, AccessToken, Merchant, Partner, Corporate, Agent, UserCode, MerchantType, Wallet } = require("~database/models");
 const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const Mailer = require('~services/mailer');
@@ -42,9 +42,14 @@ class AuthController{
             corporate : Corporate
         };
 
-        let userType = await userTypeMap[user.type].findOne({where :{user_id : user.id}});
+        let userType = await userTypeMap[user.type].findOne({
+            where :{user_id : user.id},
+            include : [
+                {model : User, as : "user"}
+            ]
+        });
 
-        user[user.type] = userType;
+        //user[user.type] = userType;
         
         let passwordCheck =  await bcrypt.compare(data.password, user.password)
 
@@ -53,18 +58,18 @@ class AuthController{
             const token = jwt.sign(
                 {user_id: user.id},
                 process.env.TOKEN_KEY,
-                {expiresIn: "48h"}
+                {expiresIn: "5d"}
             );
     
             await AuthController.saveToken(user,token);
 
-            delete user.password;
+            delete userType.user.password;
 
             return res.status(200).json({
                 error : false,
                 message : "Login Successful",
                 token : token,
-                user : user
+                user : userType
             });
 
         }else{
@@ -290,6 +295,13 @@ class AuthController{
                 type : data.user_type,
                 account_type : data.has_company || data.company_email ? "company" : "individual"
             });
+
+            // Create user wallet
+            let wallet = await Wallet.create({
+                user_id : user.id,
+                balance : 0
+            });
+
         }catch(e){
             user = {
                 error : true,

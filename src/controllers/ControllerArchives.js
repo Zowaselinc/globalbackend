@@ -701,3 +701,65 @@ class SubCategoryController{
     }
 
 }
+
+class NegotiationController{
+
+
+
+
+
+
+
+    /* ---------------------------- * ADMIN SENDS NEGOTIATION MESSAGE * ---------------------------- */
+    static async addmsgbyadmin(req , res){
+
+        // return res.status(200).json({
+        //     message : "Add Category"
+        // });
+
+        const errors = validationResult(req);
+
+        try{
+            
+            if(!errors.isEmpty()){
+                return res.status(400).json({ 
+                    error: true,
+                    message: "All fields required",
+                    data: []
+                });
+            }
+    
+            
+            // console.log(errors.isEmpty());
+            let randomid = crypto.randomBytes(8).toString('hex');
+         
+            
+            
+            var negotiation = await Negotiation.create(req.body)
+    
+            return res.status(200).json({
+                "error": false,
+                "message": "Message sent",
+                "data": negotiation
+            })
+        }catch(e){
+            var logError = await ErrorLog.create({
+                error_name: "Error on adding admin negotiation message",
+                error_description: e.toString(),
+                route: "/api/crop/negotiation/admin/add",
+                error_code: "500"
+            });
+            if(logError){
+                return res.status(500).json({
+                    error: true,
+                    message: 'Unable to complete request at the moment'
+                })
+            }
+        }
+
+        
+    }
+    /* ---------------------------- * ADMIN SENDS NEGOTIATION MESSAGE * ---------------------------- */
+
+
+}

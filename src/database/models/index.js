@@ -8,6 +8,7 @@ const createSequelizeInstance = () => {
     dialect: process.env.DATABASE_DIALECT,
     operatorsAliases: false,
     port: process.env.DATABASE_PORT ?? 3306,
+    logging: false,
 
     pool: {
       max: eval(process.env.DATABASE_POOL_MAX),
@@ -16,7 +17,7 @@ const createSequelizeInstance = () => {
       idle: eval(process.env.DATABASE_POOL_IDLE)
     },
     dialectOptions: {
-      useUTC: false, //for reading from database
+      // useUTC: false, //for reading from database
       dateStrings: true,
       typeCast: function (field, next) { // for reading from database
         if (field.type === 'DATETIME') {
@@ -93,8 +94,13 @@ Crop.belongsTo(User, {
 });
 
 Crop.belongsTo(Category, {
-  foreignKey: "category",
-  as: "crop_category"
+  foreignKey: "category_id",
+  as: "category"
+});
+
+Crop.belongsTo(SubCategory, {
+  foreignKey: "subcategory_id",
+  as: "subcategory"
 });
 
 Crop.hasOne(CropSpecification, {
@@ -123,19 +129,19 @@ CropRequest.belongsTo(Crop, {
 });
 
 Category.hasMany(Crop, {
-  foreignKey: "category",
+  foreignKey: "category_id",
 });
 
 Category.hasMany(Input, {
-  foreignKey: "category",
+  foreignKey: "category_id",
 });
 
 SubCategory.hasMany(Input, {
-  foreignKey: "sub_category",
+  foreignKey: "subcategory_id",
 });
 
 SubCategory.hasMany(Crop, {
-  foreignKey: "sub_category",
+  foreignKey: "subcategory_id",
 });
 
 Cart.hasOne(Input,{ foreignKey: 'id' })
@@ -148,6 +154,11 @@ Input.hasMany(Cart,{
 Negotiation.hasOne(CropSpecification, {
   foreignKey: "model_id",
   as: "specification"
+});
+
+Negotiation.hasOne(Order, {
+  foreignKey : "negotiation_id",
+  as : "order"
 });
 
 Conversation.hasMany(Negotiation, {
@@ -171,6 +182,16 @@ Conversation.belongsTo(User , {
   as : "participant",
   constraints : false
 });
+
+Order.belongsTo(User, {
+  foreignKey : 'buyer_id',
+  as : "buyer"
+})
+
+Order.belongsTo(Negotiation,{
+  foreignKey : "negotiation_id",
+  as : "negotiation"
+})
 
 
 

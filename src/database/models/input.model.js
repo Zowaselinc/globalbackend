@@ -7,11 +7,11 @@ let Schema = (Sequelize,mode) => {
             type: Sequelize.INTEGER(11),
             allowNull : false
         },
-        category : {
+        category_id : {
             type: Sequelize.STRING,
             allowNull : false
         },
-        sub_category : {
+        subcategory_id : {
             type: Sequelize.STRING,
             allowNull : false
         },

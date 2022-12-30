@@ -39,6 +39,9 @@ const OrderValidators = require("./validators/OrderValidators");
 
 const RouteProvider = require('~providers/RouteProvider');
 const OrderController = require("~controllers/OrderController");
+const TransactionValidator = require("./validators/TransactionValidator");
+const TransactionController = require("~controllers/TransactionController");
+
 
 const Router = RouteProvider.Router;
 
@@ -70,6 +73,10 @@ Router.middleware(['isGuest']).group((router)=>{
 
 });
 
+Router.group((router) => {
+    router.post('/flutterwave/webhook', TransactionController.handleFlutterwaveWebhook);
+});
+
 // User routes
 Router.middleware(['isAuthenticated']).group((router)=>{
 
@@ -83,27 +90,25 @@ Router.middleware(['isAuthenticated']).group((router)=>{
 
 
 /* -------------------------------------------------------------------------- */
-/*                         GENERAL MARKETPLACE ROUTES                         */
+/*                         GENERAL ROUTES                         */
 /* -------------------------------------------------------------------------- */
 
 Router.group((router) => {
 
         /* -------------------------------- Category -------------------------------- */
+
         router.get('/category/:type/getall', CategoryController.getAllCategories);
         router.get('/category/:type/getall/:offset/:limit', CategoryController.getAllByLimit);
         router.get('/category/:id', CategoryController.getById);
-        // router.post('/crop/category/add', CategoryValidator.addCategoryValidator, CategoryController.add);
-        // router.post('/crop/category/editbyid', CategoryValidator.addCategoryValidator, CategoryController.editbyid);
-        // router.post('/crop/category/deletebyid', CategoryController.deletebyid);
     
         /* ------------------------------- SubCategory ------------------------------ */
 
         router.get('/subcategory/getbycategory/:categoryId', SubCategoryController.getByCategory);
         router.get('/subcategory/:id', SubCategoryController.getById);
-        // router.post('/crop/subcategory/add', SubCategoryValidator.addSubCategoryValidator, SubCategoryController.add);
-        // router.post('/crop/subcategory/editbyid', SubCategoryValidator.addSubCategoryValidator, SubCategoryController.editbyid);
-        // router.post('/crop/subcategory/deletebyid', SubCategoryController.deletebyid);
 
+        /* ------------------------------- Transaction ------------------------------ */
+
+    router.post('/transaction/verify', TransactionValidator.verifyTransaction, TransactionController.verifyTransaction );
 
 })
 
@@ -130,11 +135,11 @@ Router.group((router)=>{
 
     /* ------------------------------- Crop ------------------------------ */
 
+    router.post('/crop/add', CropValidation.addCropValidator, CropController.add);
     router.get('/crop/getbycropwanted', CropController.getByCropWanted);
     router.get('/crop/getbycropauction', CropController.getByCropAuctions);
     router.get('/crop/getbycropoffer', CropController.getByCropOffer);
     router.get('/crop/getbyid/:id', CropController.getById);
-    // router.post('/crop/add', CropValidation.addCropValidator, CropController.add);
     // router.post('/crop/editbyid', CropValidation.addCropValidator, CropController.EditById);
 
 
@@ -155,30 +160,33 @@ Router.group((router)=>{
 
     /* ------------------------------- Negotiation ------------------------------ */
     router.post('/crop/negotiation/add', NegotiationValidator.addNegotiationValidator, NegotiationController.add);
-    router.post('/crop/negotiation/admin/add', NegotiationValidator.addNegotiationValidator, NegotiationController.addmsgbyadmin);
+    // router.post('/crop/negotiation/admin/add', NegotiationValidator.addNegotiationValidator, NegotiationController.addmsgbyadmin);
     router.get('/crop/:cropId/negotiation/getbyuserid/:userid', NegotiationController.getbyuserid);
     router.get('/crop/negotiation/:userid', NegotiationController.getListByUser);
     router.post('/crop/negotiation/sendoffer', NegotiationController.sendNegotiationOffer);
-    router.post('/crop/negotiation/accept', NegotiationController.acceptNegotiation);
-    router.post('/crop/negotiation/decline', NegotiationController.declineNegotiation);
+    router.post('/crop/negotiation/accept', NegotiationValidator.negotiation, NegotiationController.acceptNegotiation);
+    router.post('/crop/negotiation/decline',NegotiationValidator.negotiation, NegotiationController.declineNegotiation);
+    router.post('/crop/negotiation/close',NegotiationValidator.negotiation, NegotiationController.closeNegotiation);
     router.get('/crop/negotiation/grabtransactionby/:status/:userid', NegotiationController.getNegotiationTransactionSummary);
     router.get('/crop/negotiation/getallsummary', NegotiationController.getAllNegotiationTransactionSummary);
 
 
     /* ---------------------------------- Order --------------------------------- */
-    router.post('/crop/order/add', OrderValidators.cropAddOrderValidators, OrderController.createNewOrder);
-    router.get('/crop/order/getbyorderid/:orderid', OrderValidators.cropGetOrderByIdValidators, OrderController.getByOrderId);
+    router.post('/crop/order/add', OrderValidators.createOrderValidator, OrderController.createNewOrder);
+    router.get('/order/:order', OrderController.getByOrderHash);
     router.get('/crop/order/getbybuyer/:buyerid/:buyertype', OrderController.getByBuyer);
     router.get('/crop/order/getbynegotiationid/:negotiationid', OrderController.getByNegotiationId);
     router.get('/crop/order/getbypaymentstatus/:paymentstatus', OrderController.getByPaymentStatus);
     // Tracking Details
-    router.post('/crop/trackingdetails/updatebyorderid', OrderValidators.updateTrackingDetailsValidators, OrderController.updateTrackingDetailsByOrderId);
+    router.post('/order/:order/trackingdetails', OrderValidators.updateTrackingDetailsValidators, OrderController.updateTrackingDetailsByOrderId);
     // Waybill Details
-    router.post('/crop/waybilldetails/updatebyorderid', OrderValidators.updateWaybillDetailsValidators, OrderController.updateWaybillDetailsByOrderId);
-    // Good Receipt Notes Details
-    router.post('/crop/goodreceiptnote/updatebyorderid', OrderValidators.updateGoodReceiptValidators, OrderController.updateGoodReceiptNoteByOrderId);
+    router.post('/order/:order/waybilldetails', OrderValidators.updateWaybillDetailsValidators, OrderController.updateWaybillDetailsByOrderId);
+    // Goodreceiptnote Details
+    router.post('/order/:order/goodreceiptnote', OrderValidators.updateGoodReceiptDetailsValidators, OrderController.updateWaybillDetailsByOrderId);
 
 
+    /* ---------------------------------- Transaction --------------------------------- */
+    router.post('/crop/transaction/add', TransactionValidator.addTransactionValidator, TransactionController.createNewTransaction );
 });
 
 

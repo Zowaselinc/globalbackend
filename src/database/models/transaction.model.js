@@ -6,6 +6,10 @@ let Schema = (Sequelize,mode) => {
             type: Sequelize.STRING,
             allowNull : false
         },
+        transaction_ref : {
+            type: Sequelize.STRING,
+            allowNull : false
+        },
         type : {
             type : Sequelize.STRING,
             allowNull : false
