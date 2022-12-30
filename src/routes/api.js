@@ -73,6 +73,10 @@ Router.middleware(['isGuest']).group((router)=>{
 
 });
 
+Router.group((router) => {
+    router.post('/flutterwave/webhook', TransactionController.handleFlutterwaveWebhook);
+});
+
 // User routes
 Router.middleware(['isAuthenticated']).group((router)=>{
 
@@ -173,11 +177,11 @@ Router.group((router)=>{
     router.get('/crop/order/getbynegotiationid/:negotiationid', OrderController.getByNegotiationId);
     router.get('/crop/order/getbypaymentstatus/:paymentstatus', OrderController.getByPaymentStatus);
     // Tracking Details
-    router.post('/crop/trackingdetails/updatebyorderid', OrderValidators.updateTrackingDetailsValidators, OrderController.updateTrackingDetailsByOrderId);
+    router.post('/order/:order/trackingdetails', OrderValidators.updateTrackingDetailsValidators, OrderController.updateTrackingDetailsByOrderId);
     // Waybill Details
-    router.post('/crop/waybilldetails/updatebyorderid', OrderValidators.updateWaybillDetailsValidators, OrderController.updateWaybillDetailsByOrderId);
+    router.post('/order/:order/waybilldetails', OrderValidators.updateWaybillDetailsValidators, OrderController.updateWaybillDetailsByOrderId);
     // Goodreceiptnote Details
-    router.post('/crop/goodreceiptnote/updatebyorderid', OrderValidators.updateGoodReceiptDetailsValidators, OrderController.updateWaybillDetailsByOrderId);
+    router.post('/order/:order/goodreceiptnote', OrderValidators.updateGoodReceiptDetailsValidators, OrderController.updateWaybillDetailsByOrderId);
 
 
     /* ---------------------------------- Transaction --------------------------------- */
