@@ -24,18 +24,20 @@ module.exports = {
     ],
 
     updateWaybillDetailsValidators : [
-        
-        body('order_id').isString().not().isEmpty(),
-        body('waybill_details.dispatch_section.from_seller_id').isNumeric().not().isEmpty(),
-        body('waybill_details.dispatch_section.seller_title').isString().not().isEmpty(),
-        body('waybill_details.dispatch_section.to_buyer_id').isNumeric().not().isEmpty(),
-        body('waybill_details.dispatch_section.buyer_title').isString().not().isEmpty(),
-        body('waybill_details.dispatch_section.consignee').isString().not().isEmpty(),
-        body('waybill_details.dispatch_section.truck_no').isString().not().isEmpty(),
+        body('waybill_details.dispatch_section.from').isString(),
+        body('waybill_details.dispatch_section.to').isString(),
+        body('waybill_details.dispatch_section.date').isString(),
+        body('waybill_details.dispatch_section.consignee').isString(),
+        body('waybill_details.dispatch_section.truck_number').isString(),
+        body('waybill_details.dispatch_section.remarks').isString(),
+        body('waybill_details.dispatch_section.items').not().isEmpty(),
+        body('waybill_details.dispatch_section.drivers_data').not().isEmpty(),
+        body('waybill_details.dispatch_section.sellers_data').not().isEmpty(),
+        body('waybill_details.receipt_section.items').not().isEmpty(),
+        body('waybill_details.receipt_section.remarks').isString(),
+        body('waybill_details.receipt_section.sellers_data').not().isEmpty(),
+        body('waybill_details.receipt_section.recipient_data').not().isEmpty(),
 
-        body('waybill_details.details.no1').isNumeric().not().isEmpty(),
-        body('waybill_details.details.description1').isString().not().isEmpty(),
-        body('waybill_details.details.quantity1').isString()
     ],
 
     updateGoodReceiptDetailsValidators : [

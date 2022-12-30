@@ -1,6 +1,6 @@
 
 const jwt = require("jsonwebtoken");
-const { Pricing, Transaction, Order, Negotiation, ErrorLog } = require("~database/models");
+const { Pricing, Transaction, Order, Negotiation, ErrorLog, Wallet } = require("~database/models");
 const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const Mailer = require('~services/mailer');
@@ -11,6 +11,7 @@ const Flutterwave = require('flutterwave-node-v3');
 const flw = new Flutterwave(process.env.FLW_PUBLIC_KEY, process.env.FLW_SECRET_KEY);
 
 const crypto = require('crypto');
+const { capitalize } = require("~utilities/string");
 
 
 
@@ -151,6 +152,9 @@ class TransactionController{
                                 order.payment_status = "PAID";
                                 await order.save();
 
+
+                                // CREATE TRANSACTION
+
                                 var transaction = await Transaction.create({
                                     transaction_id : transactionId,
                                     transaction_ref : transactionRef,
@@ -159,6 +163,11 @@ class TransactionController{
                                     amount_paid : response.data.amount,
                                     status : "completed"
                                 });
+
+                                // CREDIT SELLER WALLET
+                                var wallet = await Wallet.findOne({ where : {user_id : JSON.parse(order.product).user_id}});
+                                wallet.balance = eval(wallet.balance) + eval(response.data.amount);
+                                await wallet.save();
                             }
                         }
                     }
@@ -190,6 +199,38 @@ class TransactionController{
         
     }
     /* ----------------------- VERIFY TRANSACTION PAYMENT ----------------------- */
+
+    /* ----------------------------- PAYMENT WEBHOOK ---------------------------- */
+    static async handleFlutterwaveWebhook(req, res){
+        var body = req.body;
+        var event = body.event.split('.');
+        var functionName = 'handle';
+        event.forEach(element => {
+            functionName += capitalize(element);
+        });
+        TransactionController[functionName](body.data);
+    }
+    /* ----------------------------- PAYMENT WEBHOOK ---------------------------- */
+
+
+    /* ------------------------- HANDLE CHARGE COMPLETED ------------------------ */
+    static async handleChargeCompleted(data){
+        if(data.status == "successful"){
+            /* ------------------------ Fetch charged transaction ----------------------- */
+            var transaction = await Transaction.findOne({
+                where : { transaction_ref : data.tx_ref, transaction_id : data.id }
+            });
+
+            if(transaction){
+                /* ------------------------ CHECK THAT AMOUNT MATCHES ----------------------- */
+                if(transaction.amount_paid == data.charged_amount){
+
+                }
+            }
+        }
+    }
+    /* ------------------------- HANDLE CHARGE COMPLETED ------------------------ */
+
 
 }
 

@@ -520,7 +520,7 @@ class OrderController{
                 });
             }
             
-            var findOrder = await Order.findOne({ where: { order_id: req.body.order_id } });
+            var findOrder = await Order.findOne({ where: { order_hash: req.body.order_hash } });
             if(findOrder){
 
                 // return res.send(req.body.tracking_details)
@@ -529,7 +529,7 @@ class OrderController{
                 
                 var updateOrderWaybillDetails = await Order.update({
                     waybill_details: theWaybillDetails
-                }, { where : { order_id: req.body.order_id } });
+                }, { where : { order_hash: req.body.order_hash } });
 
                 return res.status(400).json({
                     error : false,
