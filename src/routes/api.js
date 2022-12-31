@@ -117,16 +117,6 @@ Router.group((router) => {
 /* -------------------------------------------------------------------------- */
 
 // Routes
-/***************
- * TEST ROUTES *
- ***************/
-Router.get("/crop/hello", Controller.hello);
-Router.get("/crop/category/hello", CategoryController.hello);
-Router.get("/crop/subcategory/hello", SubCategoryController.hello);
-Router.get("/crop/product/hello", CropController.hello);
-Router.get("/crop/cropspecification/hello", CropSpecificationController.hello);
-Router.get("/crop/croprequest/hello", CropSpecificationController.hello);
-
 
 Router.group((router)=>{
 
