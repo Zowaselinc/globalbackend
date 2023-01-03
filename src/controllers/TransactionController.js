@@ -164,10 +164,20 @@ class TransactionController{
                                     status : "completed"
                                 });
 
-                                // CREDIT SELLER WALLET
-                                var wallet = await Wallet.findOne({ where : {user_id : JSON.parse(order.product).user_id}});
-                                wallet.balance = eval(wallet.balance) + eval(response.data.amount);
-                                await wallet.save();
+                                // CREDIT SELLER WALLET OR WALLETS
+                                if(order.products.length > 1){
+                                    for(var i = 0;i < order.products.length;i++){
+                                        var wallet = await Wallet.findOne({ where : {user_id : JSON.parse(order.products)[i].user_id}});
+                                        wallet.balance = eval(wallet.balance) + eval(JSON.parse(order.products)[i].price);
+                                        await wallet.save();
+                                    }
+                                }else{
+                                    var wallet = await Wallet.findOne({ where : {user_id : JSON.parse(order.products)[i].user_id}});
+                                    wallet.balance = eval(wallet.balance) + eval(response.data.amount);
+                                    await wallet.save();
+                                }
+
+
                             }
                         }
                     }

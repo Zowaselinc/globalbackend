@@ -427,7 +427,7 @@ class NegotiationController {
                 const conversation = await Conversation.findByPk(offer.conversation_id);
 
 
-                const product = await Crop.findOne({
+                const products = await Crop.findAll({
                     where: { id: conversation.crop_id },
                     include: CropIncludes
                 });
@@ -438,9 +438,9 @@ class NegotiationController {
                     buyer_type: "corporate",
                     negotiation_id: offer.id,
                     total : eval(offer.specification.qty) * eval(offer.specification.price),
-                    currency : product.currency,
+                    currency : products[0].currency,
                     payment_status: "UNPAID",
-                    product: JSON.stringify(product),
+                    products: JSON.stringify(products),
                 })
 
                 return res.status(200).json({

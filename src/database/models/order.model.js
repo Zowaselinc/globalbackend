@@ -33,7 +33,7 @@ let Schema = (Sequelize,mode) => {
             type : Sequelize.ENUM( "UNPAID", "PARTIALLY_PAID", "PAID" ),
             allowNull : false
         },
-        product : {
+        products : {
             type : Sequelize.TEXT,
             allowNull : false
         },
