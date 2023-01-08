@@ -29,7 +29,7 @@ class AuthController{
         let user = await User.findOne({ where : { email : data.email }});
 
         if(!user){
-           return res.status(400).json({
+           return res.status(200).json({
             error : true,
             message : "Invalid credentials"
            });
@@ -73,7 +73,7 @@ class AuthController{
             });
 
         }else{
-            return res.status(400).json({
+            return res.status(200).json({
                 error : true,
                 message : "Invalid credentials"
             });
@@ -431,7 +431,7 @@ class AuthController{
                 message : "Code verified successfully"
             });
         }else{
-            return res.status(400).json({
+            return res.status(200).json({
                 error : true,
                 message : "Invalid code"
             });
@@ -550,7 +550,7 @@ class AuthController{
         var user = await User.findOne( { where : { email : getCode.email}});
 
         if(!user){
-            return res.status(400).json({
+            return res.status(200).json({
                 error : true,
                 message : "A user with this email does not exist"
             });

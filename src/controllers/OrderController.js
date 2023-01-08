@@ -172,7 +172,7 @@ class OrderController{
 
             
             var createOrder = await Order.create({
-                order_id: "ORD"+randomid,
+                order_hash: "ORD"+randomid,
                 buyer_id: req.body.buyer_id,
                 buyer_type: req.body.buyer_type,
                 negotiation_id: negotiation_id,
@@ -671,7 +671,7 @@ class OrderController{
 
             
             var createOrder = await Order.create({
-                order_id: "ORD"+randomid,
+                order_hash: "ORD"+randomid,
                 buyer_id: req.body.buyer_id,
                 buyer_type: req.body.buyer_type,
                 payment_option: req.body.payment_option,
@@ -686,7 +686,7 @@ class OrderController{
             return res.status(200).json({
                 "error": false,
                 "message": "New input order created",
-                "data": { order_id: createOrder.order_id }
+                "data": { order_hash: createOrder.order_id }
             })
         }catch(e){
             var logError = await ErrorLog.create({
@@ -722,7 +722,7 @@ class OrderController{
             /* ---------------- check if the item is already in the cart ---------------- */
             var returnedResult = await Order.findOne(req.body,{
                 where: {
-                    "order_id": req.body.order_id
+                    "order_hash": req.body.order_id
                 }
             });
 
@@ -733,7 +733,7 @@ class OrderController{
                     "extra_documents": JSON.stringify(req.body.extra_documents)
                 },{
                     where: {
-                        "order_id": req.body.order_id
+                        "order_hash": req.body.order_id
                     }
                 });
                 
@@ -780,7 +780,7 @@ class OrderController{
 
                 /* ---------------- check if the delivery address exists ---------------- */
                 var returnedResult = await Order.findAll({
-                    attributes:['id','order_id','buyer_id', 'buyer_type', 'payment_option', 'payment_status', 'product', 'tracking_details', 'extra_documents', 'created_at'],
+                    attributes:['id','order_hash','buyer_id', 'buyer_type', 'payment_option', 'payment_status', 'product', 'tracking_details', 'extra_documents', 'created_at'],
                     where: {
                         "buyer_id": user_id
                     }
