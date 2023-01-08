@@ -56,12 +56,12 @@ class AuthController{
         if(passwordCheck){
 
             const token = jwt.sign(
-                {user_id: user.id},
+                {user_id: user.id, agent : req.headers['user-agent']},
                 process.env.TOKEN_KEY,
                 {expiresIn: "5d"}
             );
     
-            await AuthController.saveToken(user,token);
+            await AuthController.saveToken(user,token,req);
 
             delete userType.user.password;
 
@@ -338,22 +338,27 @@ class AuthController{
         return company;
     }
 
-    static async saveToken(user,token){
+    static async saveToken(user,token,req){
 
         let expiry = new Date();
         expiry.setDate( expiry.getDate() + 2);
         
-        var previousToken = await AccessToken.findOne({where : {user_id : user.id}});
+        var previousToken = await AccessToken.findOne({
+            where : {
+                user_id : user.id,
+                client_id : req.headers['user-agent']
+            }
+        });
 
         if(previousToken){
             await AccessToken.update({
                 token : token,
                 expires_at : expiry.toISOString().slice(0, 19).replace('T', ' ')
-            }, { where : { user_id : user.id } });
+            }, { where : { user_id : user.id, client_id : req.headers['user-agent'] } });
         }else{
             await AccessToken.create({
                 user_id : user.id,
-                client_id : 1,
+                client_id : req.headers['user-agent'],
                 token : token,
                 expires_at : expiry.toISOString().slice(0, 19).replace('T', ' ')
             });

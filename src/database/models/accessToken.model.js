@@ -7,7 +7,7 @@ let Schema = (Sequelize,mode) => {
             allowNull : false
         },
         client_id : {
-            type : Sequelize.INTEGER,
+            type : Sequelize.STRING,
             allowNull : false
         },
         token : {
