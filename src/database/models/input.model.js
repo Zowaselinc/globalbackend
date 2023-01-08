@@ -15,6 +15,10 @@ let Schema = (Sequelize,mode) => {
             type: Sequelize.STRING,
             allowNull : false
         },
+        title : {
+            type : Sequelize.STRING,
+            allowNull : false
+        },
         crop_focus : {
             type: Sequelize.STRING(350),
             allowNull : false
@@ -25,6 +29,10 @@ let Schema = (Sequelize,mode) => {
         },
         description : {
             type: Sequelize.TEXT,
+            allowNull : false
+        },
+        stock : {
+            type : Sequelize.STRING,
             allowNull : false
         },
         usage_instruction : {

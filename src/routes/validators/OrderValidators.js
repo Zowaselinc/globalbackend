@@ -10,19 +10,6 @@ module.exports = {
         body('payment_status').isString().not().isEmpty()
     ],
 
-    updateTrackingDetailsValidators : [
-        body('order_id').isString().not().isEmpty(),
-        body('tracking_details.pickupstation.tracking_description').isString().not().isEmpty(),
-        body('tracking_details.pickupstation.location').isString().not().isEmpty(),
-        body('tracking_details.pickupstation.pickup_date').isString().not().isEmpty(),
-        body('tracking_details.shipping.tracking_description').isString().not().isEmpty(),
-        body('tracking_details.shipping.location').isString(),
-        body('tracking_details.shipping.shipping_date').isString(),
-        body('tracking_details.delivered.tracking_description').isString().not().isEmpty(),
-        body('tracking_details.delivered.location').isString(),
-        body('tracking_details.delivered.delivered_date').isString()
-    ],
-
     updateWaybillDetailsValidators : [
         body('waybill_details.dispatch_section.from').isString(),
         body('waybill_details.dispatch_section.to').isString(),
@@ -41,11 +28,10 @@ module.exports = {
     ],
 
     updateGoodReceiptDetailsValidators : [
-        
-        body('order_id').isString().not().isEmpty(),
         body('good_receipt_note.crop_description').isString().not().isEmpty(),
         body('good_receipt_note.packaging').isString().not().isEmpty(),
         body('good_receipt_note.no_of_bags').isNumeric().not().isEmpty(),
+        body('good_receipt_note.scale_type').isNumeric().not().isEmpty(),
         body('good_receipt_note.gross_weight').isNumeric().not().isEmpty(),
         body('good_receipt_note.tare_weight').isNumeric().not().isEmpty(),
         body('good_receipt_note.net_weight').isNumeric().not().isEmpty(),

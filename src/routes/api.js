@@ -74,6 +74,7 @@ Router.middleware(['isGuest']).group((router)=>{
 });
 
 Router.group((router) => {
+    router.post('/testpost', Controller.testPostData);
     router.post('/flutterwave/webhook', TransactionController.handleFlutterwaveWebhook);
 });
 
@@ -167,11 +168,11 @@ Router.group((router)=>{
     router.get('/crop/order/getbynegotiationid/:negotiationid', OrderController.getByNegotiationId);
     router.get('/crop/order/getbypaymentstatus/:paymentstatus', OrderController.getByPaymentStatus);
     // Tracking Details
-    router.post('/order/:order/trackingdetails', OrderValidators.updateTrackingDetailsValidators, OrderController.updateTrackingDetailsByOrderId);
+    router.post('/order/:order/trackingdetails', OrderController.updateTrackingDetailsByOrderId);
     // Waybill Details
     router.post('/order/:order/waybilldetails', OrderValidators.updateWaybillDetailsValidators, OrderController.updateWaybillDetailsByOrderId);
     // Goodreceiptnote Details
-    router.post('/order/:order/goodreceiptnote', OrderValidators.updateGoodReceiptDetailsValidators, OrderController.updateWaybillDetailsByOrderId);
+    router.post('/order/:order/goodsreceiptnote', OrderValidators.updateGoodReceiptDetailsValidators, OrderController.updateGoodReceiptNoteByOrderId);
 
 
     /* ---------------------------------- Transaction --------------------------------- */
@@ -193,7 +194,8 @@ Router.group((router) => {
     /* ---------------------------------- Input ---------------------------------- */
     router.post('/input/add', InputsValidator.createInputValidator,Input.createInput);
     router.get('/input/getallbyuserid/:user_id', Input.getallInputsByUser);
-    router.get('/input/getall', Input.getallInputs);
+    router.get('/input', Input.getallInputs);
+    router.get('/input/:input', Input.getInputById);
     router.get('/input/getallbycategory/:category', Input.getallInputsByCategory);
     router.get('/input/getallbymanufacturer/:manufacturer', Input.getallInputsByManufacturer);
     router.get('/input/getallbypackaging/:packaging', Input.getallInputsByPackaging);
@@ -201,8 +203,8 @@ Router.group((router) => {
     
     /* ---------------------------------- CART ---------------------------------- */
     router.post('/input/cart/add', InputsValidator.addToCartValidator,Cart.addtoCart);
-    router.get('/input/cart/getallcartbyuserid/:user_id', Cart.getUserInputCart);
-    router.get('/input/cart/delete/:id', Cart.deleteCartItem);
+    router.get('/input/cart/:user_id', Cart.getUserInputCart);
+    router.delete('/input/cart/delete/:id', Cart.deleteCartItem);
 
     
     /* ---------------------------------- Order --------------------------------- */

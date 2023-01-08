@@ -15,7 +15,7 @@ class InputsCart{
                 return res.status(400).json({ 
                     error: true,
                     message: "All fields required",
-                    data: []
+                    data: errors
                 });
             }
 
@@ -26,6 +26,21 @@ class InputsCart{
                     "input_id": req.body.input_id
                 }
             });
+
+            /* -------------------------------- Get input ------------------------------- */
+            var input = await Input.findOne({
+                where : {id : req.body.input_id}
+            });
+
+            if(!input){
+                return res.status(400).json({
+                    error : true,
+                    message : "Invalid Request",
+                    data : []
+                })
+            }else{
+                req.body.price = input.price;
+            }
 
             if(checkCart.length > 0){
                 /* ------------------------- update existing record ------------------------- */

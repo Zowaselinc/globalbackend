@@ -57,6 +57,7 @@ class InputProducts{
                     user_id: req.body.user_id,
                     category: req.body.category,
                     sub_category: req.body.sub_category,
+                    title : req.body.title,
                     crop_focus: req.body.crop_focus,
                     packaging: req.body.packaging,
                     description: req.body.description,
@@ -176,6 +177,45 @@ class InputProducts{
                 error_name: "Error on getting all Inputs",
                 error_description: e.toString(),
                 route: "/api/input/getall",
+                error_code: "500"
+            });
+            if(logError){
+                return res.status(500).json({
+                    error: true,
+                    message: 'Unable to complete request at the moment'
+                })
+            }  
+        }
+    }
+
+    static async getInputById(req , res){
+        try{
+            var input = await Input.findOne({
+                where : {id : req.params.input}
+            });
+
+            if(input){
+
+                return res.status(200).json({
+                    error : false,
+                    message: "Input returned successfully",
+                    data : input
+                })
+
+            }else{
+
+                return res.status(200).json({
+                    error : false,
+                    message: "No such input found",
+                    data : []
+                })
+
+            }
+        }catch(e){
+            var logError = await ErrorLog.create({
+                error_name: "Error on getting input",
+                error_description: e.toString(),
+                route: "/api/input/:input",
                 error_code: "500"
             });
             if(logError){

@@ -18,22 +18,16 @@ class CropController{
     /* ---------------------------- * ADD Cropdescription * ---------------------------- */
     static async add(req , res){
 
-        // return res.status(200).json({
-        //     message : "Add Cropdescription "
-        // });
-
         let sampleFile;
         let uploadPath;
 
         const errors = validationResult(req);
 
         let randomid = crypto.randomBytes(8).toString('hex');
-        // let allImages = Object.keys(req.files);
-        // console.log(__dirname + '/uploads/' + req.files[allImages[0]].name);
+
         try{
 
             if(!errors.isEmpty()){
-                // return res.status(400).json({ errors: errors.array() });
                 return res.status(200).json({
                     "error": true,
                     "message": "All fields are required",
@@ -48,15 +42,8 @@ class CropController{
                 }) 
             
             }else{
-                // console.log(req.files);
 
-                // console.log('req.files >>>', req.files); // eslint-disable-line
-                
-                
                 let allImages = Object.keys(req.files);
-                
-                // let theurlpath = Object.keys("http://localhost:3000/"+req.files);
-                // console.log(allImages, "THE IMAGES HIUGUFTYDFGHJKHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
 
                 /* -------------------------- MOVE UPLOADED FOLDER -------------------------- */
                 let my_object = [];
@@ -78,7 +65,6 @@ class CropController{
                         }
                     });
                 }
-                // res.send(my_object);
 
                 /* -------------------------- MOVE UPLOADED FOLDER -------------------------- */
 

@@ -144,12 +144,8 @@ SubCategory.hasMany(Crop, {
   foreignKey: "subcategory_id",
 });
 
-Cart.hasOne(Input,{ foreignKey: 'id' })
+Cart.belongsTo(Input,{ foreignKey: 'input_id' })
 
-Input.hasMany(Cart,{
-  foreignKey: 'input_id',
-  as: 'input_cart'
-})
 
 Negotiation.hasOne(CropSpecification, {
   foreignKey: "model_id",

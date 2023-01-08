@@ -4,8 +4,9 @@ module.exports = {
 
     createInputValidator: [
         body('user_id').isString().not().isEmpty(),
-        body('category').isString().not().isEmpty(),
-        body('sub_category').isString().not().isEmpty(),
+        body('category_id').isString().not().isEmpty(),
+        body('subcategory_id').isString().not().isEmpty(),
+        body('title').isString().not().isEmpty(),
         body('crop_focus').isString().not().isEmpty(),
         body('packaging').isString().not().isEmpty(),
         body('description').isString().not().isEmpty(),
@@ -24,10 +25,9 @@ module.exports = {
     ],
 
     addToCartValidator: [
-        body('user_id').isString().not().isEmpty(),
-        body('input_id').isString().not().isEmpty(),
-        body('quantity').isString().not().isEmpty(),
-        body('price').isString().not().isEmpty()
+        body('user_id').not().isEmpty(),
+        body('input_id').not().isEmpty(),
+        body('quantity').isNumeric().not().isEmpty(),
     ]
 
 }

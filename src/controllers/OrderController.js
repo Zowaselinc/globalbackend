@@ -460,18 +460,16 @@ class OrderController{
                 });
             }
 
-            var findOrder = await Order.findOne({ where: { order_id: req.body.order_id } });
+            var findOrder = await Order.findOne({ where: { order_hash : req.params.order } });
             if(findOrder){
-
-                // return res.send(req.body.tracking_details)
 
                 let thetrackingDetails = JSON.stringify(req.body.tracking_details);
                 
                 var updateOrderTrackingDetails = await Order.update({
                     tracking_details: thetrackingDetails
-                }, { where : { order_id: req.body.order_id } });
+                }, { where : { order_hash: req.body.order } });
 
-                return res.status(400).json({
+                return res.status(200).json({
                     error : false,
                     message : "Tracking details updated successfully",
                     data : []
@@ -579,7 +577,7 @@ class OrderController{
                 });
             }
 
-            var findOrder = await Order.findOne({ where: { order_id: req.body.order_id } });
+            var findOrder = await Order.findOne({ where: { order_hash: req.params.order } });
             if(findOrder){
 
                 // return res.send(req.body.tracking_details)
@@ -588,9 +586,9 @@ class OrderController{
                 
                 var updateGoodReceiptDetails = await Order.update({
                     receipt_note: theGoodReceiptDetails
-                }, { where : { order_id: req.body.order_id } });
+                }, { where : { order_hash: req.params.order } });
 
-                return res.status(400).json({
+                return res.status(200).json({
                     error : false,
                     message : "Receipt note updated successfully",
                     data : []
