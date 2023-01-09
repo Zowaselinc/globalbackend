@@ -149,38 +149,44 @@ class TransactionController{
                         if(order){
 
                             // CHECK FOR CORRECT ORDER AMOUNT ON TRANSACTION
-
-                            if(order.total == response.data.amount){
-
-                                order.payment_status = "PAID";
+                            if(req.body.partial){
+                                order.amount_paid = eval(response.data.amount) + eval(order.amount_paid ?? 0),
+                                order.payment_status = order.amount_paid == eval(order.total) ? "PAID" : "PARTIALLY_PAID";
+                                order.amount_due = eval(order.total) - order.amount_paid;
                                 await order.save();
-
-
-                                // CREATE TRANSACTION
-
-                                var transaction = await Transaction.create({
-                                    transaction_id : transactionId,
-                                    transaction_ref : transactionRef,
-                                    type : "order",
-                                    type_id : order.id,
-                                    amount_paid : response.data.amount,
-                                    status : "completed"
-                                });
-
-                                // CREDIT SELLER WALLET OR WALLETS
-                                if(order.products.length > 1){
-                                    for(var i = 0;i < order.products.length;i++){
-                                        var wallet = await Wallet.findOne({ where : {user_id : JSON.parse(order.products)[i].user_id}});
-                                        wallet.balance = eval(wallet.balance) + eval(JSON.parse(order.products)[i].price);
-                                        await wallet.save();
-                                    }
+                            }else{
+                                if(order.total == response.data.amount){
+                                    order.payment_status = "PAID";
+                                    order.amount_paid = response.data.amount,
+                                    order.amound_due = 0;
+                                    await order.save();
                                 }else{
+                                    return res.status(400).json({ "error": true, "message": "Invalid transaction amount"})
+                                }
+                            }
+                            
+                            // CREATE TRANSACTION
+
+                            var transaction = await Transaction.create({
+                                transaction_id : transactionId,
+                                transaction_ref : transactionRef,
+                                type : "order",
+                                type_id : order.id,
+                                amount_paid : response.data.amount,
+                                status : "completed"
+                            });
+
+                            // CREDIT SELLER WALLET OR WALLETS
+                            if(order.products.length > 1){
+                                for(var i = 0;i < order.products.length;i++){
                                     var wallet = await Wallet.findOne({ where : {user_id : JSON.parse(order.products)[i].user_id}});
-                                    wallet.balance = eval(wallet.balance) + eval(response.data.amount);
+                                    wallet.balance = eval(wallet.balance) + eval(JSON.parse(order.products)[i].price);
                                     await wallet.save();
                                 }
-
-
+                            }else{
+                                var wallet = await Wallet.findOne({ where : {user_id : JSON.parse(order.products)[i].user_id}});
+                                wallet.balance = eval(wallet.balance) + eval(response.data.amount);
+                                await wallet.save();
                             }
                         }
                     }
@@ -190,10 +196,10 @@ class TransactionController{
                         "message": "Transaction verified"
                     })
                 }else{
-                    return res.status(200).json({ "error": true, "message": "Duplicate transaction entry"})
+                    return res.status(400).json({ "error": true, "message": "Duplicate transaction entry"})
                 }
             }else{
-                return res.status(200).json({ "error": true, "message": "Transaction not successful"})
+                return res.status(400).json({ "error": true, "message": "Transaction not successful"})
             }
 
         }catch(e){

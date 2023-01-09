@@ -467,7 +467,7 @@ class OrderController{
                 
                 var updateOrderTrackingDetails = await Order.update({
                     tracking_details: thetrackingDetails
-                }, { where : { order_hash: req.body.order } });
+                }, { where : { order_hash: req.params.order } });
 
                 return res.status(200).json({
                     error : false,

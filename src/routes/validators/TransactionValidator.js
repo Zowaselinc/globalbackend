@@ -19,6 +19,7 @@ module.exports = {
         body('transaction_id').isString(),
         body('transaction_ref').isString(),
         body('order').isString().optional(),
-        body('subscription').isString().optional()
+        body('subscription').isString().optional(),
+        body('partial').optional(),
     ]
 }

@@ -144,7 +144,7 @@ class AuthController{
             {expiresIn: "48h"}
         );
 
-        await AuthController.saveToken(user,token);
+        await AuthController.saveToken(user,token,req);
 
         Mailer()
         .to(data.email).from(process.env.MAIL_FROM)
@@ -207,7 +207,7 @@ class AuthController{
             {expiresIn: "48h"}
         );
 
-        await AuthController.saveToken(user,token);
+        await AuthController.saveToken(user,token,req);
 
         res.status(200).json({
             status : true,
@@ -269,7 +269,7 @@ class AuthController{
             {expiresIn: "48h"}
         );
 
-        await AuthController.saveToken(user,token);
+        await AuthController.saveToken(user,token,req);
 
         return res.status(200).json({
             status : true,

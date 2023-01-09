@@ -432,6 +432,14 @@ class NegotiationController {
                     include: CropIncludes
                 });
 
+                var tracking_details = {
+                    pickup_location : products[0].warehouse_address,
+                    transit : [],
+
+                    //To be removed later
+                    delivery_location : "No 20 Lesely Drive"
+                };;
+
                 var order = await Order.create({
                     order_hash: "ORD" + randomId,
                     buyer_id: offer.type == "corporate" ? offer.sender_id : offer.receiver_id,
@@ -440,6 +448,7 @@ class NegotiationController {
                     total : eval(offer.specification.qty) * eval(offer.specification.price),
                     currency : products[0].currency,
                     payment_status: "UNPAID",
+                    tracking_details : JSON.stringify(tracking_details),
                     products: JSON.stringify(products),
                 })
 

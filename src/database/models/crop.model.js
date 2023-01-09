@@ -54,6 +54,10 @@ let Schema = (Sequelize,mode) => {
             type: Sequelize.STRING,
             allowNull : false
         },
+        warehouse_address : {
+            type: Sequelize.STRING,
+            allowNull : false
+        },
         ...generateTimestamps(Sequelize,mode)
     }
 }
