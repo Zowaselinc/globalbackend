@@ -2,6 +2,8 @@
 const { validationResult } = require('express-validator');
 const { SubCategory, ErrorLog } = require('~database/models');
 const crypto = require('crypto');
+const { count } = require('console');
+const { Sequelize } = require('sequelize');
 
 class SubCategoryController{
 
@@ -13,6 +15,53 @@ class SubCategoryController{
     }
 
 
+        /* --------------------------- GET ALL SUB CATEGORIES --------------------------- */
+
+
+        static async getAllSubCategories(req, res){
+
+            try{
+    
+                var subcategories = await SubCategory.findAll();
+    
+                if(subcategories.length > 0){
+    ``    
+                    return res.status(200).json({
+                        error : false,
+                        message: "Subcategories returned successfully",
+                        data : subcategories
+                    })
+    
+                }else{
+    
+                    return res.status(200).json({
+                        error : false,
+                        message: "No categories found",
+                        data : []
+                    })
+    
+                }
+    
+            }catch(error){
+                var logError = await ErrorLog.create({
+                    error_name: "Error on getting all Sub categories",
+                    error_description: error.toString(),
+                    route: `/subcategories/getall`,
+                    error_code: "500"
+                });
+    
+                return res.status(500).json({
+                    error: true,
+                    message: "Unable to complete the request at the moment",
+                    data: []
+                });
+            }
+    
+    
+        }
+    
+        /* --------------------------- GET ALL SUB CATEGORIES --------------------------- */
+        
 
 
 

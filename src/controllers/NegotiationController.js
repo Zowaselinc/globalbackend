@@ -408,8 +408,8 @@ class NegotiationController {
             }
 
             var offer = await Negotiation.findOne({
-                where : req.body.id,
-                includes : [
+                where : {id : req.body.id},
+                include : [
                     IncludeSpecification
                 ]
             });

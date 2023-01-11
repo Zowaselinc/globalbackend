@@ -14,7 +14,7 @@ module.exports = {
         body('waybill_details.dispatch_section.from').isString(),
         body('waybill_details.dispatch_section.to').isString(),
         body('waybill_details.dispatch_section.date').isString(),
-        body('waybill_details.dispatch_section.consignee').isString(),
+        body('waybill_details.dispatch_section.cosignee').isString(),
         body('waybill_details.dispatch_section.truck_number').isString(),
         body('waybill_details.dispatch_section.remarks').isString(),
         body('waybill_details.dispatch_section.items').not().isEmpty(),

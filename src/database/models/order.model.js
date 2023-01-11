@@ -35,11 +35,9 @@ let Schema = (Sequelize,mode) => {
         },
         amount_paid : {
             type: Sequelize.STRING,
-            allowNull : false
         },
         amount_due : {
             type: Sequelize.STRING,
-            allowNull : false
         },
         products : {
             type : Sequelize.TEXT,

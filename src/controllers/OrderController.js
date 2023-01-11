@@ -329,7 +329,7 @@ class OrderController{
         const errors = validationResult(req);
 
         try{
-            var findOrder = await Order.findOne({ where: { buyer_id: req.params.buyerid, buyer_type: req.params.buyertype } });
+            var findOrder = await Order.findAll({ where: { buyer_id: req.params.id} });
             if(findOrder){
                 return res.status(200).json({
                     error : false,
@@ -337,8 +337,8 @@ class OrderController{
                     data : findOrder
                 })
             }else{
-                return res.status(400).json({
-                    error : true,
+                return res.status(200).json({
+                    error : false,
                     message : "No order found",
                     data : findOrder
                 })

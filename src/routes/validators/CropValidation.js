@@ -1,27 +1,23 @@
 const { body } = require('express-validator');
 
-module.exports = {
-
+const Extended = {
     addCropValidator : [
+        // Crop model requirements
         body('type').isString(),
         body('user_id').isString(),
         body('title').isString(),
         body('category_id').isString(),
         body('subcategory_id').isString(),
-        // body('active').isString(),
-        // body('market').isString(),
         body('description').isString(),
-        // body('images').isString(),
+        body('images').isString(),
         body('currency').isString(),
         body('is_negotiable').isString(),
         body('video').isString(),
         body('packaging').isString(),
         body('application').isString(),
-        body('manufacture_name').isString(),
-        body('manufacture_date').isString(),
-        body('expiration_date').isString(),
 
-        body('model_type').isString(),
+        // Crop specification Requirements
+
         body('qty').isNumeric(),
         body('price').isNumeric(),
         body('color').isString(),
@@ -51,10 +47,14 @@ module.exports = {
         body('curcumin_content').isNumeric(),
         body('extraneous').isNumeric(),
         body('unit').isString(),
-        // body('kg').isNumeric(),
-        // body('liters').isNumeric()
+    ],
+}
+module.exports = {
 
-        // body('crop_id').isNumeric(),
+    addCropWantedValidator : [
+
+        ...Extended.addCropValidator,
+        body('crop_id').isNumeric(),
         body('state').isString(),
         body('zip').isString(),
         body('country').isString(),
@@ -62,6 +62,7 @@ module.exports = {
         body('delivery_method').isString(),
         body('delivery_date').isString(),
         body('delivery_window').isString()
+
     ],
 
 

@@ -87,6 +87,9 @@ Router.middleware(['isAuthenticated']).group((router)=>{
 
     router.get('/users/:id', UserController.getUserById);
 
+    router.get('/users/:id/orders', OrderController.getByBuyer);
+
+
 });
 
 
@@ -102,7 +105,7 @@ Router.group((router) => {
         router.get('/category/:id', CategoryController.getById);
     
         /* ------------------------------- SubCategory ------------------------------ */
-
+        router.get('/subcategory/getall', SubCategoryController.getAllSubCategories);
         router.get('/subcategory/getbycategory/:categoryId', SubCategoryController.getByCategory);
         router.get('/subcategory/:id', SubCategoryController.getById);
 
@@ -125,7 +128,7 @@ Router.group((router)=>{
 
     /* ------------------------------- Crop ------------------------------ */
 
-    router.post('/crop/add', CropValidation.addCropValidator, CropController.add);
+    router.post('/crop/wanted/add', CropValidation.addCropWantedValidator, CropController.add);
     router.get('/crop/getbycropwanted', CropController.getByCropWanted);
     router.get('/crop/getbycropauction', CropController.getByCropAuctions);
     router.get('/crop/getbycropoffer', CropController.getByCropOffer);
@@ -164,9 +167,9 @@ Router.group((router)=>{
     /* ---------------------------------- Order --------------------------------- */
     router.post('/crop/order/add', OrderValidators.createOrderValidator, OrderController.createNewOrder);
     router.get('/order/:order', OrderController.getByOrderHash);
-    router.get('/crop/order/getbybuyer/:buyerid/:buyertype', OrderController.getByBuyer);
-    router.get('/crop/order/getbynegotiationid/:negotiationid', OrderController.getByNegotiationId);
-    router.get('/crop/order/getbypaymentstatus/:paymentstatus', OrderController.getByPaymentStatus);
+    router.get('/order/getbybuyer/:buyerid/:buyertype', OrderController.getByBuyer);
+    router.get('/order/getbynegotiationid/:negotiationid', OrderController.getByNegotiationId);
+    router.get('/order/getbypaymentstatus/:paymentstatus', OrderController.getByPaymentStatus);
     // Tracking Details
     router.post('/order/:order/trackingdetails', OrderController.updateTrackingDetailsByOrderId);
     // Waybill Details
