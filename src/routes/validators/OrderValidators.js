@@ -10,6 +10,10 @@ module.exports = {
         body('payment_status').isString().not().isEmpty()
     ],
 
+    createCartOrderValidator : [
+        body('delivery_details').not().isEmpty(),
+    ],
+
     updateWaybillDetailsValidators : [
         body('waybill_details.dispatch_section.from').isString(),
         body('waybill_details.dispatch_section.to').isString(),

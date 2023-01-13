@@ -54,7 +54,6 @@ module.exports = {
     addCropWantedValidator : [
 
         ...Extended.addCropValidator,
-        body('crop_id').isNumeric(),
         body('state').isString(),
         body('zip').isString(),
         body('country').isString(),

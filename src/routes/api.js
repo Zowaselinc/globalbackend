@@ -89,6 +89,8 @@ Router.middleware(['isAuthenticated']).group((router)=>{
 
     router.get('/users/:id/orders', OrderController.getByBuyer);
 
+    router.get('/users/:id/sales', OrderController.getBySeller);
+
 
 });
 
@@ -166,8 +168,10 @@ Router.group((router)=>{
 
     /* ---------------------------------- Order --------------------------------- */
     router.post('/crop/order/add', OrderValidators.createOrderValidator, OrderController.createNewOrder);
+    router.post('/order/cart/create', OrderValidators.createCartOrderValidator, OrderController.createCartOrder);
     router.get('/order/:order', OrderController.getByOrderHash);
     router.get('/order/getbybuyer/:buyerid/:buyertype', OrderController.getByBuyer);
+    router.get('/order/getbyseller/:sellerid/:buyertype', OrderController.getByBuyer);
     router.get('/order/getbynegotiationid/:negotiationid', OrderController.getByNegotiationId);
     router.get('/order/getbypaymentstatus/:paymentstatus', OrderController.getByPaymentStatus);
     // Tracking Details

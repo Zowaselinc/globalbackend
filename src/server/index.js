@@ -8,6 +8,7 @@ const Routes = require('~routes');
 const {DB} = require("~database/models");
 
 const cors = require('cors');
+const GlobalUtils = require('~utilities/global');
 
 class Server{
 
@@ -20,7 +21,7 @@ class Server{
 
         // Register App Routes
         Routes(App).register();
-        
+    
 
         //Sync Database Models
         //{ force: true }

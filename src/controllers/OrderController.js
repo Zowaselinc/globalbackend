@@ -13,6 +13,7 @@ const { use } = require("~routes/api");
 
 const crypto = require('crypto');
 const { IncludeBuyer, IncludeNegotiation } = require("~database/helpers/modelncludes");
+const { Op } = require("sequelize");
 
 
 
@@ -274,6 +275,67 @@ class OrderController{
     /* ---------------------------- * CREATE NEW ORDER * ---------------------------- */
 
 
+    static async createCartOrder(req,res){
+
+        const errors = validationResult(req);
+
+        try{
+            
+            if(!errors.isEmpty()){
+                return res.status(400).json({ 
+                    error: true,
+                    message: "All fields required",
+                    data: []
+                });
+            }
+            const randomId = crypto.randomBytes(8).toString('hex').toUpperCase();
+
+            var getUserCart = await Cart.findAll({
+                where : {user_id : req.global.user.id},
+                include : [
+                    {model : Input}
+                ]
+            });
+            var cartTotal = 0;
+            getUserCart.forEach((item)=>{
+                cartTotal += (eval(item.price) * eval(item.quantity));
+            });
+    
+            // Create order
+            var order = await Order.create({
+                order_hash: "ORD" + randomId,
+                buyer_id: req.global.user.id,
+                buyer_type: "merchant",
+                negotiation_id: null,
+                total : cartTotal,
+                currency : "NGN",
+                payment_status: "PAID",
+                waybill_details : JSON.stringify(req.body.delivery_details),
+                products: JSON.stringify(getUserCart),
+            })
+
+    
+            return res.status(200).json({
+                "error": false,
+                "message": "New order created",
+                "data": order
+            })
+        }catch(e){
+            var logError = await ErrorLog.create({
+                error_name: "Error on creating an order",
+                error_description: e.toString(),
+                route: "/api/order/cart/create",
+                error_code: "500"
+            });
+            return res.status(500).json({
+                error: true,
+                message: 'Unable to complete request at the moment '+e.toString()
+            })
+        }
+
+    }
+
+
 
     /* -------------------------- GET ORDER BY ORDER_ID ------------------------- */
     static async getByOrderHash(req , res){
@@ -330,7 +392,7 @@ class OrderController{
 
         try{
             var findOrder = await Order.findAll({ where: { buyer_id: req.params.id} });
-            if(findOrder){
+            if(findOrder && findOrder.length){
                 return res.status(200).json({
                     error : false,
                     message : "Order retrieved successfully",
@@ -347,7 +409,47 @@ class OrderController{
             var logError = await ErrorLog.create({
                 error_name: "Error on getting all orders by buyerid",
                 error_description: e.toString(),
-                route: `/api/crop/order/getbyorder/${req.params.buyerid}/${req.params.buyertype}`,
+                route: `/users/${req.params.id}/orders`,
+                error_code: "500"
+            });
+            if(logError){
+                return res.status(500).json({
+                    error: true,
+                    message: 'Unable to complete request at the moment'
+                })
+            } 
+        }
+    }
+    /* -------------------------- GET ORDER BY BUYER_ID ------------------------- */
+
+
+    /* -------------------------- GET ORDER BY BUYER_ID ------------------------- */
+    static async getBySeller(req , res){
+
+        const errors = validationResult(req);
+
+        try{
+            var findOrder = await Order.findAll({ where: { products:{
+                [Op.like] : `%"user_id":${req.params.id}%`
+            } } });
+            if(findOrder && findOrder.length){
+                return res.status(200).json({
+                    error : false,
+                    message : "Sales retrieved successfully",
+                    data : findOrder
+                })
+            }else{
+                return res.status(200).json({
+                    error : false,
+                    message : "No sales found",
+                    data : findOrder
+                })
+            }
+        }catch(e){
+            var logError = await ErrorLog.create({
+                error_name: "Error on getting all orders by buyerid",
+                error_description: e.toString(),
+                route: `/users/${req.params.id}/sales`,
                 error_code: "500"
             });
             if(logError){
