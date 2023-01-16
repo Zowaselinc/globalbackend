@@ -123,7 +123,7 @@ Router.group((router) => {
 
 // Routes
 
-Router.group((router)=>{
+Router.middleware(['isAuthenticated']).group((router)=>{
 
     // router.get();
 

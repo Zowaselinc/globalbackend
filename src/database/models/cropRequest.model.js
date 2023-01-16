@@ -23,14 +23,6 @@ let Schema = (Sequelize,mode) => {
             type: Sequelize.STRING,
             allowNull : false
         },
-        delivery_method : {
-            type: Sequelize.STRING,
-            allowNull : false
-        },
-        delivery_date : {
-            type: Sequelize.STRING,
-            allowNull : false
-        },
         delivery_window : {
             type: Sequelize.STRING,
             allowNull : false
