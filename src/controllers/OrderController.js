@@ -573,7 +573,7 @@ class OrderController{
                 return res.status(400).json({ 
                     error: true,
                     message: "All fields required",
-                    data: errors
+                    data: []
                 });
             }
 
@@ -591,7 +591,7 @@ class OrderController{
                 return res.status(200).json({
                     error : false,
                     message : "Receipt note updated successfully",
-                    data : findOrder
+                    data : []
                 })
 
             }else{
@@ -605,7 +605,7 @@ class OrderController{
             var logError = await ErrorLog.create({
                 error_name: "Error on updating receipt note by orderId",
                 error_description: e.toString(),
-                route: `/api/order/goodreceiptnote`,
+                route: `/api/crop/goodreceiptnote/updatebyorderid`,
                 error_code: "500"
             });
             if(logError){

@@ -95,7 +95,7 @@ class NegotiationController {
 
 
 
-    /* --------------------------- GET ALL NEGOTIATION BY CROP AND USERID --------------------------- */
+    /* --------------------------- GET ALL NEGOTIATION BY USERID --------------------------- */
     static async getbyuserid(req, res) {
 
         const userId = req.params.userid;
@@ -455,7 +455,7 @@ class NegotiationController {
                 return res.status(200).json({
                     error: false,
                     message: "Negotiation offer accepted successfully",
-                    data: { offer : offer, order : order, product: products }
+                    data: { offer : offer, order : order }
                 })
 
             } else {
@@ -496,7 +496,7 @@ class NegotiationController {
     static async declineNegotiation(req, res) {
 
         // return res.status(200).json({
-        //     message : "Decline Negotiation"
+        //     message : "Accept Negotiation"
         // });
 
         try {
