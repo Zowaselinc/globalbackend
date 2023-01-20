@@ -6,17 +6,20 @@ let Schema = (Sequelize,mode) => {
             type: Sequelize.INTEGER,
             allowNull : false
         },
-        client_id : {
+        address : {
             type : Sequelize.STRING,
             allowNull : false
         },
-        token : {
-            type: Sequelize.STRING,
-            unique : true,
+        zip : {
+            type : Sequelize.STRING,
             allowNull : false
         },
-        expires_at : {
-            type: Sequelize.DATE,
+        state : {
+            type : Sequelize.STRING,
+            allowNull : false
+        },
+        country : {
+            type : Sequelize.STRING,
             allowNull : false
         },
         ...generateTimestamps(Sequelize, mode)
@@ -24,10 +27,13 @@ let Schema = (Sequelize,mode) => {
 }
 const Model = (sequelize, instance, Sequelize) => {
     // Define initial for DB sync
-    sequelize.define("access_tokens", Schema(Sequelize,1),{ timestamps: false });
+    sequelize.define("delivery_address", Schema(Sequelize,1),{ timestamps: false });
     // Bypass initial instance to cater for timestamps
-    const AccessTokens = instance.define("access_tokens", Schema(Sequelize,2),{ timestamps: false });
-    return AccessTokens;
+    
+    const DeliveryAddress = instance.define("delivery_address", Schema(Sequelize,2),{ 
+        timestamps: false 
+    });
+    return DeliveryAddress;
 }
 
 module.exports = { Schema , Model};

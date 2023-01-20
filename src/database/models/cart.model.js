@@ -3,18 +3,19 @@ const generateTimestamps = require("./timestamps");
 let Schema = (Sequelize,mode) => {
 
     return {
-        error_name : {
-            type: Sequelize.STRING,
-            allowNull : false
-        },
-        error_description : {
-            type : Sequelize.STRING
-        },
-        route : {
+        user_id : {
             type : Sequelize.STRING,
             allowNull : false
         },
-        error_code:{
+        input_id : {
+            type : Sequelize.STRING,
+            allowNull : false
+        },
+        quantity : {
+            type : Sequelize.STRING,
+            allowNull : false
+        },
+        price:{
             type: Sequelize.STRING,
             allowNull: false
         },
@@ -24,12 +25,12 @@ let Schema = (Sequelize,mode) => {
 
 const Model = (sequelize, instance, Sequelize) => {
     // Define initial for DB sync
-    sequelize.define("errorlogs", Schema(Sequelize,1),{ timestamps: false });
+    sequelize.define("cart", Schema(Sequelize,1),{ timestamps: false });
     // Bypass initial instance to cater for timestamps
-    const ErrorLog = instance.define("errorlogs", Schema(Sequelize,2),{ 
+    const Cart = instance.define("cart", Schema(Sequelize,2),{ 
         timestamps: false,
     });
-    return ErrorLog;
+    return Cart;
 }
 
 module.exports = { Schema , Model};

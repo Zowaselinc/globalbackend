@@ -51,6 +51,10 @@ class Router{
         return this.router.patch(...this.parseArgs(...args));
     }
 
+    delete(...args){
+        return this.router.delete(...this.parseArgs(...args));
+    }
+
     put(...args){
         return this.router.put(...this.parseArgs(...args));
     }

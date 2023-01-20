@@ -15,10 +15,16 @@ class AuthMiddleware{
         let auth =  headers.authorization;
         try{
             if(auth){
+                var error = "";
                 const decoded = jwt.verify(auth, process.env.TOKEN_KEY);
-                var getToken = await AccessToken.findOne({ where : {user_id : decoded.user_id}});
-                getToken = getToken ? getToken.dataValues : {};
-                if(getToken.token != auth){
+                var getToken = await AccessToken.findAll({ where : {user_id : decoded.user_id}});
+                var tokenFound = false;
+                if(getToken){
+                    getToken.forEach(item=>{
+                        tokenFound = item.token == auth ? true : tokenFound;
+                    })
+                }
+                if(!tokenFound){
                     res.status(403);
                     res.send('Unauthorized');
                 }
@@ -28,8 +34,13 @@ class AuthMiddleware{
             }
         }
         catch(error){
-            res.status(403);
-            res.send('Forbidden');
+            if(error.name == "TokenExpiredError"){
+                res.status(403);
+                res.send('Expired');
+            }else{
+                res.status(403);
+                res.send('Forbidden');
+            }
         }
 
     }

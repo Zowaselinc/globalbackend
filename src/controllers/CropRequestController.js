@@ -1,14 +1,14 @@
 //Import validation result
 const { validationResult } = require('express-validator');
 const crypto = require('crypto');
-const { Product, ProductRequest, ErrorLog } = require('~database/models');
+const { Crop, CropRequest, ErrorLog } = require('~database/models');
 
-class ProductRequestController{
+class CropRequestController{
 
     static async hello(req , res){
 
         return res.status(200).json({
-            message : "Hello Product Request"
+            message : "Hello Crop Request"
         });
     }
 
@@ -32,10 +32,10 @@ class ProductRequestController{
             // console.log(errors.isEmpty());
             let randomid = crypto.randomBytes(8).toString('hex');
 
-            const { count, rows } = await Product.findAndCountAll({ where: { id: req.body.product_id  } });
+            const { count, rows } = await Crop.findAndCountAll({ where: { id: req.body.crop_id  } });
 
-            var FindProdRequest = await ProductRequest.findOne({ 
-                where: { product_id: req.body.product_id, state: req.body.state, country: req.body.country, address: req.body.address,
+            var FindProdRequest = await CropRequest.findOne({ 
+                where: { crop_id: req.body.crop_id, state: req.body.state, country: req.body.country, address: req.body.address,
                     delivery_method: req.body.delivery_method, delivery_date: req.body.delivery_date, 
                     delivery_window: req.body.delivery_window
                 } 
@@ -45,7 +45,7 @@ class ProductRequestController{
             if(count<1){
                 return res.status(200).json({
                     "error": true,
-                    "message": "Product does not exits"
+                    "message": "Crop does not exits"
                 })
             }else{
 
@@ -55,8 +55,8 @@ class ProductRequestController{
                         message : "This details already exists for a product request"
                     })
                 }else{
-                    var ProdRequest = await ProductRequest.create({
-                        product_id: req.body.product_id,
+                    var ProdRequest = await CropRequest.create({
+                        crop_id: req.body.crop_id,
                         state: req.body.state,
                         zip: req.body.zip,
                         country: req.body.country,
@@ -68,8 +68,8 @@ class ProductRequestController{
             
                     return res.status(200).json({
                         "error": false,
-                        "message": "Product request created successfully",
-                        "Product Request": ProdRequest
+                        "message": "Crop request created successfully",
+                        "Crop Request": ProdRequest
                     })
                 }
 
@@ -79,7 +79,7 @@ class ProductRequestController{
             var logError = await ErrorLog.create({
                 error_name: "Error on adding product request",
                 error_description: e.toString(),
-                route: "/api/productrequest/add",
+                route: "/api/croprequest/add",
                 error_code: "500"
             });
             if(logError){
@@ -105,21 +105,21 @@ class ProductRequestController{
     static async getall(req , res){
 
         // return res.status(200).json({
-        //     message : "GET ALL Product Request"
+        //     message : "GET ALL Crop Request"
         // });
 
         try{
-            var Product_Request = await ProductRequest.findAll();
+            var Crop_Request = await CropRequest.findAll();
 
             return res.status(200).json({
                 error : false,
-                data : Product_Request
+                data : Crop_Request
             })
         }catch(e){
             var logError = await ErrorLog.create({
                 error_name: "Error on getting all product request",
                 error_description: e.toString(),
-                route: "/api/productrequest/getall",
+                route: "/api/croprequest/getall",
                 error_code: "500"
             });
             if(logError){
@@ -150,17 +150,17 @@ class ProductRequestController{
         const limit = parseInt(req.params.limit);
 
         try{
-            var Product_Request = await ProductRequest.findAll({ offset: offset, limit: limit });
+            var Crop_Request = await CropRequest.findAll({ offset: offset, limit: limit });
 
             return res.status(200).json({
                 error : false,
-                data : Product_Request
+                data : Crop_Request
             })
         }catch(e){
             var logError = await ErrorLog.create({
                 error_name: "Error on getting all product request by limit and offset",
                 error_description: e.toString(),
-                route: "/api/productrequest/:offset/:limit",
+                route: "/api/croprequest/:offset/:limit",
                 error_code: "500"
             });
             if(logError){
@@ -186,7 +186,7 @@ class ProductRequestController{
     static async getbyid(req , res){
 
         // return res.status(200).json({
-        //     message : "GET Product Request By ID"
+        //     message : "GET Crop Request By ID"
         // });
 
         const errors = validationResult(req);
@@ -196,12 +196,12 @@ class ProductRequestController{
                 return res.status(400).json({ errors: errors.array() });
             }
     
-            var productrequest = await ProductRequest.findOne({ where: { id: req.body.id } });
-            if(productrequest){
+            var croprequest = await CropRequest.findOne({ where: { id: req.body.id } });
+            if(croprequest){
                 return res.status(200).json({
                     error : false,
                     message : "Single project request grabbed successfully",
-                    productrequest : productrequest
+                    croprequest : croprequest
                 })
             }else{
                 return res.status(400).json({
@@ -226,7 +226,7 @@ class ProductRequestController{
     static async getbyproductid(req , res){
 
         // return res.status(200).json({
-        //     message : "GET Product Request By ID"
+        //     message : "GET Crop Request By ID"
         // });
 
         const errors = validationResult(req);
@@ -236,12 +236,12 @@ class ProductRequestController{
                 return res.status(400).json({ errors: errors.array() });
             }
     
-            var productrequest = await ProductRequest.findOne({ where: { product_id: req.body.product_id } });
-            if(productrequest){
+            var croprequest = await CropRequest.findOne({ where: { crop_id: req.body.crop_id } });
+            if(croprequest){
                 return res.status(200).json({
                     error : false,
                     message : "Single project request grabbed successfully",
-                    productrequest : productrequest
+                    croprequest : croprequest
                 })
             }else{
                 return res.status(400).json({
@@ -268,7 +268,7 @@ class ProductRequestController{
      static async editbyid(req , res){
 
         // return res.status(200).json({
-        //     message : "EDIT Product Request By ID"
+        //     message : "EDIT Crop Request By ID"
         // });
 
         const errors = validationResult(req);
@@ -278,20 +278,20 @@ class ProductRequestController{
                 return res.status(400).json({ errors: errors.array() });
             }
             
-            var findProductRequest = await ProductRequest.findOne({ where: { id: req.body.id } });
+            var findCropRequest = await CropRequest.findOne({ where: { id: req.body.id } });
 
-            if(findProductRequest){
+            if(findCropRequest){
 
-                var productRequest = await ProductRequest.update(req.body,{
+                var cropRequest = await CropRequest.update(req.body,{
                     where : { 
                         id: req.body.id 
                     } 
                 });
 
-                if(productRequest){
+                if(cropRequest){
                     return res.status(200).json({
                         error : false,
-                        message : "Product request edited successfully",
+                        message : "Crop request edited successfully",
                         product_request : req.body
                     })
                 }else{
@@ -320,4 +320,4 @@ class ProductRequestController{
 
 }
 
-module.exports = ProductRequestController;
+module.exports = CropRequestController;

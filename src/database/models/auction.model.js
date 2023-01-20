@@ -2,7 +2,7 @@ const generateTimestamps = require("./timestamps");
 
 let Schema = (Sequelize,mode) => {
     return {
-        product_id : {
+        crop_id : {
             type : Sequelize.INTEGER,
             allowNull : false
         },

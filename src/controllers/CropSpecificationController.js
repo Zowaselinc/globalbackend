@@ -1,25 +1,25 @@
 //Import validation result
 const { validationResult } = require('express-validator');
 const crypto = require('crypto');
-const { ProductSpecification, Product } = require('~database/models');
+const { CropSpecification, Crop } = require('~database/models');
 
 
 
-class ProductspecController{
+class CropspecController{
 
     static async hello(req , res){
 
         return res.status(200).json({
-            message : "Hello Product Specification"
+            message : "Hello Crop Specification"
         });
     }
 
    
-    /* ---------------------------- * ADD Product Specification * ---------------------------- */
+    /* ---------------------------- * ADD Crop Specification * ---------------------------- */
     static async add(req , res){
 
         // return res.status(200).json({
-        //     message : "Add Product Specification "
+        //     message : "Add Crop Specification "
         // });
 
     
@@ -34,23 +34,23 @@ class ProductspecController{
             
             let randomid = crypto.randomBytes(8).toString('hex');
 
-            const { count, rows } = await Product.findAndCountAll({ where: { id: req.body.model_id  } });
-            var findProductSpec = await ProductSpecification.findOne({ where: { model_id: req.body.model_id  } });
-            console.log(findProductSpec, "This is findProductcount");
+            const { count, rows } = await Crop.findAndCountAll({ where: { id: req.body.model_id  } });
+            var findCropSpec = await CropSpecification.findOne({ where: { model_id: req.body.model_id  } });
+            console.log(findCropSpec, "This is findCropcount");
             if(count < 1){
                 return res.status(200).json({
                     "error": true,
-                    "message": "Product does not exits",
+                    "message": "Crop does not exits",
                     // "Cropdescription": Cropdescription
                 })
-            }else if(findProductSpec){
+            }else if(findCropSpec){
                 return res.status(200).json({
                     "error": true,
-                    "message": "Product specification already exits for this product",
+                    "message": "Crop specification already exits for this product",
                     // "Cropdescription": Cropdescription
                 })
             }else{
-                var Productspec = await ProductSpecification.create({
+                var Cropspec = await CropSpecification.create({
                     model_id: req.body.model_id,
                     model_type: req.body.model_type,
                     qty: req.body.qty,
@@ -81,14 +81,14 @@ class ProductspecController{
                     infested_by_weight: req.body.infested_by_weight,
                     curcumin_content: req.body.curcumin_content,
                     extraneous: req.body.extraneous,
-                    kg: req.body.kg,
+                    unit: req.body.unit,
                     liters: req.body.liters
                 })
                 console.log(req.body)
                 return res.status(200).json({
                     "error": false,
-                    "message": "Product specification created successfully",
-                    "ProductSpecification": ProductSpecification
+                    "message": "Crop specification created successfully",
+                    "CropSpecification": CropSpecification
                 })
 
             }
@@ -101,10 +101,10 @@ class ProductspecController{
 
         
     }
-    // /* ---------------------------- * ADD Product Specification * ---------------------------- */
+    // /* ---------------------------- * ADD Crop Specification * ---------------------------- */
 
    
 
 }
 
-module.exports = ProductspecController;
+module.exports = CropspecController;

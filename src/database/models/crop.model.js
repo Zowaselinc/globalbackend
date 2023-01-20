@@ -1,52 +1,74 @@
 const generateTimestamps = require("./timestamps");
 
 let Schema = (Sequelize,mode) => {
-
     return {
-        product_id : {
+        user_id : {
             type: Sequelize.INTEGER(11),
             allowNull : false
         },
-        state : {
-            type: Sequelize.STRING,
-            allowNull : false
-        },  
-        zip : {
+        title : {
             type: Sequelize.STRING,
             allowNull : false
         },
-        country : {
+        type : {
             type: Sequelize.STRING,
             allowNull : false
         },
-        address : { 
+        category_id : {
             type: Sequelize.STRING,
             allowNull : false
         },
-        delivery_method : {
+        subcategory_id : {
+            type: Sequelize.STRING,
+            // allowNull : false
+        },
+        active : {
+            type: Sequelize.INTEGER(11),
+            allowNull : false
+        },
+        description : {
             type: Sequelize.STRING,
             allowNull : false
         },
-        delivery_date : {
+        images : {
+            type: Sequelize.STRING,
+            // allowNull : false
+        },
+        currency : {
             type: Sequelize.STRING,
             allowNull : false
         },
-        delivery_window : {
+        is_negotiable : {
+            type: Sequelize.INTEGER(11),
+            allowNull : false
+        },
+        video : {
+            type: Sequelize.STRING,
+            // allowNull : false
+        },
+        packaging : {
+            type: Sequelize.STRING,
+            allowNull : false
+        },
+        application : {
+            type: Sequelize.STRING,
+            allowNull : false
+        },
+        warehouse_address : {
             type: Sequelize.STRING,
             allowNull : false
         },
         ...generateTimestamps(Sequelize,mode)
     }
 }
-
 const Model = (sequelize, instance, Sequelize) => {
     // Define initial for DB sync
-    sequelize.define("product_requests", Schema(Sequelize,1),{ timestamps: false });
+    sequelize.define("crops", Schema(Sequelize,1),{ timestamps: false });
     // Bypass initial instance to cater for timestamps
-    const ProductRequest = instance.define("product_requests", Schema(Sequelize,2),{ 
+    const Crops = instance.define("crops", Schema(Sequelize,2),{ 
         timestamps: false,
     });
-    return ProductRequest;
+    return Crops;
 }
 
 module.exports = { Schema , Model};

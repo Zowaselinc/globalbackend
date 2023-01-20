@@ -6,15 +6,11 @@ let Schema = (Sequelize,mode) => {
             type: Sequelize.STRING,
             allowNull : false
         },
-        subcategory_name : {
+        name : {
             type: Sequelize.STRING,
             allowNull : false
         },
         type : {
-            type: Sequelize.STRING,
-            allowNull : false
-        },
-        subcategory_id : {
             type: Sequelize.STRING,
             allowNull : false
         },

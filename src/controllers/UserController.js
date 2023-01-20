@@ -1,6 +1,6 @@
 
 const jwt = require("jsonwebtoken");
-const { User, Company, Merchant, Partner, Corporate, Agent, Product, ProductRequest } = require("~database/models");
+const { User, Company, Merchant, Partner, Corporate, Agent, Crop, CropRequest } = require("~database/models");
 const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const Mailer = require('~services/mailer');

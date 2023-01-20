@@ -1,6 +1,6 @@
 
 const jwt = require("jsonwebtoken");
-const { User, Company, AccessToken, Merchant, Partner, Corporate, Agent, UserCode, MerchantType } = require("~database/models");
+const { User, Company, AccessToken, Merchant, Partner, Corporate, Agent, UserCode, MerchantType, Wallet } = require("~database/models");
 const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const Mailer = require('~services/mailer');
@@ -29,7 +29,7 @@ class AuthController{
         let user = await User.findOne({ where : { email : data.email }});
 
         if(!user){
-           return res.status(400).json({
+           return res.status(200).json({
             error : true,
             message : "Invalid credentials"
            });
@@ -42,36 +42,41 @@ class AuthController{
             corporate : Corporate
         };
 
-        let userType = await userTypeMap[user.type].findOne({where :{user_id : user.id}});
+        let userType = await userTypeMap[user.type].findOne({
+            where :{user_id : user.id},
+            include : [
+                {model : User, as : "user"}
+            ]
+        });
 
-        user[user.type] = userType;
+        //user[user.type] = userType;
         
         let passwordCheck =  await bcrypt.compare(data.password, user.password)
 
         if(passwordCheck){
 
             const token = jwt.sign(
-                {user_id: user.id},
+                {user_id: user.id, agent : req.headers['user-agent']},
                 process.env.TOKEN_KEY,
-                {expiresIn: "48h"}
+                {expiresIn: "5d"}
             );
     
-            await AuthController.saveToken(user,token);
+            await AuthController.saveToken(user,token,req);
 
-            delete user.password;
+            delete userType.user.password;
 
             return res.status(200).json({
                 error : false,
                 message : "Login Successful",
                 token : token,
-                user : user
-               });
+                user : userType
+            });
 
         }else{
-            return res.status(400).json({
+            return res.status(200).json({
                 error : true,
                 message : "Invalid credentials"
-               });
+            });
         }
 
 
@@ -113,7 +118,7 @@ class AuthController{
         }
 
         var UserTypeModel = data.user_type == "merchant" ? Merchant : Corporate;
-        UserTypeModel.user_id = user.id;
+        // UserTypeModel.user_id = user.id;
         let change;
         if(data.user_type == "merchant"){
             // var merchantType = await MerchantType.findOne({ where : { title : data.merchant_type}});
@@ -126,7 +131,7 @@ class AuthController{
             // UserTypeModel.type = "red-hot";
         }
 
-        await UserTypeModel.update(change , { where : {user_id : user.id}}).catch((error => {
+        await UserTypeModel.create({ ...change, ...{user_id : user.id}}).catch((error => {
             return res.status(400).json({
                 error : true,
                 message : error.sqlMessage
@@ -139,7 +144,7 @@ class AuthController{
             {expiresIn: "48h"}
         );
 
-        await AuthController.saveToken(user,token);
+        await AuthController.saveToken(user,token,req);
 
         Mailer()
         .to(data.email).from(process.env.MAIL_FROM)
@@ -202,7 +207,7 @@ class AuthController{
             {expiresIn: "48h"}
         );
 
-        await AuthController.saveToken(user,token);
+        await AuthController.saveToken(user,token,req);
 
         res.status(200).json({
             status : true,
@@ -264,7 +269,7 @@ class AuthController{
             {expiresIn: "48h"}
         );
 
-        await AuthController.saveToken(user,token);
+        await AuthController.saveToken(user,token,req);
 
         return res.status(200).json({
             status : true,
@@ -290,6 +295,13 @@ class AuthController{
                 type : data.user_type,
                 account_type : data.has_company || data.company_email ? "company" : "individual"
             });
+
+            // Create user wallet
+            let wallet = await Wallet.create({
+                user_id : user.id,
+                balance : 0
+            });
+
         }catch(e){
             user = {
                 error : true,
@@ -326,22 +338,27 @@ class AuthController{
         return company;
     }
 
-    static async saveToken(user,token){
+    static async saveToken(user,token,req){
 
         let expiry = new Date();
         expiry.setDate( expiry.getDate() + 2);
         
-        var previousToken = await AccessToken.findOne({where : {user_id : user.id}});
+        var previousToken = await AccessToken.findOne({
+            where : {
+                user_id : user.id,
+                client_id : req.headers['user-agent']
+            }
+        });
 
         if(previousToken){
             await AccessToken.update({
                 token : token,
                 expires_at : expiry.toISOString().slice(0, 19).replace('T', ' ')
-            }, { where : { user_id : user.id } });
+            }, { where : { user_id : user.id, client_id : req.headers['user-agent'] } });
         }else{
             await AccessToken.create({
                 user_id : user.id,
-                client_id : 1,
+                client_id : req.headers['user-agent'],
                 token : token,
                 expires_at : expiry.toISOString().slice(0, 19).replace('T', ' ')
             });
@@ -419,7 +436,7 @@ class AuthController{
                 message : "Code verified successfully"
             });
         }else{
-            return res.status(400).json({
+            return res.status(200).json({
                 error : true,
                 message : "Invalid code"
             });
@@ -538,7 +555,7 @@ class AuthController{
         var user = await User.findOne( { where : { email : getCode.email}});
 
         if(!user){
-            return res.status(400).json({
+            return res.status(200).json({
                 error : true,
                 message : "A user with this email does not exist"
             });

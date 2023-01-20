@@ -2,6 +2,10 @@ const generateTimestamps = require("./timestamps");
 
 let Schema = (Sequelize,mode) => {
     return {
+        conversation_id : {
+            type : Sequelize.INTEGER(11),
+            allowNull : false
+        },
         sender_id : {
             type: Sequelize.INTEGER(11),
             allowNull : false
@@ -10,16 +14,12 @@ let Schema = (Sequelize,mode) => {
             type: Sequelize.INTEGER(11),
             allowNull : false
         },
-        product_id : {
-            type: Sequelize.INTEGER(11),
-            allowNull : false
-        },
         type : {
             type: Sequelize.STRING,
             allowNull : false
         },
         message: {
-            type: Sequelize.STRING,
+            type: Sequelize.TEXT,
             allowNull : false
         },
         messagetype: {
