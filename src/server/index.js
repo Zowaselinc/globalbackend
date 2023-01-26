@@ -11,7 +11,7 @@ const cors = require('cors');
 
 class Server{
 
-    static boot(port=3000){
+    static boot(port=3100){
 
         App.use(cors({
             origin: '*',

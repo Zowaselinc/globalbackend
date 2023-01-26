@@ -2,7 +2,8 @@
 const { validationResult } = require('express-validator');
 const crypto = require('crypto');
 const { Crop, CropSpecification, CropRequest, ErrorLog, User, Category, Auction } = require('~database/models');
-
+const md5 = require('md5');
+var appRoot = require('app-root-path');
 
 
 class CropController{
@@ -28,7 +29,7 @@ class CropController{
         try{
 
             if(!errors.isEmpty()){
-                return res.status(200).json({
+                return res.status(400).json({
                     "error": true,
                     "message": "All fields are required",
                     "data": errors
@@ -36,7 +37,7 @@ class CropController{
             }
 
             if (!req.files || Object.keys(req.files).length === 0) {
-                return res.status(200).json({
+                return res.status(400).json({
                     "error": true,
                     "message": "No files were uploaded."
                 }) 
@@ -45,14 +46,18 @@ class CropController{
 
                 let allImages = Object.keys(req.files);
 
+                
+
                 /* -------------------------- MOVE UPLOADED FOLDER -------------------------- */
                 let my_object = [];
                 for(let i = 0; i < allImages.length; i++ ){
-                    
-                    my_object.push(req.files[allImages[i]].name);
-                    sampleFile = req.files[allImages[i]];
-                    uploadPath = __dirname + '/uploads/' + req.files[allImages[i]].name;
-
+                    var file = req.files[allImages[i]];
+                    var extension = file.mimetype.split('/')[1];
+                    var newName = md5(file.name+(new Date()).toDateString()) + `.${extension}`;
+                    var imagePath = `/data/products/${newName}`
+                    my_object.push(imagePath);
+                    sampleFile = file;
+                    uploadPath = `${appRoot}/public${imagePath}`;
                     sampleFile.mv(uploadPath, function(err) {
                         if (err){
                             return res.status(500).send(err+" Error in uploading file");
@@ -73,23 +78,21 @@ class CropController{
                 /* ------------------------ INSERT INTO CROP TABLE ----------------------- */
                
                 var crop = await Crop.create({
-                    user_id: req.body.user_id,
+                    user_id: req.global.user.id,
                     title: req.body.title,
-                    type: req.body.type,
+                    type: "wanted",
                     category_id: req.body.category_id,
                     subcategory_id: req.body.subcategory_id,
-                    active: 0,
+                    active: 1,
                     market: "crop",
                     description: req.body.description,
-                    images: my_object.toString(),
+                    images: JSON.stringify(my_object),
                     currency: req.body.currency,
                     is_negotiable: req.body.is_negotiable,
                     video: req.body.video,
-                    packaging: req.body.packaging,
-                    application: req.body.application,
-                    manufacture_name: req.body.manufacture_name,
-                    manufacture_date: req.body.manufacture_date,
-                    expiration_date: req.body.expiration_date
+                    packaging: "",
+                    application: "",
+                    warehouse_address : ""
                 })
                 
                 /* ------------------------ INSERT INTO CROP TABLE ----------------------- */
@@ -99,7 +102,7 @@ class CropController{
 
                     var createCropSpecification = await CropSpecification.create({
                         model_id: crop.id,
-                        model_type: req.body.model_type,
+                        model_type: "crop",
                         qty: req.body.qty,
                         price: req.body.price,
                         color: req.body.color,
@@ -128,8 +131,7 @@ class CropController{
                         infested_by_weight: req.body.infested_by_weight,
                         curcumin_content: req.body.curcumin_content,
                         extraneous: req.body.extraneous,
-                        unit: req.body.unit,
-                        liters: req.body.liters
+                        unit: "",
                     })
 
 
@@ -142,8 +144,6 @@ class CropController{
                             zip: req.body.zip,
                             country: req.body.country,
                             address: req.body.address,
-                            delivery_method: req.body.delivery_method,
-                            delivery_date: req.body.delivery_date,
                             delivery_window: req.body.delivery_window
                         })
 
