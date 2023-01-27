@@ -9,7 +9,7 @@ const Extended = {
         body('category_id').isString(),
         body('subcategory_id').isString(),
         body('description').isString(),
-        body('images').isString(),
+        // body('images').isString(),
         body('currency').isString(),
         body('is_negotiable').isString(),
         body('video').isString(),
@@ -54,7 +54,7 @@ module.exports = {
     addCropWantedValidator : [
 
         ...Extended.addCropValidator,
-        body('crop_id').isNumeric(),
+        // body('crop_id').isNumeric(),
         body('state').isString(),
         body('zip').isString(),
         body('country').isString(),
