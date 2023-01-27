@@ -67,7 +67,7 @@ const Negotiation = DB.negotiation = require("./negotiation.model").Model(initia
 const Cart = DB.cart = require("./cart.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Input = DB.input = require("./input.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Conversation = DB.conversation = require("./conversation.model.js").Model(initialInstance, createSequelizeInstance(), Sequelize);
-
+const Color = DB.color = require('./color.model.js').Model(initialInstance, createSequelizeInstance(), Sequelize);
 
 //---------------------------------------------------
 //Register Relationships
@@ -217,5 +217,6 @@ module.exports = {
   Negotiation,
   Conversation,
   Cart,
-  Input
+  Input,
+  Color
 };

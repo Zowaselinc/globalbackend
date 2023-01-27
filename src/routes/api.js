@@ -41,6 +41,7 @@ const RouteProvider = require('~providers/RouteProvider');
 const OrderController = require("~controllers/OrderController");
 const TransactionValidator = require("./validators/TransactionValidator");
 const TransactionController = require("~controllers/TransactionController");
+const ColorController = require("~controllers/ColorController");
 
 
 const Router = RouteProvider.Router;
@@ -113,8 +114,12 @@ Router.group((router) => {
     router.get('/subcategory/:id', SubCategoryController.getById);
 
     /* ------------------------------- Transaction ------------------------------ */
-
     router.post('/transaction/verify', TransactionValidator.verifyTransaction, TransactionController.verifyTransaction);
+
+    /* ------------------------------- Color ------------------------------ */
+    router.get('/color/getall', ColorController.getAllColors);
+    router.get('/color/getbyid/:id', ColorController.getColorbyid);
+    router.get('/color/params/:offset/:limit', ColorController.getColorbyparams);
 
 })
 
