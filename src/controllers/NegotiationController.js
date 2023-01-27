@@ -281,7 +281,6 @@ class NegotiationController {
                 "infested_by_weight": req.body.infested_by_weight,
                 "curcumin_content": req.body.curcumin_content,
                 "extraneous": req.body.extraneous,
-                "unit": req.body.unit,
             }
 
             let stringifiedObj = JSON.stringify(obj);

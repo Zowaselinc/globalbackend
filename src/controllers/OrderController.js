@@ -2,7 +2,7 @@
 const jwt = require("jsonwebtoken");
 
 
-const { Pricing, Transaction, Order, ErrorLog, Negotiation, CropSpecification, Crop, CropRequest} = require("~database/models");
+const { Pricing, Transaction, Order, ErrorLog, Negotiation, CropSpecification, Crop, CropRequest, Cart, Input} = require("~database/models");
 const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const Mailer = require('~services/mailer');
@@ -289,7 +289,7 @@ class OrderController{
                 });
             }
             const randomId = crypto.randomBytes(8).toString('hex').toUpperCase();
-
+            
             var getUserCart = await Cart.findAll({
                 where : {user_id : req.global.user.id},
                 include : [
@@ -928,6 +928,76 @@ class OrderController{
                 data: []
             })
         }
+    }
+
+
+    static async saveDeliveryDetails(req, res){
+        const errors = validationResult(req);
+        try{
+
+            /* ----------------- checking the req.body for empty fields ----------------- */
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ 
+                    error: true,
+                    message: "All fields required",
+                    data: []
+                });
+            }        
+
+            /* ---------------- check if the item is already in the cart ---------------- */
+            var order = await Order.findOne({
+                where: {
+                    "order_hash": req.params.order
+                }
+            });
+
+            if(order){
+
+                var executeCommand = await Order.update({
+                    "waybill_details": JSON.stringify({
+                        address : req.body.address,
+                        country : req.body.country,
+                        state : req.body.state,
+                        city : req.body.city,
+                        zip : req.body.zip
+                    }),
+                },{
+                    where: {
+                        "order_hash": req.params.order
+                    }
+                });
+                
+                return res.status(200).json({
+                    error : false,
+                    message : "Order updated successfully",
+                    data : executeCommand
+                })
+
+            }else{
+                return res.status(400).json({
+                    error : true,
+                    message : "Order does not exist",
+                    data : []
+                })
+            }
+
+
+
+        }catch(error){
+            var logError = await ErrorLog.create({
+                error_name: "Error on updating input order",
+                error_description: error.toString(),
+                route: `/api/order/${req.params.order}/delivery`,
+                error_code: "500"
+            });
+
+            return res.status(500).json({
+                error: true,
+                message: "Unable to complete the request at the moment",
+                data: []
+            })
+        }
+        
     }
 
 

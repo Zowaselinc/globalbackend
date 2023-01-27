@@ -1,103 +1,104 @@
 const generateTimestamps = require("./timestamps");
 
-let Schema = (Sequelize,mode) => {
+let Schema = (Sequelize, mode) => {
 
     return {
-        user_id : {
+        user_id: {
             type: Sequelize.INTEGER(11),
-            allowNull : false
+            allowNull: false
         },
-        category_id : {
+        category_id: {
             type: Sequelize.STRING,
-            allowNull : false
+            allowNull: false
         },
-        subcategory_id : {
+        subcategory_id: {
             type: Sequelize.STRING,
-            allowNull : false
+            allowNull: false
         },
-        title : {
-            type : Sequelize.STRING,
-            allowNull : false
+        product_type: {
+            type: Sequelize.STRING,
+            allowNull: false
         },
-        crop_focus : {
+        crop_focus: {
             type: Sequelize.STRING(350),
-            allowNull : false
+            allowNull: false
         },
-        packaging : {
+        packaging: {
             type: Sequelize.STRING,
-            allowNull : false
+            allowNull: false
         },
-        description : {
+        description: {
             type: Sequelize.TEXT,
-            allowNull : false
+            allowNull: false
         },
-        stock : {
-            type : Sequelize.STRING,
-            allowNull : false
+        stock: {
+            type: Sequelize.STRING,
+            allowNull: false
         },
-        usage_instruction : {
+        usage_instruction: {
             type: Sequelize.TEXT,
-            allowNull : false
+            allowNull: false
         },
-        kg : {
+        kilograms: {
             type: Sequelize.STRING,
-            allowNull : false
+            allowNull: false
         },
-        liters : {
+        grams: {
             type: Sequelize.STRING,
-            allowNull : false
         },
-        images : {
+        liters: {
+            type: Sequelize.STRING,
+            allowNull: false
+        },
+        pieces_carton: {
+            type: Sequelize.STRING,
+        },
+        images: {
             type: Sequelize.STRING(350)
         },
-        price : {
+        price: {
             type: Sequelize.INTEGER(11),
-            allowNull : false
+            allowNull: false
         },
-        currency : {
+        currency: {
             type: Sequelize.STRING,
-            allowNull : false
+            allowNull: false
         },
-        manufacture_name : {
+        manufacture_name: {
             type: Sequelize.STRING,
-            allowNull : false
+            allowNull: false
         },
-        manufacture_date : {
+        manufacture_date: {
             type: Sequelize.STRING,
-            allowNull : false
+            allowNull: false
         },
-        delivery_method : {
+        delivery_method: {
             type: Sequelize.STRING,
-            allowNull : false
+            allowNull: false
         },
-        expiry_date : {
+        expiry_date: {
             type: Sequelize.STRING,
-            allowNull : false
+            allowNull: false
         },
-        manufacture_country : {
+        manufacture_country: {
             type: Sequelize.STRING,
-            allowNull : false
+            allowNull: false
         },
-        state : {
+        video: {
             type: Sequelize.STRING,
-            allowNull : false
         },
-        video : {
-            type: Sequelize.STRING,
-            allowNull : false
-        },
-        ...generateTimestamps(Sequelize,mode)
+        ...generateTimestamps(Sequelize, mode)
     }
 }
 
 const Model = (sequelize, instance, Sequelize) => {
     // Define initial for DB sync
-    sequelize.define("inputs", Schema(Sequelize,1),{ timestamps: false });
+    sequelize.define("inputs", Schema(Sequelize, 1), { timestamps: false });
     // Bypass initial instance to cater for timestamps
-    const Inputs = instance.define("inputs", Schema(Sequelize,2),{ 
+    const Inputs = instance.define("inputs", Schema(Sequelize, 2), {
         timestamps: false,
     });
     return Inputs;
 }
 
-module.exports = { Schema , Model};
+module.exports = { Schema, Model };
