@@ -10,6 +10,10 @@ module.exports = {
         body('payment_status').isString().not().isEmpty()
     ],
 
+    createCartOrderValidator : [
+        body('delivery_details').not().isEmpty(),
+    ],
+
     updateWaybillDetailsValidators : [
         body('waybill_details.dispatch_section.from').isString(),
         body('waybill_details.dispatch_section.to').isString(),
@@ -61,6 +65,15 @@ module.exports = {
     updateOrderValidator: [
         body('order_id').isString().not().isEmpty(),
         body('payment_status').isString().not().isEmpty()
+    ],
+
+    orderDeliveryValidator: [
+        body('address').isString().not().isEmpty(),
+        body('state').isString().not().isEmpty(),
+        body('city').isString().not().isEmpty(),
+        body('country').isString().not().isEmpty(),
+        body('zip').isString().not().isEmpty()
     ]
+
 
 }

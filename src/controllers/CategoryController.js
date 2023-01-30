@@ -5,12 +5,12 @@ const crypto = require('crypto');
 const { count } = require('console');
 const { Sequelize } = require('sequelize');
 
-class CategoryController{
+class CategoryController {
 
-    static async hello(req , res){
+    static async hello(req, res) {
 
         return res.status(200).json({
-            message : "Hello Category"
+            message: "Hello Category"
         });
     }
 
@@ -18,20 +18,20 @@ class CategoryController{
     /* --------------------------- GET ALL CATEGORIES --------------------------- */
 
 
-    static async getAllCategories(req, res){
+    static async getAllCategories(req, res) {
 
-        try{
+        try {
 
             var countOptions = {
-                attributes: { 
-                    include: [[Sequelize.fn("COUNT", Sequelize.col(`${req.params.type}s.id`)), `count`]] 
+                attributes: {
+                    include: [[Sequelize.fn("COUNT", Sequelize.col(`${req.params.type}s.id`)), `count`]]
                 },
                 include: [{
                     model: req.params.type == "crop" ? Crop : Input,
                     attributes: []
                 }],
                 group: ['id']
-                
+
             };
 
             var categories = await Category.findAll({
@@ -41,25 +41,25 @@ class CategoryController{
                 ...countOptions
             });
 
-            if(categories.length > 0){
-``    
+            if (categories.length > 0) {
+                ``
                 return res.status(200).json({
-                    error : false,
+                    error: false,
                     message: "Categories returned successfully",
-                    data : categories
+                    data: categories
                 })
 
-            }else{
+            } else {
 
                 return res.status(200).json({
-                    error : true,
+                    error: true,
                     message: "No categories found",
-                    data : []
+                    data: []
                 })
 
             }
 
-        }catch(error){
+        } catch (error) {
             var logError = await ErrorLog.create({
                 error_name: "Error on getting all Categories",
                 error_description: error.toString(),
@@ -78,43 +78,43 @@ class CategoryController{
     }
 
     /* --------------------------- GET ALL CATEGORIES --------------------------- */
-    
-    
+
+
 
 
     /* --------------------------- GET ALL CATEGORIES BY LIMIT --------------------------- */
-    static async getAllByLimit(req , res){
+    static async getAllByLimit(req, res) {
 
 
         const offset = parseInt(req.params.offset);
         const limit = parseInt(req.params.limit);
 
-        try{
-            var categories = await Category.findAll({ 
-                offset: offset, 
+        try {
+            var categories = await Category.findAll({
+                offset: offset,
                 limit: limit,
-                where : {
-                    type : req.params.type
+                where: {
+                    type: req.params.type
                 }
             });
 
             return res.status(200).json({
-                error : false,
-                data : categories
+                error: false,
+                data: categories
             })
-        }catch(e){
+        } catch (e) {
             var logError = await ErrorLog.create({
                 error_name: "Error on getting all categories by limit and offset",
                 error_description: e.toString(),
                 route: "/api/crop/category/getall/:offset/:limit",
                 error_code: "500"
             });
-            if(logError){
+            if (logError) {
                 return res.status(500).json({
                     error: true,
                     message: 'Unable to complete request at the moment'
                 })
-            }  
+            }
         }
     }
     /* --------------------------- GET ALL CATEGORIES BY LIMIT --------------------------- */
@@ -124,36 +124,36 @@ class CategoryController{
 
 
     /* --------------------------- GET CATEGORIES BY CATEGORY ID --------------------------- */
-    static async getById(req , res){
+    static async getById(req, res) {
 
-        try{
+        try {
             var category = await Category.findOne({ where: { id: req.params.id } });
-            if(category){
+            if (category) {
                 return res.status(200).json({
-                    error : false,
-                    message : "Category grabbed successfully",
-                    category : category
+                    error: false,
+                    message: "Category grabbed successfully",
+                    category: category
                 })
-            }else{
+            } else {
                 return res.status(400).json({
-                    error : false,
-                    message : "No category found",
-                    category : category
+                    error: false,
+                    message: "No category found",
+                    category: category
                 })
             }
-        }catch(e){
+        } catch (e) {
             var logError = await ErrorLog.create({
                 error_name: "Error on getting all categories by id",
                 error_description: e.toString(),
                 route: "/api/crop/category/getbyid",
                 error_code: "500"
             });
-            if(logError){
+            if (logError) {
                 return res.status(500).json({
                     error: true,
                     message: 'Unable to complete request at the moment'
                 })
-            } 
+            }
         }
     }
     /* --------------------------- GET CATEGORIES BY CATEGORY ID --------------------------- */

@@ -29,7 +29,7 @@ class NegotiationController {
         try {
 
             if (!errors.isEmpty()) {
-                return res.status(200).json({
+                return res.status(400).json({
                     error: true,
                     message: "All fields required",
                     data: []
@@ -129,7 +129,7 @@ class NegotiationController {
 
                 } else {
 
-                    return res.status(200).json({
+                    return res.status(400).json({
                         error: true,
                         message: "No negotiations made by this user",
                         data: []
@@ -137,7 +137,7 @@ class NegotiationController {
 
                 }
             } else {
-                return res.status(200).json({
+                return res.status(400).json({
                     error: true,
                     message: "Invalid user ID",
                     data: []
@@ -198,7 +198,7 @@ class NegotiationController {
 
                 } else {
 
-                    return res.status(200).json({
+                    return res.status(400).json({
                         error: true,
                         message: "No negotiations made by this user",
                         data: []
@@ -206,7 +206,7 @@ class NegotiationController {
 
                 }
             } else {
-                return res.status(200).json({
+                return res.status(400).json({
                     error: true,
                     message: "Invalid user ID",
                     data: []
@@ -281,7 +281,6 @@ class NegotiationController {
                 "infested_by_weight": req.body.infested_by_weight,
                 "curcumin_content": req.body.curcumin_content,
                 "extraneous": req.body.extraneous,
-                "unit": req.body.unit,
             }
 
             let stringifiedObj = JSON.stringify(obj);
@@ -460,7 +459,7 @@ class NegotiationController {
 
             } else {
 
-                return res.status(200).json({
+                return res.status(400).json({
                     error: true,
                     message: "No offer found",
                     data: []
@@ -524,7 +523,7 @@ class NegotiationController {
 
                 } else {
 
-                    return res.status(200).json({
+                    return res.status(400).json({
                         error: true,
                         message: "No offer found",
                         data: []
@@ -532,7 +531,7 @@ class NegotiationController {
 
                 }
             } else {
-                return res.status(200).json({
+                return res.status(400).json({
                     error: true,
                     message: "Invalid request",
                     data: []
@@ -587,7 +586,7 @@ class NegotiationController {
 
                 } else {
 
-                    return res.status(200).json({
+                    return res.status(400).json({
                         error: true,
                         message: "No offer found",
                         data: []

@@ -1,5 +1,6 @@
-const { AccessToken } = require("~database/models");
+const { AccessToken, User } = require("~database/models");
 const jwt = require("jsonwebtoken");
+const GlobalUtils = require("~utilities/global");
 class AuthMiddleware{
 
     isGuest(req,res){
@@ -18,6 +19,8 @@ class AuthMiddleware{
                 var error = "";
                 const decoded = jwt.verify(auth, process.env.TOKEN_KEY);
                 var getToken = await AccessToken.findAll({ where : {user_id : decoded.user_id}});
+                var user = await User.findByPk(decoded.user_id);
+                req.global = {user : user};
                 var tokenFound = false;
                 if(getToken){
                     getToken.forEach(item=>{

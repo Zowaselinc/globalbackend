@@ -1,23 +1,23 @@
 //Import validation result
 const { validationResult } = require('express-validator');
 const crypto = require('crypto');
-const { Crop, CropSpecification, CropRequest, ErrorLog, User, Category, Auction } = require('~database/models');
+const { Crop, CropSpecification, CropRequest, ErrorLog, User, Category, Auction, SubCategory } = require('~database/models');
 const md5 = require('md5');
 var appRoot = require('app-root-path');
 
 
-class CropController{
+class CropController {
 
-    static async hello(req , res){
+    static async hello(req, res) {
 
         return res.status(200).json({
-            message : "Hello Crop"
+            message: "Hello Crop"
         });
     }
 
-   
+
     /* ---------------------------- * ADD Cropdescription * ---------------------------- */
-    static async add(req , res){
+    static async add(req, res) {
 
         let sampleFile;
         let uploadPath;
@@ -26,43 +26,56 @@ class CropController{
 
         let randomid = crypto.randomBytes(8).toString('hex');
 
-        try{
+        try {
 
-            if(!errors.isEmpty()){
+            if (!errors.isEmpty()) {
                 return res.status(400).json({
                     "error": true,
                     "message": "All fields are required",
                     "data": errors
-                }) 
+                })
+            }
+            var type = req.params.type;
+
+            if (type != 'wanted' && type != "sale" && type != 'auction') {
+                return res.status(400).json({
+                    "error": true,
+                    "message": "Invalid type",
+                    "data": errors
+                });
+            }
+
+            if (type == "sale") {
+                type = "offer";
             }
 
             if (!req.files || Object.keys(req.files).length === 0) {
                 return res.status(400).json({
                     "error": true,
                     "message": "No files were uploaded."
-                }) 
-            
-            }else{
+                })
+
+            } else {
 
                 let allImages = Object.keys(req.files);
 
-                
+
 
                 /* -------------------------- MOVE UPLOADED FOLDER -------------------------- */
                 let my_object = [];
-                for(let i = 0; i < allImages.length; i++ ){
+                for (let i = 0; i < allImages.length; i++) {
                     var file = req.files[allImages[i]];
                     var extension = file.mimetype.split('/')[1];
-                    var newName = md5(file.name+(new Date()).toDateString()) + `.${extension}`;
+                    var newName = md5(file.name + (new Date()).toDateString()) + `.${extension}`;
                     var imagePath = `/data/products/${newName}`
                     my_object.push(imagePath);
                     sampleFile = file;
                     uploadPath = `${appRoot}/public${imagePath}`;
-                    sampleFile.mv(uploadPath, function(err) {
-                        if (err){
-                            return res.status(500).send(err+" Error in uploading file");
-                        }else{
-                            
+                    sampleFile.mv(uploadPath, function (err) {
+                        if (err) {
+                            return res.status(500).send(err + " Error in uploading file");
+                        } else {
+
                             // res.send('File uploaded!');
 
                             // image = "image"+i;
@@ -76,11 +89,10 @@ class CropController{
 
 
                 /* ------------------------ INSERT INTO CROP TABLE ----------------------- */
-               
+
                 var crop = await Crop.create({
                     user_id: req.global.user.id,
-                    title: req.body.title,
-                    type: "wanted",
+                    type: type,
                     category_id: req.body.category_id,
                     subcategory_id: req.body.subcategory_id,
                     active: 1,
@@ -92,13 +104,13 @@ class CropController{
                     video: req.body.video,
                     packaging: "",
                     application: "",
-                    warehouse_address : ""
+                    warehouse_address: req.body.warehouse_address
                 })
-                
+
                 /* ------------------------ INSERT INTO CROP TABLE ----------------------- */
 
 
-                if(crop){
+                if (crop) {
 
                     var createCropSpecification = await CropSpecification.create({
                         model_id: crop.id,
@@ -131,21 +143,23 @@ class CropController{
                         infested_by_weight: req.body.infested_by_weight,
                         curcumin_content: req.body.curcumin_content,
                         extraneous: req.body.extraneous,
-                        unit: "",
                     })
 
 
 
 
-                    if(createCropSpecification){
-                        var createCroropRequest = await CropRequest.create({
-                            crop_id: crop.id,
-                            state: req.body.state,
-                            zip: req.body.zip,
-                            country: req.body.country,
-                            address: req.body.address,
-                            delivery_window: req.body.delivery_window
-                        })
+                    if (createCropSpecification) {
+                        if (type == "wanted") {
+                            var createCroropRequest = await CropRequest.create({
+                                crop_id: crop.id,
+                                state: req.body.state,
+                                zip: req.body.zip,
+                                country: req.body.country,
+                                address: req.body.warehouse_address,
+                                delivery_window: req.body.delivery_window
+                            })
+                        }
+
 
                         return res.status(200).json({
                             "error": false,
@@ -155,26 +169,26 @@ class CropController{
                     }
 
                 }
-  
-            
+
+
             }
 
-        }catch(e){
+        } catch (e) {
             var logError = await ErrorLog.create({
                 error_name: "Error on add a crop",
                 error_description: e.toString(),
                 route: "/api/crop/add",
                 error_code: "500"
             });
-            if(logError){
+            if (logError) {
                 return res.status(500).json({
                     error: true,
                     message: 'Unable to complete request at the moment'
                 })
-            }  
+            }
         }
 
-        
+
     }
     // /* ---------------------------- * ADD Cropdescription * ---------------------------- */
 
@@ -187,7 +201,7 @@ class CropController{
 
 
     /* --------------------------- GET ALL WANTED CROPS --------------------------- */
-    static async getByCropWanted(req , res){
+    static async getByCropWanted(req, res) {
 
         // return res.status(200).json({
         //     message : "GET Wanted Crops"
@@ -195,12 +209,12 @@ class CropController{
 
         const errors = validationResult(req);
 
-        try{
+        try {
             if (!errors.isEmpty()) {
                 return res.status(400).json({ errors: errors.array() });
             }
-    
-            var findWantedCrops = await Crop.findAndCountAll({ 
+
+            var findWantedCrops = await Crop.findAndCountAll({
                 include: [{
                     model: CropSpecification,
                     as: 'specification',
@@ -210,39 +224,43 @@ class CropController{
                     as: 'crop_request',
                 },
                 {
-                    model : Category,
-                    as : "category"
+                    model: Category,
+                    as: "category"
                 },
                 {
-                    model : User,
-                    as : 'user',
+                    model: SubCategory,
+                    as: "subcategory"
+                },
+                {
+                    model: User,
+                    as: 'user',
                 }],
                 where: { type: "wanted" },
                 order: [['id', 'DESC']]
             });
 
-        
+
             /* --------------------- If fetched the Wanted Crops --------------------- */
-            
+
             return res.status(200).json({
-                error : false,
-                message : "Crops wanted grabbed successfully",
-                data : findWantedCrops
+                error: false,
+                message: "Crops wanted grabbed successfully",
+                data: findWantedCrops
             })
-            
-        }catch(e){
+
+        } catch (e) {
             var logError = await ErrorLog.create({
                 error_name: "Error on fetching crop wanted",
                 error_description: e.toString(),
                 route: "/api/crop/getbycropwanted",
                 error_code: "500"
             });
-            if(logError){
+            if (logError) {
                 return res.status(500).json({
                     error: true,
                     message: 'Unable to complete request at the moment'
                 })
-            } 
+            }
         }
     }
     /* --------------------------- GET ALL WANTED CROPS --------------------------- */
@@ -251,53 +269,53 @@ class CropController{
 
 
     /* --------------------------- GET ALL AUCTION CROPS --------------------------- */
-    static async getByCropAuctions(req , res){
+    static async getByCropAuctions(req, res) {
 
-        try{
-            var findCropAuctions = await Crop.findAndCountAll({ 
+        try {
+            var findCropAuctions = await Crop.findAndCountAll({
                 include: [{
                     model: CropSpecification,
                     as: 'specification',
                 },
                 {
-                    model : Category,
-                    as : "category"
+                    model: Category,
+                    as: "category"
                 },
                 {
-                    model : User,
-                    as : 'user',
+                    model: User,
+                    as: 'user',
                 },
                 {
-                    model : Auction,
-                    as : "auction"
+                    model: Auction,
+                    as: "auction"
                 }],
-                
+
                 where: { type: "auction" },
                 order: [['id', 'DESC']]
             });
 
-        
+
             /* --------------------- If fetched the Wanted Crops --------------------- */
-            
+
             return res.status(200).json({
-                error : false,
-                message : "Crops auctions grabbed successfully",
-                data : findCropAuctions
+                error: false,
+                message: "Crops auctions grabbed successfully",
+                data: findCropAuctions
             })
-            
-        }catch(error){
+
+        } catch (error) {
             var logError = await ErrorLog.create({
                 error_name: "Error on fetching crop wanted",
                 error_description: error.toString(),
                 route: "/api/crop/getbycropauction",
                 error_code: "500"
             });
-            if(logError){
+            if (logError) {
                 return res.status(500).json({
                     error: true,
                     message: 'Unable to complete request at the moment'
                 })
-            } 
+            }
         }
     }
     /* --------------------------- GET ALL WANTED CROPS --------------------------- */
@@ -308,128 +326,184 @@ class CropController{
 
 
     /* --------------------------- GET ALL OFFERED CROPS --------------------------- */
-    static async getByCropOffer(req , res){
+    static async getByCropOffer(req, res) {
 
-        try{
-            
+        try {
+
             const { count, rows } = await Crop.findAndCountAll({ where: { type: "offer" } });
 
-            if(count<1){
+            if (count < 1) {
                 return res.status(200).json({
-                    error : true,
-                    message : "No crop offer found",
-                    data : []
+                    error: true,
+                    message: "No crop offer found",
+                    data: []
                 })
-            }else{
-                var findCropOffers = await Crop.findAndCountAll({ 
+            } else {
+                var findCropOffers = await Crop.findAndCountAll({
                     include: [{
                         model: CropSpecification,
                         as: 'specification',
-                        where : { model_type : "crop"},
+                        where: { model_type: "crop" },
                     },
                     {
-                        model : Category,
-                        as : "category"
+                        model: Category,
+                        as: "category"
                     },
                     {
-                        model : User,
-                        as : 'user',
+                        model: SubCategory,
+                        as: "subcategory"
+                    },
+                    {
+                        model: User,
+                        as: 'user',
                     }],
                     where: { type: "offer" },
                     order: [['id', 'DESC']]
                 });
-    
-            
+
+
                 /* --------------------- If fetched the Wanted Crops --------------------- */
-                
+
                 return res.status(200).json({
-                    error : false,
-                    message : "Crops offer grabbed successfully",
-                    data : findCropOffers
+                    error: false,
+                    message: "Crops offer grabbed successfully",
+                    data: findCropOffers
                 })
             }
-            
-            
-        }catch(e){
+
+
+        } catch (e) {
             var logError = await ErrorLog.create({
                 error_name: "Error on fetching crops offer",
                 error_description: e.toString(),
                 route: "/api/crop/getbycropoffer",
                 error_code: "500"
             });
-            if(logError){
+            if (logError) {
                 return res.status(500).json({
                     error: true,
                     message: 'Unable to complete request at the moment'
                 })
-            } 
+            }
         }
     }
     /* --------------------------- GET ALL OFFERED CROPS --------------------------- */
 
 
 
+    /* --------------------------- GET ALL AUCTION CROPS --------------------------- */
+    static async getAllCropsByUser(req, res) {
+
+        try {
+            var findCrops = await Crop.findAndCountAll({
+                include: [{
+                    model: CropSpecification,
+                    as: 'specification',
+                },
+                {
+                    model: Category,
+                    as: "category"
+                },
+                {
+                    model: Auction,
+                    as: "auction"
+                }],
+
+                where: { user_id: req.global.user.id },
+                order: [['id', 'DESC']]
+            });
+
+
+            /* --------------------- If fetched the Wanted Crops --------------------- */
+
+            return res.status(200).json({
+                error: false,
+                message: "Crops grabbed successfully",
+                data: findCrops
+            })
+
+        } catch (error) {
+            var logError = await ErrorLog.create({
+                error_name: "Error on fetching crop wanted",
+                error_description: error.toString(),
+                route: "/api/user/crops",
+                error_code: "500"
+            });
+            if (logError) {
+                return res.status(500).json({
+                    error: true,
+                    message: 'Unable to complete request at the moment'
+                })
+            }
+        }
+    }
+    /* --------------------------- GET ALL WANTED CROPS --------------------------- */
+
 
 
     /* --------------------------- GET CROP BY ID --------------------------- */
-    static async getById(req , res){
+    static async getById(req, res) {
 
 
-        try{
+        try {
             const cropId = req.params.id;
-    
-            var crop = await Crop.findOne({ where: { id: cropId } });
-            if(crop){
 
-                var findCrop = await Crop.findOne({ 
+            var crop = await Crop.findOne({ where: { id: cropId } });
+            if (crop) {
+
+                var findCrop = await Crop.findOne({
                     include: [{
                         model: CropSpecification,
                         as: 'specification',
                     },
                     {
-                        model : Category,
-                        as : 'category'
+                        model: Category,
+                        as: 'category'
+                    },
+                    {
+                        model: SubCategory,
+                        as: 'subcategory'
                     },
                     {
                         model: CropRequest,
                         as: 'crop_request',
                         order: [['id', 'DESC']],
                         limit: 1,
-                        
-                    },{
-                        model : User,
-                        as : 'user'
+
+                    }, {
+                        model: User,
+                        as: 'user'
                     }],
-                    
+
                     where: { id: cropId },
                     order: [['id', 'DESC']]
                 });
-    
+
                 return res.status(200).json({
-                    error : false,
-                    message : "Single crop grabbed successfully",
-                    data : findCrop
+                    error: false,
+                    message: "Single crop grabbed successfully",
+                    data: findCrop
                 })
-            }else{
+            } else {
                 return res.status(400).json({
-                    error : true,
-                    message : "No such crop found",
-                    data : []
+                    error: true,
+                    message: "No such crop found",
+                    data: []
                 })
             }
-        }catch(e){
+        } catch (e) {
             var logError = await ErrorLog.create({
                 error_name: "Error on getting single crop by id",
                 error_description: e.toString(),
                 route: "/api/crop/getbyid",
                 error_code: "500"
             });
-            if(logError){
+            if (logError) {
                 return res.status(500).json({
                     error: true,
                     message: 'Unable to complete request at the moment'
                 })
-            } 
+            }
         }
     }
     /* --------------------------- GET CROP BY ID --------------------------- */
@@ -443,7 +517,7 @@ class CropController{
 
 
     /* ---------------------------- * EDIT Project by ID * ---------------------------- */
-    static async EditById(req , res){
+    static async EditById(req, res) {
 
         // return res.status(200).json({
         //     message : "Add Cropdescription "
@@ -457,26 +531,26 @@ class CropController{
         let randomid = crypto.randomBytes(8).toString('hex');
         // let allImages = Object.keys(req.files);
         // console.log(__dirname + '/uploads/' + req.files[allImages[0]].name);
-        try{
+        try {
 
-            if(!errors.isEmpty()){
+            if (!errors.isEmpty()) {
                 // return res.status(400).json({ errors: errors.array() });
                 return res.status(200).json({
                     "error": true,
                     "message": "All fields are required",
                     "data": errors
-                }) 
+                })
             }
 
-            
+
 
 
 
             /* ------------------------ UPDATE INTO CROP TABLE ----------------------- */
 
             var crop = await Crop.findOne({ where: { id: req.body.crop_id } });
-            if(crop){
-            
+            if (crop) {
+
                 var updateCrop = await Crop.update({
                     user_id: req.body.user_id,
                     type: req.body.type,
@@ -494,12 +568,12 @@ class CropController{
                     manufacture_name: req.body.manufacture_name,
                     manufacture_date: req.body.manufacture_date,
                     expiration_date: req.body.expiration_date
-                }, { where : { id: req.body.crop_id } });
-                
+                }, { where: { id: req.body.crop_id } });
+
                 /* ------------------------ UPDATE INTO CROP TABLE ----------------------- */
 
 
-                if(updateCrop){
+                if (updateCrop) {
 
                     var updateCropSpecification = await CropSpecification.update({
                         model_id: crop.id,
@@ -534,12 +608,12 @@ class CropController{
                         extraneous: req.body.extraneous,
                         unit: req.body.unit,
                         // liters: req.body.liters
-                    }, { where : { model_id: req.body.crop_id  } });
+                    }, { where: { model_id: req.body.crop_id } });
 
 
 
 
-                    if(updateCropSpecification){
+                    if (updateCropSpecification) {
                         var updateCropRequest = await CropRequest.update({
                             crop_id: crop.id,
                             state: req.body.state,
@@ -549,7 +623,7 @@ class CropController{
                             delivery_method: req.body.delivery_method,
                             delivery_date: req.body.delivery_date,
                             delivery_window: req.body.delivery_window
-                        }, { where : { crop_id: req.body.crop_id,  } });
+                        }, { where: { crop_id: req.body.crop_id, } });
 
                         return res.status(200).json({
                             "error": false,
@@ -560,36 +634,36 @@ class CropController{
 
                 }
 
-            }else{
+            } else {
                 return res.status(400).json({
-                    error : true,
-                    message : "No such crop found",
-                    data : req.body
+                    error: true,
+                    message: "No such crop found",
+                    data: req.body
                 })
             }
-  
-        }catch(e){
+
+        } catch (e) {
             var logError = await ErrorLog.create({
                 error_name: "Error on edit a crop",
                 error_description: e.toString(),
                 route: "/api/crop/editbyid",
                 error_code: "500"
             });
-            if(logError){
+            if (logError) {
                 return res.status(500).json({
                     error: true,
                     message: 'Unable to complete request at the moment'
                 })
-            }  
+            }
         }
 
-        
+
     }
     // /* ---------------------------- * EDIT Project by ID * ---------------------------- */
 
 
 
-   
+
 
 }
 

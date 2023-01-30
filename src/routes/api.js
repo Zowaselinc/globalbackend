@@ -25,7 +25,7 @@ const Cart = require('~controllers/CartController');
 
 /* ------------------------------- VALIDATORS ------------------------------- */
 
-const { RegisterMerchantCorporateValidator, LoginValidator, RegisterPartnerValidator, RegisterAgentValidator, SendVerificationValidator, ConfirmVerificationValidator, ResetPasswordValidator, VerifyResetTokenValidator} = require('./validators/AuthValidators');
+const { RegisterMerchantCorporateValidator, LoginValidator, RegisterPartnerValidator, RegisterAgentValidator, SendVerificationValidator, ConfirmVerificationValidator, ResetPasswordValidator, VerifyResetTokenValidator } = require('./validators/AuthValidators');
 
 const CategoryValidator = require('./validators/CategoryValidator');
 const SubCategoryValidator = require('./validators/SubCategoryValidator');
@@ -52,25 +52,25 @@ const Router = RouteProvider.Router;
 
 // Authentication Routes
 
-Router.middleware(['isGuest']).group((router)=>{
+Router.middleware(['isGuest']).group((router) => {
 
-    router.post('/login',LoginValidator,AuthController.login);
+    router.post('/login', LoginValidator, AuthController.login);
 
-    router.post('/register',RegisterMerchantCorporateValidator,AuthController.registerMerchantCorporate);
+    router.post('/register', RegisterMerchantCorporateValidator, AuthController.registerMerchantCorporate);
 
-    router.post('/register/partner',RegisterPartnerValidator,AuthController.registerPartner);
+    router.post('/register/partner', RegisterPartnerValidator, AuthController.registerPartner);
 
-    router.post('/register/agent',RegisterAgentValidator,AuthController.registerAgent);
+    router.post('/register/agent', RegisterAgentValidator, AuthController.registerAgent);
 
-    router.post('/register/verify',SendVerificationValidator,AuthController.sendVerificationCode);
+    router.post('/register/verify', SendVerificationValidator, AuthController.sendVerificationCode);
 
-    router.post('/register/confirm',ConfirmVerificationValidator,AuthController.verifyCode);
+    router.post('/register/confirm', ConfirmVerificationValidator, AuthController.verifyCode);
 
-    router.post('/password/email',SendVerificationValidator,AuthController.sendResetEmail);
+    router.post('/password/email', SendVerificationValidator, AuthController.sendResetEmail);
 
-    router.post('/password/verify',VerifyResetTokenValidator,AuthController.verifyResetToken);
+    router.post('/password/verify', VerifyResetTokenValidator, AuthController.verifyResetToken);
 
-    router.post('/password/reset',ResetPasswordValidator,AuthController.resetPassword);
+    router.post('/password/reset', ResetPasswordValidator, AuthController.resetPassword);
 
 });
 
@@ -80,7 +80,7 @@ Router.group((router) => {
 });
 
 // User routes
-Router.middleware(['isAuthenticated']).group((router)=>{
+Router.middleware(['isAuthenticated']).group((router) => {
 
     router.get('/users', UserController.getAllUsers);
 
@@ -90,6 +90,9 @@ Router.middleware(['isAuthenticated']).group((router)=>{
 
     router.get('/users/:id/orders', OrderController.getByBuyer);
 
+    router.get('/users/:id/sales', OrderController.getBySeller);
+
+    router.get('/users/:id/crops', CropController.getAllCropsByUser);
 
 });
 
@@ -100,23 +103,23 @@ Router.middleware(['isAuthenticated']).group((router)=>{
 
 Router.group((router) => {
 
-        /* -------------------------------- Category -------------------------------- */
-        router.get('/category/:type/getall', CategoryController.getAllCategories);
-        router.get('/category/:type/getall/:offset/:limit', CategoryController.getAllByLimit);
-        router.get('/category/:id', CategoryController.getById);
-    
-        /* ------------------------------- SubCategory ------------------------------ */
-        router.get('/subcategory/getall', SubCategoryController.getAllSubCategories);
-        router.get('/subcategory/getbycategory/:categoryId', SubCategoryController.getByCategory);
-        router.get('/subcategory/:id', SubCategoryController.getById);
+    /* -------------------------------- Category -------------------------------- */
+    router.get('/category/:type/getall', CategoryController.getAllCategories);
+    router.get('/category/:type/getall/:offset/:limit', CategoryController.getAllByLimit);
+    router.get('/category/:id', CategoryController.getById);
 
-        /* ------------------------------- Transaction ------------------------------ */
-        router.post('/transaction/verify', TransactionValidator.verifyTransaction, TransactionController.verifyTransaction );
+    /* ------------------------------- SubCategory ------------------------------ */
+    router.get('/subcategory/getall', SubCategoryController.getAllSubCategories);
+    router.get('/subcategory/getbycategory/:categoryId', SubCategoryController.getByCategory);
+    router.get('/subcategory/:id', SubCategoryController.getById);
 
-        /* ------------------------------- Color ------------------------------ */
-        router.get('/color/getall', ColorController.getAllColors);
-        router.get('/color/getbyid/:id', ColorController.getColorbyid);
-        router.get('/color/params/:offset/:limit', ColorController.getColorbyparams);
+    /* ------------------------------- Transaction ------------------------------ */
+    router.post('/transaction/verify', TransactionValidator.verifyTransaction, TransactionController.verifyTransaction);
+
+    /* ------------------------------- Color ------------------------------ */
+    router.get('/color/getall', ColorController.getAllColors);
+    router.get('/color/getbyid/:id', ColorController.getColorbyid);
+    router.get('/color/params/:offset/:limit', ColorController.getColorbyparams);
 
 })
 
@@ -126,14 +129,14 @@ Router.group((router) => {
 
 // Routes
 
-Router.group((router)=>{
+Router.middleware(['isAuthenticated']).group((router) => {
 
     // router.get();
 
 
     /* ------------------------------- Crop ------------------------------ */
 
-    router.post('/crop/wanted/add', CropValidation.addCropWantedValidator, CropController.add);
+    router.post('/crop/:type/add', CropValidation.addCropForSaleValidator, CropController.add);
     router.get('/crop/getbycropwanted', CropController.getByCropWanted);
     router.get('/crop/getbycropauction', CropController.getByCropAuctions);
     router.get('/crop/getbycropoffer', CropController.getByCropOffer);
@@ -143,7 +146,7 @@ Router.group((router)=>{
 
     /* ------------------------------- Crop Specification ------------------------------ */
     router.post('/crop/cropspecification/add', CropValidation.addCropSpecificationValidator, CropSpecificationController.add);
-  
+
 
 
     /* ------------------------------- Crop Request ------------------------------ */
@@ -163,16 +166,18 @@ Router.group((router)=>{
     router.get('/crop/negotiation/:userid', NegotiationController.getListByUser);
     router.post('/crop/negotiation/sendoffer', NegotiationController.sendNegotiationOffer);
     router.post('/crop/negotiation/accept', NegotiationValidator.negotiation, NegotiationController.acceptNegotiation);
-    router.post('/crop/negotiation/decline',NegotiationValidator.negotiation, NegotiationController.declineNegotiation);
-    router.post('/crop/negotiation/close',NegotiationValidator.negotiation, NegotiationController.closeNegotiation);
+    router.post('/crop/negotiation/decline', NegotiationValidator.negotiation, NegotiationController.declineNegotiation);
+    router.post('/crop/negotiation/close', NegotiationValidator.negotiation, NegotiationController.closeNegotiation);
     router.get('/crop/negotiation/grabtransactionby/:status/:userid', NegotiationController.getNegotiationTransactionSummary);
     router.get('/crop/negotiation/getallsummary', NegotiationController.getAllNegotiationTransactionSummary);
 
 
     /* ---------------------------------- Order --------------------------------- */
     router.post('/crop/order/add', OrderValidators.createOrderValidator, OrderController.createNewOrder);
+    router.post('/order/cart/create', OrderValidators.createCartOrderValidator, OrderController.createCartOrder);
     router.get('/order/:order', OrderController.getByOrderHash);
     router.get('/order/getbybuyer/:buyerid/:buyertype', OrderController.getByBuyer);
+    router.get('/order/getbyseller/:sellerid/:buyertype', OrderController.getByBuyer);
     router.get('/order/getbynegotiationid/:negotiationid', OrderController.getByNegotiationId);
     router.get('/order/getbypaymentstatus/:paymentstatus', OrderController.getByPaymentStatus);
     // Tracking Details
@@ -182,10 +187,11 @@ Router.group((router)=>{
     // Goodreceiptnote Details
     router.post('/order/:order/goodsreceiptnote', OrderValidators.updateGoodReceiptDetailsValidators, OrderController.updateGoodReceiptNoteByOrderId);
 
+    router.post('/order/:order/delivery', OrderValidators.orderDeliveryValidator, OrderController.saveDeliveryDetails);
+
 
     /* ---------------------------------- Transaction --------------------------------- */
-    router.post('/crop/transaction/add', TransactionValidator.addTransactionValidator, TransactionController.createNewTransaction );
-    
+    router.post('/crop/transaction/add', TransactionValidator.addTransactionValidator, TransactionController.createNewTransaction);
 });
 
 
@@ -201,7 +207,7 @@ Router.group((router)=>{
 
 Router.group((router) => {
     /* ---------------------------------- Input ---------------------------------- */
-    router.post('/input/add', InputsValidator.createInputValidator,Input.createInput);
+    router.post('/input/add', InputsValidator.createInputValidator, Input.createInput);
     router.get('/input/getallbyuserid/:user_id', Input.getallInputsByUser);
     router.get('/input', Input.getallInputs);
     router.get('/input/:input', Input.getInputById);
@@ -209,13 +215,13 @@ Router.group((router) => {
     router.get('/input/getallbymanufacturer/:manufacturer', Input.getallInputsByManufacturer);
     router.get('/input/getallbypackaging/:packaging', Input.getallInputsByPackaging);
 
-    
+
     /* ---------------------------------- CART ---------------------------------- */
-    router.post('/input/cart/add', InputsValidator.addToCartValidator,Cart.addtoCart);
+    router.post('/input/cart/add', InputsValidator.addToCartValidator, Cart.addtoCart);
     router.get('/input/cart/:user_id', Cart.getUserInputCart);
     router.delete('/input/cart/delete/:id', Cart.deleteCartItem);
 
-    
+
     /* ---------------------------------- Order --------------------------------- */
     router.post('/input/order/add', OrderValidators.InputOrderValidator, OrderController.createInputOrder);
     router.post('/input/order/updateinputorder', OrderValidators.updateOrderValidator, OrderController.updateOrderPayment);
