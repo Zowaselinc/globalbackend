@@ -10,6 +10,7 @@ module.exports = {
         body('crop_focus').isString().not().isEmpty(),
         body('packaging').isString().not().isEmpty(),
         body('description').isString().not().isEmpty(),
+        body('stock').isString().not().isEmpty(),
         body('usage_instruction').isString().not().isEmpty(),
         body('kg').isString().not().isEmpty(),
         body('liters').isString().not().isEmpty(),

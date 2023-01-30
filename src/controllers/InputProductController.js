@@ -55,13 +55,15 @@ class InputProducts{
                
                 var input = await Input.create({
                     user_id: req.body.user_id,
-                    category: req.body.category,
-                    sub_category: req.body.sub_category,
+                    category_id: req.body.category_id,
+                    subcategory_id: req.body.subcategory_id,
                     title : req.body.title,
                     crop_focus: req.body.crop_focus,
                     packaging: req.body.packaging,
                     description: req.body.description,
+                    stock: req.body.stock,
                     usage_instruction: req.body.usage_instruction,
+                    kg: req.body.kg,
                     unit: req.body.unit,
                     liters: req.body.liters,
                     images: my_object.toString(),
@@ -102,7 +104,7 @@ class InputProducts{
             if(logError){
                 return res.status(500).json({
                     error: true,
-                    message: 'Unable to complete request at the moment'
+                    message: 'Unable to complete request at the moment'+e
                 })
             }  
         }
