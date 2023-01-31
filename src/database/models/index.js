@@ -108,9 +108,9 @@ Crop.hasOne(CropSpecification, {
   as: 'specification'
 })
 
-Crop.hasOne(Auction,{
-  foreignKey : "crop_id",
-  as : "auction"
+Crop.hasOne(Auction, {
+  foreignKey: "crop_id",
+  as: "auction"
 })
 
 CropSpecification.belongsTo(Crop, {
@@ -118,7 +118,7 @@ CropSpecification.belongsTo(Crop, {
   as: 'crop'
 });
 
-Crop.hasMany(CropRequest, {
+Crop.hasOne(CropRequest, {
   foreignKey: 'crop_id',
   as: 'crop_request'
 })
@@ -144,7 +144,17 @@ SubCategory.hasMany(Crop, {
   foreignKey: "subcategory_id",
 });
 
-Cart.belongsTo(Input,{ foreignKey: 'input_id' })
+Input.belongsTo(Category, {
+  foreignKey: "category_id",
+  as: "category"
+});
+
+Input.belongsTo(SubCategory, {
+  foreignKey: "subcategory_id",
+  as: "subcategory"
+});
+
+Cart.belongsTo(Input, { foreignKey: 'input_id' })
 
 
 Negotiation.hasOne(CropSpecification, {
@@ -153,40 +163,40 @@ Negotiation.hasOne(CropSpecification, {
 });
 
 Negotiation.hasOne(Order, {
-  foreignKey : "negotiation_id",
-  as : "order"
+  foreignKey: "negotiation_id",
+  as: "order"
 });
 
 Conversation.hasMany(Negotiation, {
-  foreignKey : "conversation_id",
-  as : "negotiations"
+  foreignKey: "conversation_id",
+  as: "negotiations"
 });
 
 Conversation.belongsTo(Crop, {
-  foreignKey : "crop_id",
-  as : "crop"
+  foreignKey: "crop_id",
+  as: "crop"
 });
 
-Conversation.belongsTo(User , {
-  foreignKey : "user_one",
-  as : "initiator",
-  constraints : false
+Conversation.belongsTo(User, {
+  foreignKey: "user_one",
+  as: "initiator",
+  constraints: false
 });
 
-Conversation.belongsTo(User , {
-  foreignKey : "user_two",
-  as : "participant",
-  constraints : false
+Conversation.belongsTo(User, {
+  foreignKey: "user_two",
+  as: "participant",
+  constraints: false
 });
 
 Order.belongsTo(User, {
-  foreignKey : 'buyer_id',
-  as : "buyer"
+  foreignKey: 'buyer_id',
+  as: "buyer"
 })
 
-Order.belongsTo(Negotiation,{
-  foreignKey : "negotiation_id",
-  as : "negotiation"
+Order.belongsTo(Negotiation, {
+  foreignKey: "negotiation_id",
+  as: "negotiation"
 })
 
 

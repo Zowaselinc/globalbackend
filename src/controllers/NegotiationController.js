@@ -183,7 +183,7 @@ class NegotiationController {
                     include: [
                         IncludeCrop,
                         { model: User, as: "initiator", required: true },
-                        { model: User, as: "participant", required: true},
+                        { model: User, as: "participant", required: true },
                         IncludeNegotiations
                     ],
                 });
@@ -407,8 +407,8 @@ class NegotiationController {
             }
 
             var offer = await Negotiation.findOne({
-                where : {id : req.body.id},
-                include : [
+                where: { id: req.body.id },
+                include: [
                     IncludeSpecification
                 ]
             });
@@ -432,29 +432,27 @@ class NegotiationController {
                 });
 
                 var tracking_details = {
-                    pickup_location : products[0].warehouse_address,
-                    transit : [],
-
-                    //To be removed later
-                    delivery_location : "No 20 Lesely Drive"
-                };;
+                    pickup_location: products[0].warehouse_address,
+                    transit: [],
+                    delivery_location: ""
+                };
 
                 var order = await Order.create({
                     order_hash: "ORD" + randomId,
                     buyer_id: offer.type == "corporate" ? offer.sender_id : offer.receiver_id,
                     buyer_type: "corporate",
                     negotiation_id: offer.id,
-                    total : eval(offer.specification.qty) * eval(offer.specification.price),
-                    currency : products[0].currency,
+                    total: eval(offer.specification.qty) * eval(offer.specification.price),
+                    currency: products[0].currency,
                     payment_status: "UNPAID",
-                    tracking_details : JSON.stringify(tracking_details),
+                    tracking_details: JSON.stringify(tracking_details),
                     products: JSON.stringify(products),
                 })
 
                 return res.status(200).json({
                     error: false,
                     message: "Negotiation offer accepted successfully",
-                    data: { offer : offer, order : order }
+                    data: { offer: offer, order: order }
                 })
 
             } else {
@@ -677,7 +675,7 @@ class NegotiationController {
                     },
                     order: [['id', 'DESC']]
                 });
-                
+
 
                 /* --------------------- If fetched the accepted/declined Negotiation Transaction --------------------- */
 
@@ -785,7 +783,7 @@ class NegotiationController {
                  * I USED THE CONVERSATION_ID TO TAKE ME TO THE CONVERSATION TABLE. IN THIS TABLE,I GRABBED THE CROP_ID *
                  *******************************************************************************************************/
 
-                 const findConversation = await Conversation.findOne({
+                const findConversation = await Conversation.findOne({
                     where: {
                         id: findCropNegotiationOffers.rows[0].conversation_id
                     }

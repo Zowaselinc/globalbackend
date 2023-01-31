@@ -87,6 +87,10 @@ let Schema = (Sequelize, mode) => {
         video: {
             type: Sequelize.STRING,
         },
+        active: {
+            type: Sequelize.INTEGER,
+            allowNull: false
+        },
         ...generateTimestamps(Sequelize, mode)
     }
 }

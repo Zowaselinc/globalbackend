@@ -1,7 +1,11 @@
 const { request } = require("express");
-const { Input, ErrorLog } = require("~database/models");
+const { Input, ErrorLog, Category, SubCategory } = require("~database/models");
 const { validationResult } = require("express-validator");
 const crypto = require("crypto");
+const md5 = require('md5');
+var appRoot = require('app-root-path');
+
+
 // const jwt = require("jsonwebtoken");
 
 class InputProducts {
@@ -24,7 +28,6 @@ class InputProducts {
                     "data": []
                 })
             }
-
             if (!req.files || Object.keys(req.files).length === 0) {
                 return res.status(400).json({
                     "error": true,
@@ -59,16 +62,16 @@ class InputProducts {
                 }
 
                 /* ------------------------ INSERT INTO PRODUCT TABLE ----------------------- */
-
                 var input = await Input.create({
                     user_id: req.global.user.id,
-                    category: req.body.category,
-                    sub_category: req.body.sub_category,
+                    category_id: req.body.category_id,
+                    subcategory_id: req.body.subcategory_id,
                     crop_focus: req.body.crop_focus,
                     product_type: req.body.product_type,
                     packaging: req.body.packaging,
                     description: req.body.description,
                     usage_instruction: req.body.usage_instruction,
+                    stock: req.body.stock,
                     kilograms: req.body.kilograms,
                     grams: req.body.grams,
                     liters: req.body.liters,
@@ -81,7 +84,8 @@ class InputProducts {
                     expiry_date: req.body.expiry_date,
                     manufacture_country: req.body.manufacture_country,
                     state: req.body.state,
-                    video: req.body.video
+                    video: req.body.video,
+                    active: 1
                 })
 
                 /* ------------------------ INSERT INTO PRODUCT TABLE ----------------------- */
@@ -118,11 +122,22 @@ class InputProducts {
 
     }
 
-    static async getallInputsByUser(req, res) {
+    static async getAllInputsByUser(req, res) {
         try {
             var alluserinputs = await Input.findAll({
+                include: [
+                    {
+                        model: Category,
+                        as: "category"
+                    },
+                    {
+                        model: SubCategory,
+                        as: "subcategory"
+                    }
+                ],
                 where: {
-                    user_id: req.params.user_id
+                    user_id: req.global.user.id,
+                    active: 1
                 }
             });
 
@@ -355,7 +370,178 @@ class InputProducts {
             }
         }
     }
-    // static async getallInputsByDeliveryMethod(req , res){}
+
+
+    /* ---------------------------- Delete crop by id --------------------------- */
+
+
+    static async deleteCropById(req, res) {
+
+        const errors = validationResult(req);
+
+
+        try {
+
+            /* ------------------------ UPDATE INTO CROP TABLE ----------------------- */
+
+            var crop = await Crop.findOne({ where: { id: req.params.id } });
+            if (crop) {
+
+                var type = crop.type;
+
+                if (type == "wanted") {
+
+                    await CropRequest.destroy({
+                        where: {
+                            crop_id: req.params.id
+                        }
+                    });
+                }
+
+                if (type == "auction") {
+
+                    await Auction.destroy({
+                        where: {
+                            crop_id: req.params.id
+                        }
+                    });
+                }
+
+                crop.destroy();
+
+                await CropSpecification.destroy({
+                    where: {
+                        model_type: "crop",
+                        model_id: req.params.id
+                    }
+                });
+
+                return res.status(200).json({
+                    error: false,
+                    message: "Crop deleted successfully",
+                })
+
+            } else {
+                return res.status(400).json({
+                    error: true,
+                    message: "No such crop found",
+                    data: req.body
+                })
+            }
+
+        } catch (e) {
+            var logError = await ErrorLog.create({
+                error_name: "Error on edit a crop",
+                error_description: e.toString(),
+                route: "/api/crop/delete",
+                error_code: "500"
+            });
+            if (logError) {
+                return res.status(500).json({
+                    error: true,
+                    message: 'Unable to complete request at the moment'
+                })
+            }
+        }
+
+
+    }
+
+    /* ---------------------------- Delete input by id --------------------------- */
+
+
+    static async deleteInputById(req, res) {
+
+        const errors = validationResult(req);
+
+
+        try {
+
+            /* ------------------------ UPDATE INTO CROP TABLE ----------------------- */
+
+            var input = await Input.findOne({ where: { id: req.params.id } });
+            if (input) {
+
+
+                input.destroy();
+
+                return res.status(200).json({
+                    error: false,
+                    message: "Input deleted successfully",
+                })
+
+            } else {
+                return res.status(400).json({
+                    error: true,
+                    message: "No such input found",
+                    data: req.body
+                })
+            }
+
+        } catch (e) {
+            var logError = await ErrorLog.create({
+                error_name: "Error on edit a crop",
+                error_description: e.toString(),
+                route: "/api/crop/delete",
+                error_code: "500"
+            });
+            if (logError) {
+                return res.status(500).json({
+                    error: true,
+                    message: 'Unable to complete request at the moment'
+                })
+            }
+        }
+
+
+    }
+
+
+    static async deactivateInputById(req, res) {
+
+        const errors = validationResult(req);
+
+
+        try {
+
+            /* ------------------------ UPDATE INTO CROP TABLE ----------------------- */
+
+            var input = await Input.findOne({ where: { id: req.params.id } });
+            if (input) {
+
+                input.active = 0;
+                input.save();
+
+                return res.status(200).json({
+                    error: false,
+                    message: "Input deactivated successfully",
+                })
+
+            } else {
+                return res.status(400).json({
+                    error: true,
+                    message: "No such input found",
+                    data: req.body
+                })
+            }
+
+        } catch (e) {
+            var logError = await ErrorLog.create({
+                error_name: "Error on edit a crop",
+                error_description: e.toString(),
+                route: "/api/crop/delete",
+                error_code: "500"
+            });
+            if (logError) {
+                return res.status(500).json({
+                    error: true,
+                    message: 'Unable to complete request at the moment'
+                })
+            }
+        }
+
+
+    }
 }
 
 module.exports = InputProducts;
