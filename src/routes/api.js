@@ -142,6 +142,7 @@ Router.group((router) => {
     router.get('/crop/getbycropauction', CropController.getByCropAuctions);
     router.get('/crop/getbycropoffer', CropController.getByCropOffer);
     router.get('/crop/getbyid/:id', CropController.getById);
+    router.get('/crop/:type/:userid', CropController.getByTypeandUserID);
     // router.post('/crop/editbyid', CropValidation.addCropValidator, CropController.EditById);
 
 
