@@ -1,17 +1,18 @@
 const { body } = require('express-validator');
 
 const Extended = {
-    addCropValidator: [
+    addCropValidator : [
         // Crop model requirements
         // body('type').isString(),
         // body('user_id').isString(),
+        body('title').not().isEmpty(),
         body('category_id').not().isEmpty(),
         body('subcategory_id').not().isEmpty(),
         body('description').not().isEmpty(),
         // body('images').not().isEmpty(),
         body('currency').not().isEmpty(),
         body('is_negotiable').not().isEmpty(),
-        body('video').optional(),
+        body('video').not().isEmpty(),
         // body('packaging').not().isEmpty(),
 
         // Crop specification Requirements
@@ -21,56 +22,47 @@ const Extended = {
         body('color').not().isEmpty(),
         body('moisture_content').not().isEmpty(),
         body('foreign_matter').not().isEmpty(),
-        body('broken_grains').optional(),
-        body('weevil').optional(),
-        body('dk').optional(),
-        body('rotten_shriveled').optional(),
+        body('broken_grains').not().isEmpty(),
+        body('weevil').not().isEmpty(),
+        body('dk').not().isEmpty(),
+        body('rotten_shriveled').not().isEmpty(),
         body('test_weight').not().isEmpty(),
-        body('hectoliter').optional(),
-        body('hardness').optional(),
-        body('splits').optional(),
-        body('oil_content').optional(),
-        body('infestation').optional(),
-        body('grain_size').optional(),
-        body('total_defects').optional(),
-        body('dockage').optional(),
-        body('ash_content').optional(),
-        body('acid_ash').optional(),
-        body('volatile').optional(),
-        body('mold').optional(),
-        body('drying_process').optional(),
-        body('dead_insect').optional(),
-        body('mammalian').optional(),
-        body('infested_by_weight').optional(),
-        body('curcumin_content').optional(),
-        body('extraneous').optional(),
+        body('hectoliter').not().isEmpty(),
+        body('hardness').not().isEmpty(),
+        body('splits').not().isEmpty(),
+        body('oil_content').not().isEmpty(),
+        body('infestation').not().isEmpty(),
+        body('grain_size').not().isEmpty(),
+        body('total_defects').not().isEmpty(),
+        body('dockage').not().isEmpty(),
+        body('ash_content').not().isEmpty(),
+        body('acid_ash').not().isEmpty(),
+        body('volatile').not().isEmpty(),
+        body('mold').not().isEmpty(),
+        body('drying_process').not().isEmpty(),
+        body('dead_insect').not().isEmpty(),
+        body('mammalian').not().isEmpty(),
+        body('infested_by_weight').not().isEmpty(),
+        body('curcumin_content').not().isEmpty(),
+        body('extraneous').not().isEmpty(),
+        // body('unit').isString(),
     ],
 }
 module.exports = {
 
-    addCropWantedValidator: [
+    addCropWantedValidator : [
 
         ...Extended.addCropValidator,
         body('state').isString(),
         body('zip').isString(),
         body('country').isString(),
+        body('address').isString(),
         body('delivery_window').not().isEmpty(),
-        body('warehouse_address').isString(),
-
-    ],
-
-    addCropForSaleValidator: [
-
-        ...Extended.addCropValidator,
-        body('state').isString(),
-        body('zip').isString(),
-        body('country').isString(),
-        body('warehouse_address').isString(),
 
     ],
 
 
-    addCropRequestValidator: [
+    addCropRequestValidator : [
         body('crop_id').isNumeric(),
         body('state').isString(),
         body('zip').isString(),
@@ -82,7 +74,7 @@ module.exports = {
     ],
 
 
-    addCropSpecificationValidator: [
+    addCropSpecificationValidator : [
         // body('model_id').isNumeric(),
         body('model_type').isString(),
         body('qty').isNumeric(),

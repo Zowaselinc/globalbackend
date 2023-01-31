@@ -91,7 +91,8 @@ class CropController {
                 /* ------------------------ INSERT INTO CROP TABLE ----------------------- */
 
                 var crop = await Crop.create({
-                    user_id: req.global.user.id,
+                    user_id: req.body.user_id,
+                    title: req.body.title,
                     type: type,
                     category_id: req.body.category_id,
                     subcategory_id: req.body.subcategory_id,
@@ -143,6 +144,7 @@ class CropController {
                         infested_by_weight: req.body.infested_by_weight,
                         curcumin_content: req.body.curcumin_content,
                         extraneous: req.body.extraneous,
+                        unit: req.body.unit
                     })
 
 
@@ -150,7 +152,7 @@ class CropController {
 
                     if (createCropSpecification) {
                         if (type == "wanted") {
-                            var createCroropRequest = await CropRequest.create({
+                            var createCropRequest = await CropRequest.create({
                                 crop_id: crop.id,
                                 state: req.body.state,
                                 zip: req.body.zip,

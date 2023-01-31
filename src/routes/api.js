@@ -129,14 +129,15 @@ Router.group((router) => {
 
 // Routes
 
-Router.middleware(['isAuthenticated']).group((router) => {
+// Router.middleware(['isAuthenticated']).group((router) => {
+Router.group((router) => {
 
     // router.get();
 
 
     /* ------------------------------- Crop ------------------------------ */
 
-    router.post('/crop/:type/add', CropValidation.addCropForSaleValidator, CropController.add);
+    router.post('/crop/:type/add', CropValidation.addCropWantedValidator, CropController.add);
     router.get('/crop/getbycropwanted', CropController.getByCropWanted);
     router.get('/crop/getbycropauction', CropController.getByCropAuctions);
     router.get('/crop/getbycropoffer', CropController.getByCropOffer);

@@ -123,6 +123,10 @@ let Schema = (Sequelize,mode) => {
             type: Sequelize.STRING,
             allowNull : false
         },
+        unit : {
+            type: Sequelize.STRING,
+            allowNull : false
+        },
         ...generateTimestamps(Sequelize,mode)
     }
 }
