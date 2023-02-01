@@ -146,7 +146,10 @@ Router.middleware(['isAuthenticated']).group((router) => {
     router.get('/crop/getbycropoffer', CropController.getByCropOffer);
     router.get('/crop/getbyid/:id', CropController.getById);
     router.post('/crop/:id/deactivate', CropController.deactivateCropById);
-    router.post('/crop/:id/fulfil', OrderController.fulfilCropOffer);
+    router.get('/crop/:id/bid', CropController.getCropBids);
+    router.post('/crop/:id/bid', CropValidation.createAuctionBid, CropController.bidForCrop);
+
+
     // router.post('/crop/editbyid', CropValidation.addCropValidator, CropController.EditById);
 
 
