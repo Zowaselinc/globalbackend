@@ -67,7 +67,7 @@ class CropController {
                     var file = req.files[allImages[i]];
                     var extension = file.mimetype.split('/')[1];
                     var newName = md5(file.name + (new Date()).toDateString()) + `.${extension}`;
-                    var imagePath = `/data/products/${newName}`
+                    var imagePath = `/data/products/${newName}`;
                     my_object.push(imagePath);
                     sampleFile = file;
                     uploadPath = `${appRoot}/public${imagePath}`;
@@ -638,9 +638,62 @@ class CropController {
                 })
             }
         }
-
-
     }
+    /* --------------------------- GET ALL CROPS TYPE BY USERID --------------------------- */
+    static async getByTypeandUserID(req, res) {
+
+        try {
+            var findCrops = await Crop.findAndCountAll({
+                include: [{
+                    model: CropSpecification,
+                    as: 'specification',
+                },
+                {
+                    model: Category,
+                    as: "category"
+                },
+                {
+                    model: Auction,
+                    as: "auction"
+                }],
+
+                where: { type: req.params.type, user_id: req.params.userid },
+                order: [['id', 'DESC']]
+            });
+
+
+            /* --------------------- If fetched the Wanted Crops --------------------- */
+
+            return res.status(200).json({
+                error: false,
+                message: "Crops grabbed successfully",
+                data: findCrops
+            })
+
+        } catch (error) {
+            var logError = await ErrorLog.create({
+                error_name: "Error on fetching crop wanted",
+                error_description: error.toString(),
+                route: "/api/user/crops",
+                error_code: "500"
+            });
+            if (logError) {
+                return res.status(500).json({
+                    error: true,
+                    message: 'Unable to complete request at the moment'
+                })
+            }
+        }
+    }
+    /* --------------------------- GET ALL CROPS TYPE BY USERID --------------------------- */
+
+
+
+
+
+
+
+
 
 
 
