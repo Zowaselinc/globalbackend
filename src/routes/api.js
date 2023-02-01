@@ -133,7 +133,8 @@ Router.group((router) => {
 
 // Routes
 
-Router.middleware(['isAuthenticated']).group((router) => {
+// Router.middleware(['isAuthenticated']).group((router) => {
+Router.group((router) => {
 
     // router.get();
 
