@@ -6,10 +6,6 @@ let Schema = (Sequelize,mode) => {
             type: Sequelize.INTEGER(11),
             allowNull : false
         },
-        title : {
-            type: Sequelize.STRING,
-            allowNull : false
-        },
         type : {
             type: Sequelize.STRING,
             allowNull : false

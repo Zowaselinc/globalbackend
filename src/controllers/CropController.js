@@ -91,8 +91,7 @@ class CropController {
                 /* ------------------------ INSERT INTO CROP TABLE ----------------------- */
 
                 var crop = await Crop.create({
-                    user_id: req.body.user_id,
-                    title: req.body.title,
+                    user_id: req.global.user.id,
                     type: type,
                     category_id: req.body.category_id,
                     subcategory_id: req.body.subcategory_id,
@@ -144,7 +143,6 @@ class CropController {
                         infested_by_weight: req.body.infested_by_weight,
                         curcumin_content: req.body.curcumin_content,
                         extraneous: req.body.extraneous,
-                        unit: req.body.unit
                     })
 
 
@@ -152,13 +150,23 @@ class CropController {
 
                     if (createCropSpecification) {
                         if (type == "wanted") {
-                            var createCropRequest = await CropRequest.create({
+                            var createCroropRequest = await CropRequest.create({
                                 crop_id: crop.id,
                                 state: req.body.state,
                                 zip: req.body.zip,
                                 country: req.body.country,
                                 address: req.body.warehouse_address,
                                 delivery_window: req.body.delivery_window
+                            })
+                        }
+
+                        if (type == "auction") {
+                            var createAuction = await Auction.create({
+                                crop_id: crop.id,
+                                start_date: req.body.start_date,
+                                end_date: req.body.end_date,
+                                minimum_bid: req.body.minimum_bid,
+                                status: 1
                             })
                         }
 
@@ -237,7 +245,7 @@ class CropController {
                     model: User,
                     as: 'user',
                 }],
-                where: { type: "wanted" },
+                where: { type: "wanted", active: 1 },
                 order: [['id', 'DESC']]
             });
 
@@ -284,6 +292,10 @@ class CropController {
                     as: "category"
                 },
                 {
+                    model: SubCategory,
+                    as: "subcategory"
+                },
+                {
                     model: User,
                     as: 'user',
                 },
@@ -292,7 +304,7 @@ class CropController {
                     as: "auction"
                 }],
 
-                where: { type: "auction" },
+                where: { type: "auction", active: 1 },
                 order: [['id', 'DESC']]
             });
 
@@ -359,7 +371,7 @@ class CropController {
                         model: User,
                         as: 'user',
                     }],
-                    where: { type: "offer" },
+                    where: { type: "offer", active: 1 },
                     order: [['id', 'DESC']]
                 });
 
@@ -407,11 +419,20 @@ class CropController {
                     as: "category"
                 },
                 {
+                    model: SubCategory,
+                    as: "subcategory"
+                },
+                {
                     model: Auction,
                     as: "auction"
-                }],
+                },
+                {
+                    model: CropRequest,
+                    as: 'crop_request',
+                },
+                ],
 
-                where: { user_id: req.global.user.id },
+                where: { user_id: req.global.user.id, active: 1 },
                 order: [['id', 'DESC']]
             });
 
@@ -469,9 +490,6 @@ class CropController {
                     {
                         model: CropRequest,
                         as: 'crop_request',
-                        order: [['id', 'DESC']],
-                        limit: 1,
-
                     }, {
                         model: User,
                         as: 'user'
@@ -720,7 +738,127 @@ class CropController {
 
 
 
+    /* ---------------------------- Delete crop by id --------------------------- */
 
+
+    static async deleteCropById(req, res) {
+
+        const errors = validationResult(req);
+
+
+        try {
+
+            /* ------------------------ UPDATE INTO CROP TABLE ----------------------- */
+
+            var crop = await Crop.findOne({ where: { id: req.params.id } });
+            if (crop) {
+
+                var type = crop.type;
+
+                if (type == "wanted") {
+
+                    await CropRequest.destroy({
+                        where: {
+                            crop_id: req.params.id
+                        }
+                    });
+                }
+
+                if (type == "auction") {
+
+                    await Auction.destroy({
+                        where: {
+                            crop_id: req.params.id
+                        }
+                    });
+                }
+
+                crop.destroy();
+
+                await CropSpecification.destroy({
+                    where: {
+                        model_type: "crop",
+                        model_id: req.params.id
+                    }
+                });
+
+                return res.status(200).json({
+                    error: false,
+                    message: "Crop deleted successfully",
+                })
+
+            } else {
+                return res.status(400).json({
+                    error: true,
+                    message: "No such crop found",
+                    data: req.body
+                })
+            }
+
+        } catch (e) {
+            var logError = await ErrorLog.create({
+                error_name: "Error on edit a crop",
+                error_description: e.toString(),
+                route: "/api/crop/delete",
+                error_code: "500"
+            });
+            if (logError) {
+                return res.status(500).json({
+                    error: true,
+                    message: 'Unable to complete request at the moment'
+                })
+            }
+        }
+
+
+    }
+
+    static async deactivateCropById(req, res) {
+
+        const errors = validationResult(req);
+
+
+        try {
+
+            /* ------------------------ UPDATE INTO CROP TABLE ----------------------- */
+
+            var crop = await Crop.findOne({ where: { id: req.params.id } });
+            if (crop) {
+
+                crop.active = 0;
+
+                crop.save();
+
+                return res.status(200).json({
+                    error: false,
+                    message: "Crop deactivated successfully",
+                })
+
+            } else {
+                return res.status(400).json({
+                    error: true,
+                    message: "No such crop found",
+                    data: req.body
+                })
+            }
+
+        } catch (e) {
+            var logError = await ErrorLog.create({
+                error_name: "Error on edit a crop",
+                error_description: e.toString(),
+                route: "/api/crop/delete",
+                error_code: "500"
+            });
+            if (logError) {
+                return res.status(500).json({
+                    error: true,
+                    message: 'Unable to complete request at the moment'
+                })
+            }
+        }
+
+
+    }
 
 }
 

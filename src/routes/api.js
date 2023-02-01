@@ -19,7 +19,8 @@ const CropRequestController = require('../controllers/CropRequestController');
 const CropSpecificationController = require('../controllers/CropSpecificationController');
 
 const NegotiationController = require('../controllers/NegotiationController');
-const Input = require('~controllers/InputProductController');
+
+const InputController = require('~controllers/InputProductController');
 
 const Cart = require('~controllers/CartController');
 
@@ -42,6 +43,7 @@ const OrderController = require("~controllers/OrderController");
 const TransactionValidator = require("./validators/TransactionValidator");
 const TransactionController = require("~controllers/TransactionController");
 const ColorController = require("~controllers/ColorController");
+const { Order } = require("~database/models");
 
 
 const Router = RouteProvider.Router;
@@ -94,6 +96,8 @@ Router.middleware(['isAuthenticated']).group((router) => {
 
     router.get('/users/:id/crops', CropController.getAllCropsByUser);
 
+    router.get('/users/:id/inputs', InputController.getAllInputsByUser);
+
 });
 
 
@@ -129,20 +133,21 @@ Router.group((router) => {
 
 // Routes
 
-// Router.middleware(['isAuthenticated']).group((router) => {
-Router.group((router) => {
+Router.middleware(['isAuthenticated']).group((router) => {
 
     // router.get();
 
 
     /* ------------------------------- Crop ------------------------------ */
 
-    router.post('/crop/:type/add', CropValidation.addCropWantedValidator, CropController.add);
+    router.post('/crop/:type/add', CropValidation.addCropForSaleValidator, CropController.add);
     router.get('/crop/getbycropwanted', CropController.getByCropWanted);
     router.get('/crop/getbycropauction', CropController.getByCropAuctions);
     router.get('/crop/getbycropoffer', CropController.getByCropOffer);
     router.get('/crop/getbyid/:id', CropController.getById);
     router.get('/crop/:type/:userid', CropController.getByTypeandUserID);
+    router.post('/crop/:id/deactivate', CropController.deactivateCropById);
+    router.post('/crop/:id/fulfil', OrderController.fulfilCropOffer);
     // router.post('/crop/editbyid', CropValidation.addCropValidator, CropController.EditById);
 
 
@@ -207,15 +212,17 @@ Router.group((router) => {
 /*                             INPUT MARKET PLACE                             */
 /* -------------------------------------------------------------------------- */
 
-Router.group((router) => {
+Router.middleware('isAuthenticated').group((router) => {
     /* ---------------------------------- Input ---------------------------------- */
-    router.post('/input/add', InputsValidator.createInputValidator, Input.createInput);
-    router.get('/input/getallbyuserid/:user_id', Input.getallInputsByUser);
-    router.get('/input', Input.getallInputs);
-    router.get('/input/:input', Input.getInputById);
-    router.get('/input/getallbycategory/:category', Input.getallInputsByCategory);
-    router.get('/input/getallbymanufacturer/:manufacturer', Input.getallInputsByManufacturer);
-    router.get('/input/getallbypackaging/:packaging', Input.getallInputsByPackaging);
+    router.post('/input/add', InputsValidator.createInputValidator, InputController.createInput);
+    router.get('/input/getallbyuserid/:user_id', InputController.getAllInputsByUser);
+    router.get('/input', InputController.getallInputs);
+    router.delete('/input/:id', InputController.deleteInputById);
+    router.post('/input/:id/deactivate', InputController.deactivateInputById);
+    router.get('/input/:input', InputController.getInputById);
+    router.get('/input/getallbycategory/:category', InputController.getallInputsByCategory);
+    router.get('/input/getallbymanufacturer/:manufacturer', InputController.getallInputsByManufacturer);
+    router.get('/input/getallbypackaging/:packaging', InputController.getallInputsByPackaging);
 
 
     /* ---------------------------------- CART ---------------------------------- */

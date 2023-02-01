@@ -15,24 +15,10 @@ let Schema = (Sequelize, mode) => {
             type: Sequelize.STRING,
             allowNull: false
         },
-        // product_type: {
-        //     type: Sequelize.STRING,
-        //     allowNull: false
-        // },
-        // added
-        title : {
-            type : Sequelize.STRING,
-            allowNull : false
-        },
-        kg: {
+        product_type: {
             type: Sequelize.STRING,
             allowNull: false
         },
-        state : {
-            type: Sequelize.STRING,
-            allowNull : false
-        },
-        // added
         crop_focus: {
             type: Sequelize.STRING(350),
             allowNull: false
@@ -53,10 +39,10 @@ let Schema = (Sequelize, mode) => {
             type: Sequelize.TEXT,
             allowNull: false
         },
-        // kilograms: {
-        //     type: Sequelize.STRING,
-        //     allowNull: false
-        // },
+        kilograms: {
+            type: Sequelize.STRING,
+            allowNull: false
+        },
         grams: {
             type: Sequelize.STRING,
         },
@@ -100,6 +86,10 @@ let Schema = (Sequelize, mode) => {
         },
         video: {
             type: Sequelize.STRING,
+        },
+        active: {
+            type: Sequelize.INTEGER,
+            allowNull: false
         },
         ...generateTimestamps(Sequelize, mode)
     }
