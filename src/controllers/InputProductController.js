@@ -58,6 +58,7 @@ class InputProducts{
                     user_id: req.global.user.id,
                     category_id: req.body.category_id,
                     subcategory_id: req.body.subcategory_id,
+                    product_type: req.body.product_type,
                     crop_focus: req.body.crop_focus,
                     packaging: req.body.packaging,
                     description: req.body.description,
@@ -106,7 +107,8 @@ class InputProducts{
             if(logError){
                 return res.status(500).json({
                     error: true,
-                    message: 'Unable to complete request at the moment'+e
+                    // message: 'Unable to complete request at the moment'+req.body.state+' '+e.toString()
+                    message: 'Unable to complete request at the moment'
                 })
             }  
         }
@@ -128,7 +130,7 @@ class InputProducts{
                     }
                 ],
                 where: {
-                    user_id: req.global.user.id,
+                    user_id: req.params.user_id,
                     active: 1
                 }
             });
@@ -160,7 +162,7 @@ class InputProducts{
             if(logError){
                 return res.status(500).json({
                     error: true,
-                    message: 'Unable to complete request at the moment'
+                    message: 'Unable to complete request at the moment'+e.toString()
                 })
             }  
         }
@@ -197,6 +199,7 @@ class InputProducts{
             if(logError){
                 return res.status(500).json({
                     error: true,
+                    // message: 'Unable to complete request at the moment'+e.toString()
                     message: 'Unable to complete request at the moment'
                 })
             }  

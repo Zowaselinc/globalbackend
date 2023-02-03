@@ -141,12 +141,12 @@ Router.group((router) => {
 
     /* ------------------------------- Crop ------------------------------ */
 
-    router.post('/crop/:type/add', CropValidation.addCropForSaleValidator, CropController.add);
+    router.post('/crop/:type/add', CropValidation.addCropWantedValidator, CropController.add);
     router.get('/crop/getbycropwanted', CropController.getByCropWanted);
     router.get('/crop/getbycropauction', CropController.getByCropAuctions);
     router.get('/crop/getbycropoffer', CropController.getByCropOffer);
     router.get('/crop/getbyid/:id', CropController.getById);
-    router.get('/crop/:type/:userid', CropController.getByTypeandUserID);
+    router.get('/crop/:type', CropController.getByTypeandUserID); //type and global user id
     router.post('/crop/:id/deactivate', CropController.deactivateCropById);
     router.post('/crop/:id/fulfil', OrderController.fulfilCropOffer);
     // router.post('/crop/editbyid', CropValidation.addCropValidator, CropController.EditById);
@@ -213,7 +213,8 @@ Router.group((router) => {
 /*                             INPUT MARKET PLACE                             */
 /* -------------------------------------------------------------------------- */
 
-Router.middleware('isAuthenticated').group((router) => {
+// Router.middleware('isAuthenticated').group((router) => {
+Router.group((router) => {
     /* ---------------------------------- Input ---------------------------------- */
     router.post('/input/add', InputsValidator.createInputValidator, InputController.createInput);
     router.get('/input/getallbyuserid/:user_id', InputController.getAllInputsByUser);
