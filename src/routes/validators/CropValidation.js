@@ -118,4 +118,8 @@ module.exports = {
         // body('liters').isNumeric(),
     ],
 
+    createAuctionBid: [
+        body('amount').not().isEmpty()
+    ]
+
 }
