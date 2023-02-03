@@ -148,7 +148,7 @@ Router.middleware(['isAuthenticated']).group((router) => {
     router.get('/crop/:type/:userid', CropController.getByTypeandUserID);
     router.post('/crop/:id/deactivate', CropController.deactivateCropById);
     router.post('/crop/:id/fulfil', OrderController.fulfilCropOffer);
-    // router.post('/crop/editbyid', CropValidation.addCropValidator, CropController.EditById);
+    // router.post('/crop/editbyid', CropValidation.addCropValidator, CropController.EditById); 
 
 
     /* ------------------------------- Crop Specification ------------------------------ */
