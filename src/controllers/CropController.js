@@ -657,7 +657,7 @@ class CropController {
                     as: "auction"
                 }],
 
-                where: { type: req.params.type, user_id: req.params.userid },
+                where: { type: req.params.type, user_id: req.global.user.id },
                 order: [['id', 'DESC']]
             });
 
