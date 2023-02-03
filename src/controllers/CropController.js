@@ -246,7 +246,8 @@ class CropController {
                     as: 'user',
                 }],
                 where: { type: "wanted", active: 1 },
-                order: [['id', 'DESC']]
+                order: [['id', 'DESC']],
+                group: ["id"]
             });
 
 
@@ -305,7 +306,8 @@ class CropController {
                 }],
 
                 where: { type: "auction", active: 1 },
-                order: [['id', 'DESC']]
+                order: [['id', 'DESC']],
+                group: ["id"]
             });
 
 
@@ -372,7 +374,8 @@ class CropController {
                         as: 'user',
                     }],
                     where: { type: "offer", active: 1 },
-                    order: [['id', 'DESC']]
+                    order: [['id', 'DESC']],
+                    group: ["id"]
                 });
 
 
@@ -433,7 +436,8 @@ class CropController {
                 ],
 
                 where: { user_id: req.global.user.id, active: 1 },
-                order: [['id', 'DESC']]
+                order: [['id', 'DESC']],
+                group: ["id"]
             });
 
 
@@ -551,7 +555,8 @@ class CropController {
                 }],
 
                 where: { type: req.params.type, user_id: req.global.user.id },
-                order: [['id', 'DESC']]
+                order: [['id', 'DESC']],
+                group: ["id"]
             });
 
 
