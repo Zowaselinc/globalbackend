@@ -368,8 +368,8 @@ class OrderController {
 
             var createOrder = await Order.create({
                 order_hash: "ORD" + randomid,
-                buyer_id: req.global.user.id,
-                buyer_type: req.global.user.type,
+                buyer_id: products[0].type == "wanted" ? products[0].user_id : req.global.user.id,
+                buyer_type: products[0].type == "wanted" ? "corporate" : req.global.user.type,
                 negotiation_id: null,
                 total: eval(req.body.quantity) * eval(products[0].specification.price),
                 currency: products[0].currency,
