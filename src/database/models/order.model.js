@@ -1,73 +1,77 @@
 const generateTimestamps = require("./timestamps");
 
-let Schema = (Sequelize,mode) => {
+let Schema = (Sequelize, mode) => {
     return {
-        order_hash : {
+        order_hash: {
             type: Sequelize.STRING,
-            allowNull : false
+            allowNull: false
         },
-        buyer_id : {
-            type : Sequelize.STRING,
-            allowNull : false
-        },
-        buyer_type : {
-            type : Sequelize.STRING,
-            allowNull : false
-        },
-        negotiation_id : {
+        buyer_id: {
             type: Sequelize.STRING,
-            allowNull : true
+            allowNull: false
         },
-        total : {
-            type : Sequelize.STRING,
-            allowNull : false
-        },
-        currency : {
-            type : Sequelize.STRING,
-            allowNull : false
-        },
-        payment_option : {
+        buyer_type: {
             type: Sequelize.STRING,
+            allowNull: false
         },
-        payment_status : {
-            type : Sequelize.ENUM( "UNPAID", "PARTIALLY_PAID", "PAID" ),
-            allowNull : false
+        seller_id: {
+            type: Sequelize.STRING,
+            allowNull: true
         },
-        amount_paid : {
+        negotiation_id: {
+            type: Sequelize.STRING,
+            allowNull: true
+        },
+        total: {
+            type: Sequelize.STRING,
+            allowNull: false
+        },
+        currency: {
+            type: Sequelize.STRING,
+            allowNull: false
+        },
+        payment_option: {
             type: Sequelize.STRING,
         },
-        amount_due : {
+        payment_status: {
+            type: Sequelize.ENUM("UNPAID", "PARTIALLY_PAID", "PAID"),
+            allowNull: false
+        },
+        amount_paid: {
             type: Sequelize.STRING,
         },
-        products : {
-            type : Sequelize.TEXT,
-            allowNull : false
+        amount_due: {
+            type: Sequelize.STRING,
         },
-        tracking_details : {
+        products: {
             type: Sequelize.TEXT,
-            allowNull : true
+            allowNull: false
         },
-        waybill_details : {
+        tracking_details: {
             type: Sequelize.TEXT,
-            allowNull : true
+            allowNull: true
         },
-        receipt_note : {
+        waybill_details: {
             type: Sequelize.TEXT,
-            allowNull : true
+            allowNull: true
         },
-        extra_documents : {
+        receipt_note: {
             type: Sequelize.TEXT,
-            allowNull : true
+            allowNull: true
         },
-        ...generateTimestamps(Sequelize,mode)
+        extra_documents: {
+            type: Sequelize.TEXT,
+            allowNull: true
+        },
+        ...generateTimestamps(Sequelize, mode)
     }
 }
 const Model = (sequelize, instance, Sequelize) => {
     // Define initial for DB sync
-    sequelize.define("orders", Schema(Sequelize,1),{ timestamps: false });
+    sequelize.define("orders", Schema(Sequelize, 1), { timestamps: false });
     // Bypass initial instance to cater for timestamps
-    const Order = instance.define("orders", Schema(Sequelize,2),{ timestamps: false });
+    const Order = instance.define("orders", Schema(Sequelize, 2), { timestamps: false });
     return Order;
 }
 
-module.exports = { Schema , Model};
+module.exports = { Schema, Model };

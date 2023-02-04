@@ -370,6 +370,7 @@ class OrderController {
                 order_hash: "ORD" + randomid,
                 buyer_id: products[0].type == "wanted" ? products[0].user_id : req.global.user.id,
                 buyer_type: products[0].type == "wanted" ? "corporate" : req.global.user.type,
+                seller_id: products[0].type == "wanted" ? req.global.user.id : products[0].user_id,
                 negotiation_id: null,
                 total: eval(req.body.quantity) * eval(products[0].specification.price),
                 currency: products[0].currency,

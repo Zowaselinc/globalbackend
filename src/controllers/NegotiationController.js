@@ -441,6 +441,7 @@ class NegotiationController {
                     order_hash: "ORD" + randomId,
                     buyer_id: offer.type == "corporate" ? offer.sender_id : offer.receiver_id,
                     buyer_type: "corporate",
+                    seller_id: offer.type == "corporate" ? offer.receiver_id : offer.sender_id,
                     negotiation_id: offer.id,
                     total: eval(offer.specification.qty) * eval(offer.specification.price),
                     currency: products[0].currency,
