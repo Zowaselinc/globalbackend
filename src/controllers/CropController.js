@@ -74,12 +74,6 @@ class CropController {
                     sampleFile.mv(uploadPath, function (err) {
                         if (err) {
                             return res.status(500).send(err + " Error in uploading file");
-                        } else {
-
-                            // res.send('File uploaded!');
-
-                            // image = "image"+i;
-                            // my_object.image = "uploadPath"
                         }
                     });
                 }
