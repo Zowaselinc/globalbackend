@@ -4,15 +4,15 @@ const { validationResult } = require("express-validator");
 const crypto = require("crypto");
 // const jwt = require("jsonwebtoken");
 
-class InputsCart{
+class InputsCart {
 
-    static async addtoCart(req, res){
+    static async addtoCart(req, res) {
         const errors = validationResult(req);
-        try{
+        try {
 
             /* ----------------- checking the req.body for empty fields ----------------- */
             if (!errors.isEmpty()) {
-                return res.status(400).json({ 
+                return res.status(400).json({
                     error: true,
                     message: "All fields required",
                     data: errors
@@ -22,56 +22,56 @@ class InputsCart{
             /* ---------------- check if the item is already in the cart ---------------- */
             var checkCart = await Cart.findAll({
                 where: {
-                    "user_id":req.body.user_id,
+                    "user_id": req.body.user_id,
                     "input_id": req.body.input_id
                 }
             });
 
             /* -------------------------------- Get input ------------------------------- */
             var input = await Input.findOne({
-                where : {id : req.body.input_id}
+                where: { id: req.body.input_id }
             });
 
-            if(!input){
+            if (!input) {
                 return res.status(400).json({
-                    error : true,
-                    message : "Invalid Request",
-                    data : []
+                    error: true,
+                    message: "Invalid Request",
+                    data: []
                 })
-            }else{
+            } else {
                 req.body.price = input.price;
             }
 
-            if(checkCart.length > 0){
+            if (checkCart.length > 0) {
                 /* ------------------------- update existing record ------------------------- */
                 var makeRequest = await Cart.update(req.body, {
                     where: {
-                        "user_id":req.body.user_id,
+                        "user_id": req.body.user_id,
                         "input_id": req.body.input_id
                     }
                 });
-            }else{
+            } else {
                 /* --------------------- insert the product into the DB --------------------- */
                 var makeRequest = await Cart.create(req.body);
             }
-                
-            if(makeRequest){
+
+            if (makeRequest) {
                 return res.status(200).json({
-                    error : false,
-                    message : "Item added to cart successfully",
-                    data : []
+                    error: false,
+                    message: "Item added to cart successfully",
+                    data: []
                 })
-            }else{
+            } else {
                 return res.status(400).json({
-                    error : true,
-                    message : "Unable to complete the request at the moment",
-                    data : []
+                    error: true,
+                    message: "Unable to complete the request at the moment",
+                    data: []
                 })
             }
 
 
 
-        }catch(error){
+        } catch (error) {
             var logError = await ErrorLog.create({
                 error_name: "Error on adding input to cart-+",
                 error_description: error.toString(),
@@ -85,54 +85,55 @@ class InputsCart{
                 data: []
             })
         }
-        
+
     }
 
     /* ----------------- get all cart added by a specified user ----------------- */
-    static async getUserInputCart(req, res){
-        try{
+    static async getUserInputCart(req, res) {
+        try {
 
             /* ----------------- the user id supplied as a get param ---------------- */
             const userid = req.params.user_id;
 
-            if(userid !== "" || userid !== null || userid !== undefined){            
+            if (userid !== "" || userid !== null || userid !== undefined) {
 
                 /* ---------------- check if the item is already in the cart ---------------- */
                 var returnedResult = await Cart.findAll({
                     include: [{
                         model: Input,
+                        as: "input"
                     }],
                     where: {
                         "user_id": userid
                     }
                 });
 
-                if(returnedResult.length > 0){
-                    
+                if (returnedResult.length > 0) {
+
                     return res.status(200).json({
-                        error : false,
-                        message : "User cart retrieved successfully",
-                        data : returnedResult
+                        error: false,
+                        message: "User cart retrieved successfully",
+                        data: returnedResult
                     })
 
-                }else{
+                } else {
                     return res.status(200).json({
-                        error : true,
-                        message : "Unable to complete the request at the moment",
-                        data : returnedResult
+                        error: true,
+                        message: "Unable to complete the request at the moment",
+                        data: returnedResult
                     })
                 }
-            }else{
+            } else {
                 return res.status(200).json({
-                    error : true,
-                    message : "Invalid user id",
-                    data : returnedResult
+                    error: true,
+                    message: "Invalid user id",
+                    data: returnedResult
                 })
             }
 
 
 
-        }catch(error){
+        } catch (error) {
             var logError = await ErrorLog.create({
                 error_name: "Error on getting all cart items by user",
                 error_description: error.toString(),
@@ -146,16 +147,16 @@ class InputsCart{
                 data: []
             })
         }
-        
+
     }
-    
-    static async deleteCartItem(req, res){
-        try{
+
+    static async deleteCartItem(req, res) {
+        try {
 
             /* ----------------- the user id supplied as a get param ---------------- */
             const id = req.params.id;
 
-            if(id !== "" || id !== null || id !== undefined){            
+            if (id !== "" || id !== null || id !== undefined) {
 
                 /* ---------------- check if the item is already in the cart ---------------- */
                 var returnedResult = await Cart.findOne({
@@ -164,7 +165,7 @@ class InputsCart{
                     }
                 });
 
-                if(returnedResult){
+                if (returnedResult) {
 
                     var deleteit = await Cart.destroy({
                         where: {
@@ -172,43 +173,43 @@ class InputsCart{
                         }
                     })
 
-                    if(deleteit){
+                    if (deleteit) {
 
                         return res.status(200).json({
-                            error : false,
-                            message : "Cart Item deleted successfully",
-                            data : []
+                            error: false,
+                            message: "Cart Item deleted successfully",
+                            data: []
                         })
 
-                    }else{
+                    } else {
 
                         return res.status(400).json({
-                            error : true,
-                            message : "Invalid request.",
-                            data : []
+                            error: true,
+                            message: "Invalid request.",
+                            data: []
                         })
 
                     }
-                    
 
-                }else{
+
+                } else {
                     return res.status(200).json({
-                        error : true,
-                        message : "Cart Item does not exist",
-                        data : []
+                        error: true,
+                        message: "Cart Item does not exist",
+                        data: []
                     })
                 }
-            }else{
+            } else {
                 return res.status(400).json({
-                    error : true,
-                    message : "Invalid user id",
-                    data : returnedResult
+                    error: true,
+                    message: "Invalid user id",
+                    data: returnedResult
                 })
             }
 
 
 
-        }catch(error){
+        } catch (error) {
             var logError = await ErrorLog.create({
                 error_name: "Error on getting all cart items by user",
                 error_description: error.toString(),
