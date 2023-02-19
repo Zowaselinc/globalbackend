@@ -133,22 +133,33 @@ Router.group((router) => {
 
 // Routes
 
-Router.middleware(['isAuthenticated']).group((router) => {
+// Router.middleware(['isAuthenticated']).group((router) => {
+Router.group((router) => {
 
     // router.get();
 
 
     /* ------------------------------- Crop ------------------------------ */
 
-    router.post('/crop/:type/add', CropValidation.addCropForSaleValidator, CropController.add);
+    router.post('/crop/:type/add', CropValidation.addCropWantedValidator, CropController.add);
     router.get('/crop/getbycropwanted', CropController.getByCropWanted);
     router.get('/crop/getbycropauction', CropController.getByCropAuctions);
     router.get('/crop/getbycropoffer', CropController.getByCropOffer);
     router.get('/crop/getbyid/:id', CropController.getById);
+<<<<<<< HEAD
     router.get('/crop/:type', CropController.getByTypeandUserID);
     router.post('/crop/:id/deactivate', CropController.deactivateCropById);
     router.post('/crop/:id/fulfil', OrderController.fulfilCropOffer);
     // router.post('/crop/editbyid', CropValidation.addCropValidator, CropController.EditById); 
+=======
+    router.get('/crop/:type', CropController.getByTypeandUserID); //type and global user id.
+    router.post('/crop/:id/deactivate', CropController.deactivateCropById);
+    router.get('/crop/:id/bid', CropController.getCropBids);
+    router.post('/crop/:id/bid', CropValidation.createAuctionBid, CropController.bidForCrop);
+
+
+    // router.post('/crop/editbyid', CropValidation.addCropValidator, CropController.EditById);
+>>>>>>> master
 
 
     /* ------------------------------- Crop Specification ------------------------------ */
@@ -212,7 +223,8 @@ Router.middleware(['isAuthenticated']).group((router) => {
 /*                             INPUT MARKET PLACE                             */
 /* -------------------------------------------------------------------------- */
 
-Router.middleware('isAuthenticated').group((router) => {
+// Router.middleware('isAuthenticated').group((router) => {
+Router.group((router) => {
     /* ---------------------------------- Input ---------------------------------- */
     router.post('/input/add', InputsValidator.createInputValidator, InputController.createInput);
     router.get('/input/getallbyuserid/:user_id', InputController.getAllInputsByUser);
@@ -238,6 +250,5 @@ Router.middleware('isAuthenticated').group((router) => {
 })
 
 module.exports = Router;
-
 
 

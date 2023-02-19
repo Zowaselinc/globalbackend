@@ -1,7 +1,7 @@
 //Import validation result
 const { validationResult } = require('express-validator');
 const crypto = require('crypto');
-const { Crop, CropSpecification, CropRequest, ErrorLog, User, Category, Auction, SubCategory } = require('~database/models');
+const { Crop, CropSpecification, CropRequest, ErrorLog, User, Category, Auction, SubCategory, Bid } = require('~database/models');
 const md5 = require('md5');
 var appRoot = require('app-root-path');
 
@@ -193,7 +193,7 @@ class CropController {
             if (logError) {
                 return res.status(500).json({
                     error: true,
-                    message: 'Unable to complete request at the moment'
+                    message: 'Unable to complete request at the moment'+e.toString()
                 })
             }
         }
@@ -497,6 +497,10 @@ class CropController {
                     }, {
                         model: User,
                         as: 'user'
+                    },
+                    {
+                        model: Auction,
+                        as: "auction"
                     }],
 
                     where: { id: cropId },
@@ -532,10 +536,113 @@ class CropController {
     }
     /* --------------------------- GET CROP BY ID --------------------------- */
 
+    static async getCropBids(req, res) {
+        try {
+            /* ------------------------ UPDATE INTO CROP TABLE ----------------------- */
+
+            var bids = await Bid.findAll({ where: { crop_id: req.params.id } });
+            if (bids) {
+
+                return res.status(200).json({
+                    error: false,
+                    message: "Bids returned successfully",
+                    data: bids
+                })
+
+            } else {
+                return res.status(200).json({
+                    error: false,
+                    message: "No bids on this crop",
+                    data: []
+                })
+            }
+
+        } catch (e) {
+            var logError = await ErrorLog.create({
+                error_name: "Error on edit a crop",
+                error_description: e.toString(),
+                route: "/api/crop/:id/bid",
+                error_code: "500"
+            });
+            if (logError) {
+                return res.status(500).json({
+                    error: true,
+                    message: 'Unable to complete request at the moment'
+                })
+            }
+        }
 
 
+    }
 
 
+    static async bidForCrop(req, res) {
+
+        const errors = validationResult(req);
+
+        try {
+
+            if (!errors.isEmpty()) {
+                // return res.status(400).json({ errors: errors.array() });
+                return res.status(200).json({
+                    "error": true,
+                    "message": "All fields are required",
+                    "data": errors
+                })
+            }
+
+            /* ------------------------ UPDATE INTO CROP TABLE ----------------------- */
+
+            var crop = await Crop.findOne({ where: { id: req.params.id } });
+            if (crop) {
+
+                //Check for existing bid
+                var existingBid = await Bid.findOne({
+                    where: { user_id: req.global.user.id, crop_id: req.params.id }
+                });
+
+                if (!existingBid) {
+                    var bid = await Bid.create({
+                        user_id: req.global.user.id,
+                        crop_id: req.params.id,
+                        amount: req.body.amount
+                    });
+
+                    return res.status(200).json({
+                        error: false,
+                        message: "Bid created",
+                    });
+
+                } else {
+                    return res.status(400).json({
+                        error: true,
+                        message: "You have already bidded on this product",
+                    })
+                }
+
+            } else {
+                return res.status(400).json({
+                    error: true,
+                    message: "No such crop found",
+                    data: req.body
+                })
+            }
+
+        } catch (e) {
+            var logError = await ErrorLog.create({
+                error_name: "Error on edit a crop",
+                error_description: e.toString(),
+                route: "/api/crop/:id/bid",
+                error_code: "500"
+            });
+            if (logError) {
+                return res.status(500).json({
+                    error: true,
+                    message: 'Unable to complete request at the moment'
+                })
+            }
+        }
+    }
     /* --------------------------- GET ALL CROPS TYPE BY USERID --------------------------- */
     static async getByTypeandUserID(req, res) {
 
@@ -555,8 +662,12 @@ class CropController {
                 }],
 
                 where: { type: req.params.type, user_id: req.global.user.id },
+<<<<<<< HEAD
                 order: [['id', 'DESC']],
                 group: ["id"]
+=======
+                order: [['id', 'DESC']]
+>>>>>>> master
             });
 
 

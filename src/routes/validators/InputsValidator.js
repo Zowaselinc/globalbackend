@@ -22,6 +22,7 @@ module.exports = {
         body('delivery_method').not().isEmpty(),
         body('expiry_date').not().isEmpty(),
         body('manufacture_country').not().isEmpty(),
+        body('state').not().isEmpty(),
         body('video').optional()
     ],
 
