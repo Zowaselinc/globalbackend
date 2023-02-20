@@ -146,20 +146,14 @@ Router.group((router) => {
     router.get('/crop/getbycropauction', CropController.getByCropAuctions);
     router.get('/crop/getbycropoffer', CropController.getByCropOffer);
     router.get('/crop/getbyid/:id', CropController.getById);
-<<<<<<< HEAD
-    router.get('/crop/:type', CropController.getByTypeandUserID);
+    router.get('/crop/:type/:userid', CropController.getByTypeandUserID);
     router.post('/crop/:id/deactivate', CropController.deactivateCropById);
     router.post('/crop/:id/fulfil', OrderController.fulfilCropOffer);
-    // router.post('/crop/editbyid', CropValidation.addCropValidator, CropController.EditById); 
-=======
-    router.get('/crop/:type', CropController.getByTypeandUserID); //type and global user id.
-    router.post('/crop/:id/deactivate', CropController.deactivateCropById);
     router.get('/crop/:id/bid', CropController.getCropBids);
     router.post('/crop/:id/bid', CropValidation.createAuctionBid, CropController.bidForCrop);
 
 
     // router.post('/crop/editbyid', CropValidation.addCropValidator, CropController.EditById);
->>>>>>> master
 
 
     /* ------------------------------- Crop Specification ------------------------------ */
