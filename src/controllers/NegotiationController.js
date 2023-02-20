@@ -57,6 +57,30 @@ class NegotiationController {
                     crop_id: req.body.crop_id
                 });
                 req.body.conversation_id = conversation.id;
+
+                /* ------------------------------ NOTIFICATION ------------------------------ */
+                if(conversation){
+                    var findCrop = await Crop.findOne({
+                        where: {
+                            id: conversation.crop_id
+                        }
+                    })
+
+                    var createNotification = await Notification.create({
+                        notification_name: "New Conversation",
+                        message: "Conversation initiated for crop negotiation",
+                        single_seen: 0,
+                        general_seen: 0,
+                        model: "conversation",
+                        model_id: conversation.id,
+                        buyer_id: findCrop.type == "wanted" ? req.body.receiver_id : req.body.sender_id,
+                        buyer_type: findCrop.type == "wanted" ? "corporate" : "merchant",
+                        seller_id: findCrop.type == "wanted" ? req.body.sender_id : req.body.receiver_id,
+                        notification_to:  findCrop.type == "wanted" ? "corporate" : "merchant",
+                    })
+                }
+                /* ------------------------------ NOTIFICATION ------------------------------ */
+
             } else {
                 req.body.conversation_id = conversation.id;
             }
@@ -451,6 +475,37 @@ class NegotiationController {
                     tracking_details: JSON.stringify(tracking_details),
                     products: JSON.stringify(products),
                 });
+
+                /* ------------------------------ NOTIFICATION ------------------------------ */
+                if(order){
+                    var createNotificationtoCorporate = await Notification.create({
+                        notification_name: "New Order #"+order.order_hash,
+                        message: "Offer accepted through negotiation",
+                        single_seen: 0,
+                        general_seen: 0,
+                        model: "order",
+                        model_id: order.order_hash,
+                        buyer_id: offer.type == "corporate" ? offer.sender_id : offer.receiver_id,
+                        buyer_type: "corporate",
+                        seller_id: offer.type == "corporate" ? offer.receiver_id : offer.sender_id,
+                        notification_to:  products[0].type == "wanted" ? req.global.user.type : "corporate",
+                    })
+
+                    var createNotificationtoMerchant = await Notification.create({
+                        notification_name: "New Order #"+order.order_hash,
+                        message: "Offer accepted through negotiation",
+                        single_seen: 0,
+                        general_seen: 0,
+                        model: "order",
+                        model_id: order.order_hash,
+                        buyer_id: offer.type == "corporate" ? offer.sender_id : offer.receiver_id,
+                        buyer_type: "corporate",
+                        seller_id: offer.type == "corporate" ? offer.receiver_id : offer.sender_id,
+                        notification_to:  "merchant"
+                    })
+              
+                }
+                /* ------------------------------ NOTIFICATION ------------------------------ */
 
                 var buyer = await User.findByPk(order.buyer_id);
                 var seller = await User.findByPk(order.seller_id);
