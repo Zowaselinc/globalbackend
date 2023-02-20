@@ -146,15 +146,7 @@ Router.group((router) => {
     router.get('/crop/getbycropauction', CropController.getByCropAuctions);
     router.get('/crop/getbycropoffer', CropController.getByCropOffer);
     router.get('/crop/getbyid/:id', CropController.getById);
-<<<<<<< HEAD
     router.get('/crop/:type/:userid', CropController.getByTypeandUserID);
-=======
-<<<<<<< HEAD
-    router.get('/crop/:type', CropController.getByTypeandUserID); //type and global user id.
-=======
-    // router.get('/crop/:type/:userid', CropController.getByTypeandUserID);
->>>>>>> cd560e8e68c941b21ceca33ab74effd435b50d81
->>>>>>> master
     router.post('/crop/:id/deactivate', CropController.deactivateCropById);
     router.post('/crop/:id/fulfil', OrderController.fulfilCropOffer);
     router.get('/crop/:id/bid', CropController.getCropBids);
