@@ -132,7 +132,6 @@ class NotificationController {
 
     /* ------------------- UPDATE SINGLE NOTIFICATION TO SEEN ------------------ */
     static async updateSingleNotificationToSeen(req, res) {
-
         // return res.status(200).json({
         //     message : "Accept Negotiation"
         // });
