@@ -25,7 +25,7 @@ class Mailer{
     }
 
     from(from){
-        this.Mail.from = from;
+        this.Mail.from = `Zowasel <${from}>`;
         return this;
     }
 

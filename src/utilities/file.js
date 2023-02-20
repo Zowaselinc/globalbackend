@@ -11,10 +11,14 @@ class TemplateHelper{
 
     }
 
-    static parseDataToTemplate(templateString,data){
+    static parseDataToTemplate(templateString,data,parent = ""){
         var keys = Object.keys(data);
         keys.forEach((variable)=>{
-            templateString = templateString.replace(`{{${variable}}}`,data[variable]);
+            if(typeof data[variable] == "object"){
+                templateString = TemplateHelper.parseDataToTemplate(templateString,data[variable],`${parent}${variable}.`);
+            }else{
+                templateString = templateString.replace(`{{${parent}${variable}}}`,data[variable]);
+            }
         });
         return templateString;
     }

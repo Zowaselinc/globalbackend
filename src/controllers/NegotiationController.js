@@ -6,6 +6,8 @@ const { Op } = require('sequelize');
 const { request } = require('http');
 const ConversationController = require('./ConversationController');
 const { IncludeNegotiations, IncludeCrop, CropIncludes, IncludeSpecification } = require('~database/helpers/modelncludes');
+const Mailer = require('~services/mailer');
+require('dotenv').config();
 
 class NegotiationController {
 
@@ -421,7 +423,7 @@ class NegotiationController {
 
                 // Create Order For Offer
 
-                const randomId = crypto.randomBytes(8).toString('hex').toUpperCase();
+                const randomId = crypto.randomBytes(16).toString('hex').toUpperCase();
 
                 const conversation = await Conversation.findByPk(offer.conversation_id);
 
@@ -441,13 +443,43 @@ class NegotiationController {
                     order_hash: "ORD" + randomId,
                     buyer_id: offer.type == "corporate" ? offer.sender_id : offer.receiver_id,
                     buyer_type: "corporate",
+                    seller_id: offer.type == "corporate" ? offer.receiver_id : offer.sender_id,
                     negotiation_id: offer.id,
                     total: eval(offer.specification.qty) * eval(offer.specification.price),
                     currency: products[0].currency,
                     payment_status: "UNPAID",
                     tracking_details: JSON.stringify(tracking_details),
                     products: JSON.stringify(products),
-                })
+                });
+
+                var buyer = await User.findByPk(order.buyer_id);
+                var seller = await User.findByPk(order.seller_id);
+                var crop = products[0];
+                var refererUrl = req.headers.referer;
+
+                // Send offer accepted email
+                var offerSender = offer.sender_id == buyer.id ? buyer : seller;
+                Mailer()
+                .to(offerSender.email).from(process.env.MAIL_FROM)
+                .subject('Crop offer accepted').template('emails.AcceptedCropOffer',{
+                    name : offerSender.first_name,
+                    cropQuantity : crop.specification.qty+crop.specification.test_weight,
+                    cropTitle : crop.subcategory.name+"-"+crop.specification.color,
+                    orderLink : `${refererUrl}dashboard/marketplace/order/${order.order_hash}`,
+                    orderHash : order.order_hash
+                }).send();
+
+                // Send offer confimation email
+                var offerReceiver = offer.receiver_id == buyer.id ? buyer : seller;
+                Mailer(offerReceiver.email)
+                .to().from(process.env.MAIL_FROM)
+                .subject('Offer confirmation').template('emails.OfferConfirmation',{
+                    name : offerReceiver.first_name,
+                    cropQuantity : crop.specification.qty+crop.specification.test_weight,
+                    cropTitle : crop.subcategory.name+"-"+crop.specification.color,
+                    orderLink : `${refererUrl}dashboard/marketplace/order/${order.order_hash}`,
+                    orderHash : order.order_hash
+                }).send();
 
                 return res.status(200).json({
                     error: false,
