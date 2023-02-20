@@ -24,6 +24,10 @@ const InputController = require('~controllers/InputProductController');
 
 const Cart = require('~controllers/CartController');
 
+const ConversationController = require("~controllers/ConversationController");
+
+const NotificationController = require("~controllers/NotificationController");
+
 /* ------------------------------- VALIDATORS ------------------------------- */
 
 const { RegisterMerchantCorporateValidator, LoginValidator, RegisterPartnerValidator, RegisterAgentValidator, SendVerificationValidator, ConfirmVerificationValidator, ResetPasswordValidator, VerifyResetTokenValidator } = require('./validators/AuthValidators');
@@ -34,6 +38,7 @@ const CropValidation = require('./validators/CropValidation');
 const NegotiationValidator = require('./validators/NegotiationValidator');
 const InputsValidator = require('./validators/InputsValidator');
 const OrderValidators = require("./validators/OrderValidators");
+const NegotiationValidator = require("./validators/NegotiationValidator");
 
 
 /* -------------------------------- PROVIDERS ------------------------------- */
@@ -125,7 +130,24 @@ Router.group((router) => {
     router.get('/color/getbyid/:id', ColorController.getColorbyid);
     router.get('/color/params/:offset/:limit', ColorController.getColorbyparams);
 
+    /* ------------------------------ Conversation ------------------------------ */
+    router.get('/conversation/getall', ConversationController.getAllConversations);
+    router.get('/conversation/getbyuserid/:userid', ConversationController.getAllConversationsByUserID);
+
 })
+
+/* -------------------------------------------------------------------------- */
+/*                              NOTIFICATION                                  */
+/* -------------------------------------------------------------------------- */
+Router.middleware(['isAuthenticated']).group((router) => {
+    router.get('/notification/:usertype/:user_id', NotificationController.getAllNotificationByUserTypeandID);
+    router.post('/notification/general_seen/updatebyuser', NotificationController.updateGeneralNotificationToSeen);
+    router.post('/notification/:notification_id/updatesingle_seen', NotificationController.updateSingleNotificationToSeen);
+});
+/* -------------------------------------------------------------------------- */
+/*                              NOTIFICATION                                  */
+/* -------------------------------------------------------------------------- */
+
 
 /* -------------------------------------------------------------------------- */
 /*                              CROP MARKETPLACE                              */
@@ -133,8 +155,8 @@ Router.group((router) => {
 
 // Routes
 
-// Router.middleware(['isAuthenticated']).group((router) => {
-Router.group((router) => {
+Router.middleware(['isAuthenticated']).group((router) => {
+// Router.group((router) => {
 
     // router.get();
 
@@ -217,8 +239,8 @@ Router.group((router) => {
 /*                             INPUT MARKET PLACE                             */
 /* -------------------------------------------------------------------------- */
 
-// Router.middleware('isAuthenticated').group((router) => {
-Router.group((router) => {
+Router.middleware('isAuthenticated').group((router) => {
+// Router.group((router) => {
     /* ---------------------------------- Input ---------------------------------- */
     router.post('/input/add', InputsValidator.createInputValidator, InputController.createInput);
     router.get('/input/getallbyuserid/:user_id', InputController.getAllInputsByUser);
@@ -244,5 +266,3 @@ Router.group((router) => {
 })
 
 module.exports = Router;
-
-
