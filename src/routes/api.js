@@ -28,6 +28,8 @@ const ConversationController = require("~controllers/ConversationController");
 
 const NotificationController = require("~controllers/NotificationController");
 
+const WalletController = require("~controllers/WalletController");
+
 /* ------------------------------- VALIDATORS ------------------------------- */
 
 const { RegisterMerchantCorporateValidator, LoginValidator, RegisterPartnerValidator, RegisterAgentValidator, SendVerificationValidator, ConfirmVerificationValidator, ResetPasswordValidator, VerifyResetTokenValidator } = require('./validators/AuthValidators');
@@ -146,6 +148,16 @@ Router.middleware(['isAuthenticated']).group((router) => {
 });
 /* -------------------------------------------------------------------------- */
 /*                              NOTIFICATION                                  */
+/* -------------------------------------------------------------------------- */
+
+/* -------------------------------------------------------------------------- */
+/*                                  WALLET                                    */
+/* -------------------------------------------------------------------------- */
+Router.middleware(['isAuthenticated']).group((router) => {
+    router.get('/wallet/user_id', WalletController.getWalletByUserId);
+});
+/* -------------------------------------------------------------------------- */
+/*                                  WALLET                                    */
 /* -------------------------------------------------------------------------- */
 
 
