@@ -30,9 +30,7 @@ class NotificationController {
 
     /* -------------------------- FETCH NOTIFICATIONS BY USERTYPE AND USERID ------------------------- */
     static async getAllNotificationByUserTypeandID(req, res) {
-
         const errors = validationResult(req);
-
         try {
             var findNotification = await Notification.findAll({ 
                 where: {
@@ -73,9 +71,6 @@ class NotificationController {
     }
     /* -------------------------- FETCH NOTIFICATIONS BY USERTYPE AND USERID ------------------------- */
 
-
-
-
     /* ------------------- UPDATE GENERAL NOTIFICATION TO SEEN ------------------ */
     static async updateGeneralNotificationToSeen(req, res) {
 
@@ -111,7 +106,6 @@ class NotificationController {
                     message: "Notifiation updated successfully",
                     data: []
                 })
-
             }else{
                 return res.status(400).json({
                     error: true,
@@ -119,10 +113,6 @@ class NotificationController {
                     data: []
                 })
             }
-       
-
-
-
         } catch (error) {
             var logError = await ErrorLog.create({
                 error_name: "Error on updating notification general_seen",
@@ -140,9 +130,6 @@ class NotificationController {
     }
     /* ------------------- UPDATE GENERAL NOTIFICATION TO SEEN ------------------ */
 
-
-
-
     /* ------------------- UPDATE SINGLE NOTIFICATION TO SEEN ------------------ */
     static async updateSingleNotificationToSeen(req, res) {
 
@@ -152,16 +139,13 @@ class NotificationController {
         let notification_id = req.params.notification_id;
 
         try {
-
-            var findNotification = await Notification.findAll({
-                
+            var findNotification = await Notification.findAll({     
                 where: {
                     id: notification_id
                 }
             })
 
             if(findNotification.length){
-
                 var seenSingleNotifications = await Notification.update({
                     single_seen: 1,
                     general_seen: 1
@@ -184,7 +168,6 @@ class NotificationController {
                     data: []
                 })
             }
-
         } catch (error) {
             var logError = await ErrorLog.create({
                 error_name: "Error on updating notification single_seen",
