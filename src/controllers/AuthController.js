@@ -65,6 +65,17 @@ class AuthController{
 
             delete userType.user.password;
 
+            const ipAddresses = req.header('x-forwarded-for');
+            let ipAddress = typeof ipAddresses == 'object' ? ipAddresses[0] : ipAddresses;
+
+            Mailer()
+            .to(user.email).from(process.env.MAIL_FROM)
+            .subject('New Login').template('emails.LoginNotification',{
+                ipaddress : ipAddress,
+                timestamp: (new Date()).toLocaleString(),
+                name : user.first_name+" "+user.last_name,
+            }).send();
+
             return res.status(200).json({
                 error : false,
                 message : "Login Successful",
@@ -453,6 +464,7 @@ class AuthController{
           return res.status(400).json({ errors: errors.array() });
         }
 
+        var refererUrl = req.headers.referer;
 
         const data = req.body;
 
@@ -496,7 +508,8 @@ class AuthController{
 
         Mailer()
         .to(data.email).from(process.env.MAIL_FROM)
-        .subject('Reset Password').template('emails.ResetEmail',{code : resetToken}).send();
+        .subject('Reset Password')
+        .template('emails.ResetEmail',{resetLink : `${refererUrl}resetpassword/${resetToken}`}).send();
 
 
         res.status(200).json({

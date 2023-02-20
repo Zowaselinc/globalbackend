@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email OTP</title>
+    <title>Order confirmation</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Radio+Canada&display=swap" rel="stylesheet">
@@ -35,7 +35,7 @@ img{
     border-radius: 7px;
     font-family: 'Radio Canada', sans-serif;
     color: #171a1b;
-    padding-top: 100px;
+    padding-top: 60px;
     border: 1px #616161;
 }
 
@@ -212,7 +212,7 @@ hr{
         border-radius: 7px;
         font-family: 'Radio Canada', sans-serif;
         /* color: #171a1b; */
-        padding-top: 100px;
+        padding-top: 60px;
         border: 1px #616161;
         table-layout: fixed;
     }
@@ -268,12 +268,12 @@ hr{
         Font-family: 'Radio Canada', sans-serif;
         font-size: 16px;
         font-weight: 500px;
-        Line-height: 27px;
+        Line-height: 24px;
         text-align: center;
-        padding-bottom: 48px;
+        padding-bottom: 10px;
         width:100%;
         max-width: fit-content;
-        height: 27px;
+        height: 24px;
         margin: 0 auto;
         /* table-layout: fixed; */
     }
@@ -309,9 +309,9 @@ hr{
         Font-family: 'Radio Canada', sans-serif;
         font-size: 16px;
         font-weight:500px;
-        Line-height: 27px;
+        Line-height: 20px;
         text-align: center;
-        padding-top: 35px;
+        padding-top: 5px;
         padding-bottom: 10px;
         width: 100%;
         max-width: fit-content;
@@ -356,19 +356,18 @@ hr{
                     </table>
                 </td>
             </tr>
-                
-            
-               
             <!-- TITLE,BODY AND BUTTON -->
                 <tr>
                     <td>
                         <table class="notification">
                             <tr>
                                 <td style="text-align:center; padding:15px">
-                                    <p class="otp-header">Reset Password</p>
-                                    <p class="body">We just recieved a request to reset your password on your account associated with Zowasel</p>
-                                    <p class="body-2">Click the button below to complete the password reset process</p>
-                                    <a href="{{resetLink}}" class="button-dark" style="color:#FFFFFF;">Reset Password</a>
+                                    <p class="otp-header">Order confirmed</p>
+                                    <p class="body">Dear {{name}},</p>
+                                    <p class="body">Your crop offer for {{cropQuantity}} of {{cropTitle}} has been confirmed and an order <b>{{orderHash}}</b> has been created.</p>
+                                    <p class="body-2">Click the button below to process and complete the order</p>
+                                    <a href="{{orderLink}}" class="button-dark" style="color:#FFFFFF;">Complete Order</a>
+
                                     <p class="bodymid">This is an automated message, do not reply.</p>
                                     
                                     <hr>
