@@ -176,13 +176,8 @@ class CropController {
             if (logError) {
                 return res.status(500).json({
                     error: true,
-<<<<<<< HEAD
-                    message: 'Unable to complete request at the moment'+e.toString()
-                })
-=======
                     message: "Unable to complete request at the moment",
                 });
->>>>>>> cd560e8e68c941b21ceca33ab74effd435b50d81
             }
         }
     }
@@ -225,12 +220,8 @@ class CropController {
                     },
                 ],
                 where: { type: "wanted", active: 1 },
-<<<<<<< HEAD
                 order: [['id', 'DESC']],
                 group: ["id"]
-=======
-                order: [["id", "DESC"]],
->>>>>>> master
             });
 
             /* --------------------- If fetched the Wanted Crops --------------------- */
@@ -285,12 +276,8 @@ class CropController {
                 ],
 
                 where: { type: "auction", active: 1 },
-<<<<<<< HEAD
                 order: [['id', 'DESC']],
                 group: ["id"]
-=======
-                order: [["id", "DESC"]],
->>>>>>> master
             });
 
             /* --------------------- If fetched the Wanted Crops --------------------- */
@@ -352,12 +339,8 @@ class CropController {
                         },
                     ],
                     where: { type: "offer", active: 1 },
-<<<<<<< HEAD
                     order: [['id', 'DESC']],
                     group: ["id"]
-=======
-                    order: [["id", "DESC"]],
->>>>>>> master
                 });
 
                 /* --------------------- If fetched the Wanted Crops --------------------- */
@@ -413,12 +396,8 @@ class CropController {
                 ],
 
                 where: { user_id: req.global.user.id, active: 1 },
-<<<<<<< HEAD
                 order: [['id', 'DESC']],
                 group: ["id"]
-=======
-                order: [["id", "DESC"]],
->>>>>>> master
             });
 
             /* --------------------- If fetched the Wanted Crops --------------------- */
@@ -647,21 +626,11 @@ class CropController {
                     },
                 ],
 
-<<<<<<< HEAD
                 where: { type: req.params.type, user_id: req.global.user.id },
-<<<<<<< HEAD
+
                 order: [['id', 'DESC']],
                 group: ["id"]
-=======
-                order: [['id', 'DESC']]
-<<<<<<< HEAD
->>>>>>> master
-=======
-=======
-                where: { type: req.params.type, user_id: req.params.userid },
-                order: [["id", "DESC"]],
->>>>>>> cd560e8e68c941b21ceca33ab74effd435b50d81
->>>>>>> master
+
             });
 
             /* --------------------- If fetched the Wanted Crops --------------------- */
