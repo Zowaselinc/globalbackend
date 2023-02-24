@@ -220,7 +220,7 @@ class CropController {
                     },
                 ],
                 where: { type: "wanted", active: 1 },
-                order: [["id", "DESC"]],
+                order: [['id', 'DESC']],
             });
 
             /* --------------------- If fetched the Wanted Crops --------------------- */
@@ -275,7 +275,7 @@ class CropController {
                 ],
 
                 where: { type: "auction", active: 1 },
-                order: [["id", "DESC"]],
+                order: [['id', 'DESC']],
             });
 
             /* --------------------- If fetched the Wanted Crops --------------------- */
@@ -337,7 +337,7 @@ class CropController {
                         },
                     ],
                     where: { type: "offer", active: 1 },
-                    order: [["id", "DESC"]],
+                    order: [['id', 'DESC']],
                 });
 
                 /* --------------------- If fetched the Wanted Crops --------------------- */
@@ -393,7 +393,7 @@ class CropController {
                 ],
 
                 where: { user_id: req.global.user.id, active: 1 },
-                order: [["id", "DESC"]],
+                order: [['id', 'DESC']],
             });
 
             /* --------------------- If fetched the Wanted Crops --------------------- */
@@ -492,10 +492,10 @@ class CropController {
         try {
             /* ------------------------ UPDATE INTO CROP TABLE ----------------------- */
 
-            var bids = await Bid.findAll({ 
+            var bids = await Bid.findAll({
                 where: { crop_id: req.params.id },
                 order: [["id", "DESC"]],
-             });
+            });
             if (bids) {
                 return res.status(200).json({
                     error: false,
@@ -560,7 +560,7 @@ class CropController {
                     });
                 } else {
                     var maxBid = 0;
-                    existingBids.forEach((bid)=>{
+                    existingBids.forEach((bid) => {
                         maxBid = bid.amount > maxBid ? bid.amount : maxBid;
                     });
                     if (eval(req.body.amount) <= eval(maxBid)) {
@@ -622,8 +622,10 @@ class CropController {
                     },
                 ],
 
-                where: { type: req.params.type, user_id: req.params.userid },
-                order: [["id", "DESC"]],
+                where: { type: req.params.type, user_id: req.global.user.id },
+
+                order: [['id', 'DESC']],
+
             });
 
             /* --------------------- If fetched the Wanted Crops --------------------- */

@@ -24,6 +24,12 @@ const InputController = require('~controllers/InputProductController');
 
 const Cart = require('~controllers/CartController');
 
+const ConversationController = require("~controllers/ConversationController");
+
+const NotificationController = require("~controllers/NotificationController");
+
+const WalletController = require("~controllers/WalletController");
+
 /* ------------------------------- VALIDATORS ------------------------------- */
 
 const { RegisterMerchantCorporateValidator, LoginValidator, RegisterPartnerValidator, RegisterAgentValidator, SendVerificationValidator, ConfirmVerificationValidator, ResetPasswordValidator, VerifyResetTokenValidator } = require('./validators/AuthValidators');
@@ -44,7 +50,6 @@ const TransactionValidator = require("./validators/TransactionValidator");
 const TransactionController = require("~controllers/TransactionController");
 const ColorController = require("~controllers/ColorController");
 const { Order } = require("~database/models");
-const WalletController = require("~controllers/WalletController");
 const AnalyticsController = require("~controllers/AnalyticsController");
 
 
@@ -127,7 +132,34 @@ Router.group((router) => {
     router.get('/color/getbyid/:id', ColorController.getColorbyid);
     router.get('/color/params/:offset/:limit', ColorController.getColorbyparams);
 
+    /* ------------------------------ Conversation ------------------------------ */
+    router.get('/conversation/getall', ConversationController.getAllConversations);
+    router.get('/conversation/getbyuserid/:userid', ConversationController.getAllConversationsByUserID);
+
 })
+
+/* -------------------------------------------------------------------------- */
+/*                              NOTIFICATION                                  */
+/* -------------------------------------------------------------------------- */
+Router.middleware(['isAuthenticated']).group((router) => {
+    router.get('/notification/:usertype/:user_id', NotificationController.getAllNotificationByUserTypeandID);
+    router.post('/notification/general_seen/updatebyuser', NotificationController.updateGeneralNotificationToSeen);
+    router.post('/notification/:notification_id/updatesingle_seen', NotificationController.updateSingleNotificationToSeen);
+});
+/* -------------------------------------------------------------------------- */
+/*                              NOTIFICATION                                  */
+/* -------------------------------------------------------------------------- */
+
+/* -------------------------------------------------------------------------- */
+/*                                  WALLET                                    */
+/* -------------------------------------------------------------------------- */
+Router.middleware(['isAuthenticated']).group((router) => {
+    router.get('/wallet/user_id', WalletController.getWalletByUserId);
+});
+/* -------------------------------------------------------------------------- */
+/*                                  WALLET                                    */
+/* -------------------------------------------------------------------------- */
+
 
 /* -------------------------------------------------------------------------- */
 /*                              CROP MARKETPLACE                              */
@@ -136,18 +168,19 @@ Router.group((router) => {
 // Routes
 
 Router.middleware(['isAuthenticated']).group((router) => {
+    // Router.group((router) => {
 
     // router.get();
 
 
     /* ------------------------------- Crop ------------------------------ */
 
-    router.post('/crop/:type/add', CropValidation.addCropForSaleValidator, CropController.add);
+    router.post('/crop/:type/add', CropValidation.addCropWantedValidator, CropController.add);
     router.get('/crop/getbycropwanted', CropController.getByCropWanted);
     router.get('/crop/getbycropauction', CropController.getByCropAuctions);
     router.get('/crop/getbycropoffer', CropController.getByCropOffer);
     router.get('/crop/getbyid/:id', CropController.getById);
-    // router.get('/crop/:type/:userid', CropController.getByTypeandUserID);
+    router.get('/crop/:type/userid', CropController.getByTypeandUserID);
     router.post('/crop/:id/deactivate', CropController.deactivateCropById);
     router.post('/crop/:id/fulfil', OrderController.fulfilCropOffer);
     router.get('/crop/:id/bid', CropController.getCropBids);
@@ -219,6 +252,7 @@ Router.middleware(['isAuthenticated']).group((router) => {
 /* -------------------------------------------------------------------------- */
 
 Router.middleware('isAuthenticated').group((router) => {
+    // Router.group((router) => {
     /* ---------------------------------- Input ---------------------------------- */
     router.post('/input/add', InputsValidator.createInputValidator, InputController.createInput);
     router.get('/input/getallbyuserid/:user_id', InputController.getAllInputsByUser);

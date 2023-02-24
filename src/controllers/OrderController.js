@@ -12,6 +12,7 @@ const {
     Cart,
     Input,
     User,
+    Notification,
 } = require("~database/models");
 const { body, validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
@@ -417,6 +418,23 @@ class OrderController {
                 tracking_details: JSON.stringify(tracking_details),
                 products: JSON.stringify(products),
             });
+
+            /* ------------------------------ NOTIFICATION ------------------------------ */
+            if(createOrder){
+                var createNotification = await Notification.create({
+                    notification_name: "New Order #"+createOrder.order_hash,
+                    message: "Offer accepted without negotiation",
+                    single_seen: 0,
+                    general_seen: 0,
+                    model: "order",
+                    model_id: createOrder.order_hash,
+                    buyer_id: products[0].type == "wanted" ? products[0].user_id : req.body.user_id,
+                    buyer_type: products[0].type == "wanted" ? "corporate" : req.body.user_type,
+                    seller_id: products[0].type == "wanted" ? req.global.user.id : products[0].user_id,
+                    notification_to:  products[0].type == "wanted" ? "corporate" : "merchant",
+                })
+            }
+            /* ------------------------------ NOTIFICATION ------------------------------ */
 
             var buyer = await User.findByPk(createOrder.buyer_id);
             var seller = await User.findByPk(createOrder.seller_id);
