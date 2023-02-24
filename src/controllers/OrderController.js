@@ -241,7 +241,7 @@ class OrderController {
                 });
             }
 
-            const randomid = crypto.randomBytes(16).toString("hex");
+            var randomid = crypto.randomBytes(16).toString("hex");
 
             var createOrder = await Order.create({
                 order_hash: "ORD" + randomid,
@@ -288,34 +288,73 @@ class OrderController {
                     data: [],
                 });
             }
-            const randomId = crypto.randomBytes(16).toString("hex").toUpperCase();
 
             var getUserCart = await Cart.findAll({
                 where: { user_id: req.global.user.id },
                 include: [{ model: Input }],
             });
+
+            var sellerGroups = {};
+
             var cartTotal = 0;
-            getUserCart.forEach((item) => {
+            getUserCart.forEach(async (item) => {
                 cartTotal += eval(item.price) * eval(item.quantity);
+
+                //Deduct available stock for product;
+                var input = await Input.findOne({
+                    where: { id: item.input.id }
+                });
+                input.stock = eval(input.stock) - eval(item.quantity);
+                await input.save();
+
+                //Group same seller items together
+                if (sellerGroups[input.user_id]) {
+                    sellerGroups[input.user_id].push(item);
+                } else {
+                    sellerGroups[input.user_id] = [item];
+                }
             });
 
-            // Create order
-            var order = await Order.create({
-                order_hash: "ORD" + randomId,
-                buyer_id: req.global.user.id,
-                buyer_type: "merchant",
-                negotiation_id: null,
-                total: cartTotal,
-                currency: "NGN",
-                payment_status: "PAID",
-                waybill_details: JSON.stringify(req.body.delivery_details),
-                products: JSON.stringify(getUserCart),
+
+            // Create orders by seller groups
+
+            var allOrders = [];
+
+            Object.values(sellerGroups).forEach(async (group) => {
+
+                var groupTotal = 0;
+                group.forEach(item => {
+                    groupTotal += (eval(item.quantity) * eval(item.price));
+                })
+
+                var randomId = crypto.randomBytes(16).toString("hex").toUpperCase();
+
+                // Create order
+                var order = await Order.create({
+                    order_hash: "ORD" + randomId,
+                    buyer_id: req.global.user.id,
+                    buyer_type: "merchant",
+                    seller_id: group[0].user_id,
+                    negotiation_id: null,
+                    total: groupTotal,
+                    currency: "NGN",
+                    payment_status: "UNPAID",
+                    waybill_details: JSON.stringify(req.body.delivery_details),
+                    products: JSON.stringify(group),
+                });
+
+                allOrders.push(order);
             });
+
+
 
             return res.status(200).json({
                 error: false,
                 message: "New order created",
-                data: order,
+                data: {
+                    orders: allOrders,
+                    total: cartTotal
+                },
             });
         } catch (e) {
             var logError = await ErrorLog.create({
@@ -384,29 +423,40 @@ class OrderController {
             var crop = products[0];
             var refererUrl = req.headers.referer;
 
+            if (req.body.quantity) {
+                var cropSpecification = await CropSpecification.findOne({
+                    where: {
+                        model_type: "crop",
+                        model_id: crop.id
+                    }
+                });
+                cropSpecification.qty = eval(cropSpecification.qty) - eval(req.body.quantity);
+                cropSpecification.save();
+            }
+
             // Send offer accepted email
             var offerOwner = products[0].type == "wanted" ? buyer : seller;
             Mailer()
-            .to(offerOwner.email).from(process.env.MAIL_FROM)
-            .subject('Crop offer accepted').template('emails.AcceptedCropOffer',{
-                name : offerOwner.first_name,
-                cropQuantity : crop.specification.qty+crop.specification.test_weight,
-                cropTitle : crop.subcategory.name+"-"+crop.specification.color,
-                orderLink : `${refererUrl}dashboard/marketplace/order/${createOrder.order_hash}`,
-                orderHash : createOrder.order_hash
-            }).send();
+                .to(offerOwner.email).from(process.env.MAIL_FROM)
+                .subject('Crop offer accepted').template('emails.AcceptedCropOffer', {
+                    name: offerOwner.first_name,
+                    cropQuantity: crop.specification.qty + crop.specification.test_weight,
+                    cropTitle: crop.subcategory.name + "-" + crop.specification.color,
+                    orderLink: `${refererUrl}dashboard/marketplace/order/${createOrder.order_hash}`,
+                    orderHash: createOrder.order_hash
+                }).send();
 
             // Send offer confimation email
             var offerFulfiler = products[0].type == "wanted" ? seller : buyer;
             Mailer()
-            .to(offerFulfiler.email).from(process.env.MAIL_FROM)
-            .subject('Offer confirmation').template('emails.OfferConfirmation',{
-                name : offerFulfiler.first_name,
-                cropQuantity : crop.specification.qty+crop.specification.test_weight,
-                cropTitle : crop.subcategory.name+"-"+crop.specification.color,
-                orderLink : `${refererUrl}dashboard/marketplace/order/${createOrder.order_hash}`,
-                orderHash : createOrder.order_hash
-            }).send();
+                .to(offerFulfiler.email).from(process.env.MAIL_FROM)
+                .subject('Offer confirmation').template('emails.OfferConfirmation', {
+                    name: offerFulfiler.first_name,
+                    cropQuantity: crop.specification.qty + crop.specification.test_weight,
+                    cropTitle: crop.subcategory.name + "-" + crop.specification.color,
+                    orderLink: `${refererUrl}dashboard/marketplace/order/${createOrder.order_hash}`,
+                    orderHash: createOrder.order_hash
+                }).send();
 
             return res.status(200).json({
                 error: false,
@@ -644,19 +694,19 @@ class OrderController {
                 );
 
                 let order = await Order.findOne({
-                    where : {order_hash : req.params.order }
+                    where: { order_hash: req.params.order }
                 });
 
                 var buyer = await User.findByPk(order.buyer_id);
                 var refererUrl = req.headers.referer;
 
                 Mailer()
-                .to(buyer.email).from(process.env.MAIL_FROM)
-                .subject('Delivery update').template('emails.TrackingUpdate',{
-                    name : buyer.first_name,
-                    orderLink : `${refererUrl}dashboard/marketplace/${req.params.order}/tracking`,
-                    orderHash : req.params.order
-                }).send();
+                    .to(buyer.email).from(process.env.MAIL_FROM)
+                    .subject('Delivery update').template('emails.TrackingUpdate', {
+                        name: buyer.first_name,
+                        orderLink: `${refererUrl}dashboard/marketplace/${req.params.order}/tracking`,
+                        orderHash: req.params.order
+                    }).send();
 
                 return res.status(200).json({
                     error: false,

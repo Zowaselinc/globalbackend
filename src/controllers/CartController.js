@@ -1,5 +1,5 @@
 const { request } = require("express");
-const { Input, ErrorLog, Cart } = require("~database/models");
+const { Input, ErrorLog, Cart, Category, SubCategory } = require("~database/models");
 const { validationResult } = require("express-validator");
 const crypto = require("crypto");
 // const jwt = require("jsonwebtoken");
@@ -101,7 +101,11 @@ class InputsCart {
                 var returnedResult = await Cart.findAll({
                     include: [{
                         model: Input,
-                        as: "input"
+                        as: "input",
+                        include: [
+                            { model: Category, as: "category" },
+                            { model: SubCategory, as: "subcategory" },
+                        ]
                     }],
                     where: {
                         "user_id": userid

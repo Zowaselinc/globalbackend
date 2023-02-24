@@ -44,6 +44,8 @@ const TransactionValidator = require("./validators/TransactionValidator");
 const TransactionController = require("~controllers/TransactionController");
 const ColorController = require("~controllers/ColorController");
 const { Order } = require("~database/models");
+const WalletController = require("~controllers/WalletController");
+const AnalyticsController = require("~controllers/AnalyticsController");
 
 
 const Router = RouteProvider.Router;
@@ -240,6 +242,30 @@ Router.middleware('isAuthenticated').group((router) => {
     router.post('/input/order/updateinputorder', OrderValidators.updateOrderValidator, OrderController.updateOrderPayment);
     router.get('/input/order/history/getbyuserid/:user_id', OrderController.getOrderHistoryByUserId);
 })
+
+
+/* ------------------------------ WALLET ROUTES ----------------------------- */
+
+Router.middleware('isAuthenticated').group((router) => {
+    router.get('/wallet/balance', WalletController.getBalance);
+    router.get('/wallet/transactions/recent', WalletController.getRecentTransactions);
+})
+
+/* ------------------------------ ANALYTICS ROUTES ----------------------------- */
+
+Router.middleware('isAuthenticated').group((router) => {
+    router.get('/analytics', AnalyticsController.getStatistics);
+})
+
+
+
+/* --------------------------- LANDING PAGE ROUTES -------------------------- */
+Router.middleware(['isLandingRefered']).group((router) => {
+    router.get('/load/cropswanted', CropController.getByCropWanted);
+    router.get('/load/cropsauction', CropController.getByCropAuctions);
+    router.get('/load/cropoffers', CropController.getByCropOffer);
+    router.get('/load/inputs', InputController.getallInputs);
+});
 
 module.exports = Router;
 

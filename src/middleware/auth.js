@@ -47,6 +47,16 @@ class AuthMiddleware {
         }
 
     }
+
+    isLandingRefered(req, res) {
+        let headers = req.headers;
+        var refererUrl = headers.referer;
+        if (!refererUrl.includes("growsel.com")) {
+            return res.status(400).json({
+                message: "Invalid referer"
+            });
+        }
+    }
 }
 
 module.exports = new AuthMiddleware();

@@ -1,44 +1,48 @@
 const generateTimestamps = require("./timestamps");
 
-let Schema = (Sequelize,mode) => {
+let Schema = (Sequelize, mode) => {
     return {
-        transaction_id : {
+        transaction_id: {
             type: Sequelize.STRING,
-            allowNull : false
+            allowNull: false
         },
-        transaction_ref : {
+        transaction_ref: {
             type: Sequelize.STRING,
-            allowNull : false
+            allowNull: false
         },
-        type : {
-            type : Sequelize.STRING,
-            allowNull : false
-        },
-        type_id : {
+        type: {
             type: Sequelize.STRING,
-            allowNull : false
+            allowNull: false
+        },
+        type_id: {
+            type: Sequelize.STRING,
+            allowNull: false
         },
         user_id: {
-            type : Sequelize.STRING,
-            allowNull : false
-        },
-        amount_paid : {
             type: Sequelize.STRING,
-            allowNull : false
+            allowNull: false
         },
-        status : {
+        recipient_id: {
             type: Sequelize.STRING,
-            allowNull : false
+            allowNull: true
         },
-        ...generateTimestamps(Sequelize,mode)
+        amount_paid: {
+            type: Sequelize.STRING,
+            allowNull: false
+        },
+        status: {
+            type: Sequelize.STRING,
+            allowNull: false
+        },
+        ...generateTimestamps(Sequelize, mode)
     }
 }
 const Model = (sequelize, instance, Sequelize) => {
     // Define initial for DB sync
-    sequelize.define("transactions", Schema(Sequelize,1),{ timestamps: false });
+    sequelize.define("transactions", Schema(Sequelize, 1), { timestamps: false });
     // Bypass initial instance to cater for timestamps
-    const Transaction = instance.define("transactions", Schema(Sequelize,2),{ timestamps: false });
+    const Transaction = instance.define("transactions", Schema(Sequelize, 2), { timestamps: false });
     return Transaction;
 }
 
-module.exports = { Schema , Model};
+module.exports = { Schema, Model };

@@ -460,26 +460,40 @@ class NegotiationController {
                 // Send offer accepted email
                 var offerSender = offer.sender_id == buyer.id ? buyer : seller;
                 Mailer()
-                .to(offerSender.email).from(process.env.MAIL_FROM)
-                .subject('Crop offer accepted').template('emails.AcceptedCropOffer',{
-                    name : offerSender.first_name,
-                    cropQuantity : crop.specification.qty+crop.specification.test_weight,
-                    cropTitle : crop.subcategory.name+"-"+crop.specification.color,
-                    orderLink : `${refererUrl}dashboard/marketplace/order/${order.order_hash}`,
-                    orderHash : order.order_hash
-                }).send();
+                    .to(offerSender.email).from(process.env.MAIL_FROM)
+                    .subject('Crop offer accepted').template('emails.AcceptedCropOffer', {
+                        name: offerSender.first_name,
+                        cropQuantity: crop.specification.qty + crop.specification.test_weight,
+                        cropTitle: crop.subcategory.name + "-" + crop.specification.color,
+                        orderLink: `${refererUrl}dashboard/marketplace/order/${order.order_hash}`,
+                        orderHash: order.order_hash
+                    }).send();
 
                 // Send offer confimation email
                 var offerReceiver = offer.receiver_id == buyer.id ? buyer : seller;
                 Mailer(offerReceiver.email)
-                .to().from(process.env.MAIL_FROM)
-                .subject('Offer confirmation').template('emails.OfferConfirmation',{
-                    name : offerReceiver.first_name,
-                    cropQuantity : crop.specification.qty+crop.specification.test_weight,
-                    cropTitle : crop.subcategory.name+"-"+crop.specification.color,
-                    orderLink : `${refererUrl}dashboard/marketplace/order/${order.order_hash}`,
-                    orderHash : order.order_hash
-                }).send();
+                    .to().from(process.env.MAIL_FROM)
+                    .subject('Offer confirmation').template('emails.OfferConfirmation', {
+                        name: offerReceiver.first_name,
+                        cropQuantity: crop.specification.qty + crop.specification.test_weight,
+                        cropTitle: crop.subcategory.name + "-" + crop.specification.color,
+                        orderLink: `${refererUrl}dashboard/marketplace/order/${order.order_hash}`,
+                        orderHash: order.order_hash
+                    }).send();
+
+                // Reduce crop offer if partial offer fulfilment
+                if (offer.messagetype == "offer") {
+                    if (offer.specification.qty) {
+                        var cropSpecification = await CropSpecification.findOne({
+                            where: {
+                                model_type: "crop",
+                                model_id: crop.id
+                            }
+                        });
+                        cropSpecification.qty = eval(cropSpecification.qty) - eval(offer.specification.qty);
+                        cropSpecification.save();
+                    }
+                }
 
                 return res.status(200).json({
                     error: false,
