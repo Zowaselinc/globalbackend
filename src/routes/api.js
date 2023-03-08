@@ -43,9 +43,12 @@ const OrderController = require("~controllers/OrderController");
 const TransactionValidator = require("./validators/TransactionValidator");
 const TransactionController = require("~controllers/TransactionController");
 const ColorController = require("~controllers/ColorController");
-const { Order } = require("~database/models");
+const { Order, Wallet } = require("~database/models");
 const WalletController = require("~controllers/WalletController");
 const AnalyticsController = require("~controllers/AnalyticsController");
+const AccountController = require("~controllers/AccountController");
+const AccountValidator = require("./validators/AccountValidator");
+const WalletValidator = require("./validators/WalletValidator");
 
 
 const Router = RouteProvider.Router;
@@ -99,6 +102,18 @@ Router.middleware(['isAuthenticated']).group((router) => {
     router.get('/users/:id/crops', CropController.getAllCropsByUser);
 
     router.get('/users/:id/inputs', InputController.getAllInputsByUser);
+
+
+    // Account Settings
+
+    router.post('/users/account', AccountValidator.updateAccountValidator, AccountController.updateAccountDetails);
+
+    router.post('/users/account/password', AccountValidator.changePasswordValidator, AccountController.changePassword);
+
+
+    // Company Settings
+
+    router.post('/company', AccountValidator.updateCompanyValidator, AccountController.updateCompanyDetails)
 
 });
 
@@ -249,7 +264,10 @@ Router.middleware('isAuthenticated').group((router) => {
 Router.middleware('isAuthenticated').group((router) => {
     router.get('/wallet/balance', WalletController.getBalance);
     router.get('/wallet/transactions/recent', WalletController.getRecentTransactions);
-})
+    router.get('/wallet/withdraw', WalletController.getWithdrawalRequests);
+    router.post("/wallet/withdraw", WalletValidator.withdrawalRequestValidator, WalletController.sendWithdrawalRequest)
+    router.post('/wallet/withdraw/otp', WalletController.sendWithdrawalCode);
+});
 
 /* ------------------------------ ANALYTICS ROUTES ----------------------------- */
 
