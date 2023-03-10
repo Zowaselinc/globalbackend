@@ -1,7 +1,7 @@
 //Import validation result
 const { validationResult } = require('express-validator');
 const crypto = require('crypto');
-const { Negotiation, ErrorLog, CropSpecification, Crop, Conversation, User, Category, Order, CropRequest } = require('~database/models');
+const { Negotiation, ErrorLog, CropSpecification, Crop, Conversation, User, Category, Order, CropRequest, Notification } = require('~database/models');
 const { Op } = require('sequelize');
 const { request } = require('http');
 const ConversationController = require('./ConversationController');
