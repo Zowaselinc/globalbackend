@@ -79,27 +79,48 @@ class NotificationController {
         // });
 
         try {
+            const user = req.global.user;
+            let findNotification;
+            if(user.type == "corporate"){
+                findNotification = await Notification.findAll({
+                    where: {
+                        notification_to: user.type,
+                        buyer_id : user.id,
+                        buyer_type : user.type
+                    }
+                })
+            }else if(user.type == "merchant"){
+                findNotification = await Notification.findAll({
+                    where: {
+                        notification_to: user.type,
+                        seller_id : user.id,
+                    }
+                })
+            }
 
-            var findNotification = await Notification.findAll({
-                
-                where: {
-                    notification_to: "corporate",
-                    buyer_id: req.global.user.id,
-                    buyer_type: req.global.user.type
-                }
-            })
 
             if(findNotification.length){
 
-                var seenAllNotificationsGenerally = await Notification.update({
-                    general_seen: 1
-                }, {
-                    where: {
-                        notification_to: "corporate",
-                        buyer_id: req.global.user.id,
-                        buyer_type: req.global.user.type
-                    }
-                });
+                if(user.type == "corporate"){
+                    var seenAllNotificationsGenerally = await Notification.update({
+                        general_seen: 1
+                    },  {
+                        where: {
+                            notification_to: user.type,
+                            buyer_id : user.id,
+                            buyer_type : user.type
+                        }
+                    })
+                }else if(user.type == "merchant"){
+                    var seenAllNotificationsGenerally = await Notification.update({
+                        general_seen: 1
+                    }, {
+                        where: {
+                            notification_to: user.type,
+                            seller_id : user.id,
+                        }
+                    })
+                }
 
                 return res.status(200).json({
                     error: false,
@@ -156,7 +177,7 @@ class NotificationController {
 
                 return res.status(200).json({
                     error: false,
-                    message: "Notifiation updated successfully",
+                    message: "Notification updated successfully",
                     data: []
                 })
 
