@@ -49,6 +49,7 @@ const AnalyticsController = require("~controllers/AnalyticsController");
 const AccountController = require("~controllers/AccountController");
 const AccountValidator = require("./validators/AccountValidator");
 const WalletValidator = require("./validators/WalletValidator");
+const KYCController = require("~controllers/KYCController");
 
 
 const Router = RouteProvider.Router;
@@ -109,6 +110,8 @@ Router.middleware(['isAuthenticated']).group((router) => {
     router.post('/users/account', AccountValidator.updateAccountValidator, AccountController.updateAccountDetails);
 
     router.post('/users/account/password', AccountValidator.changePasswordValidator, AccountController.changePassword);
+
+    router.post('/users/account/kyc', AccountValidator.startKYC, KYCController.startKycVerification);
 
 
     // Company Settings
