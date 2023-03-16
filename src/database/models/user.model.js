@@ -78,19 +78,7 @@ let Schema = (Sequelize,mode) => {
         is_approved : {
             type : Sequelize.INTEGER
         },
-        //Move to seperate table
-        kyc_applicant_id: {
-            type : Sequelize.STRING 
-        },
-        kyc_check_id: {
-            type : Sequelize.STRING  
-        },
-        kyc_status: {
-            type : Sequelize.STRING  
-        },
-        kyc_is_verified: {
-            type : Sequelize.INTEGER  
-        },
+        
         ...generateTimestamps(Sequelize,mode)
     }
 }

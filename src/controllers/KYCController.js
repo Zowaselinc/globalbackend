@@ -1,5 +1,5 @@
 const { validationResult } = require("express-validator");
-const { Crop, ErrorLog, Order, User, Company } = require("~database/models");
+const { Crop, ErrorLog, Order, User, Company, KYC } = require("~database/models");
 const bcrypt = require('bcryptjs');
 const OnfidoInstance = require("~providers/Onfido");
 
@@ -47,44 +47,53 @@ class KYCController {
                 //     });
                 // }
                 var userData = req.global.user;
+
                 let applicant = await OnfidoInstance.createNewApplicant({
                     ...{
                         first_name: userData.first_name,
                         last_name: userData.last_name,
                         email: userData.email,
-                        dob: userData.DOB,
+                        dob: userData.dob,
                         country: userData.country
                     },
                     ...req.body
                 });
-                if (applicant) {
-                    //Finds a  user  
-                    try {
-                        const user = await User.update({
-                            kyc_applicant_id: applicant.id,
-                        }, { where: { id: userData.id } });
 
+
+                if (applicant) {
+                    //SAVES USER APPLICANT_ID
+                    let userKyc;
+                    try {
+                        userKyc = await KYC.create({
+                            user_id: userData.id,
+                            applicant_id: applicant.id,
+                            is_verified: 0
+                        });
                     } catch (error) {
-                        console.log(error);
+                        console.log(error)
                     }
+
+
                 } else {
                     return res.status(400).json({
                         error: true,
                         message: "An Error Occurred",
                     });
                 }
+
                 let allImages = Object.keys(req.files);
                 for (let index = 0; index < allImages.length; index++) {
                     const imageKey = allImages[index];
                     var uploaded = await OnfidoInstance.uploadDocument(req.files[imageKey], imageKey);
+
                 }
                 var response = await OnfidoInstance.checkDocument();
                 if (response) {
                     try {
-                        const user = await User.update({
-                            kyc_status: response.status,
-                            kyc_check_id: response.id
-                        }, { where: { id: userData.id } });
+                        const user = await KYC.update({
+                            status: response.status,
+                            check_id: response.id,
+                        }, { where: { user_id: userData.id } });
 
                     } catch (error) {
                         console.log(error);
@@ -97,7 +106,7 @@ class KYCController {
                 } else {
                     return res.status(400).json({
                         error: true,
-                        message: "An Error Occured Try again",
+                        message: "An Error Occured Try Again",
                     });
                 }
 
@@ -121,30 +130,36 @@ class KYCController {
 
     static async retriveCheck(req, res) {
         const errors = validationResult(req);
-
         var userData = req.global.user;
-        if (userData.kyc_check_id == null && userData.kyc_applicant_id == null) {
+        var kycDataObj;
+
+        if (req.global.getKycdata[0]) {
+            let data = req.global.getKycdata[0]["dataValues"];
+            kycDataObj = data;
+
+        }
+        if (!kycDataObj) {
             return res.status(400).json({
                 error: true,
                 message: "This User Has No Applicant ID  Or Check ID"
             });
         }
+
+
         try {
-
-
-            var doc = await OnfidoInstance.retriveDocument(userData.kyc_check_id)
+            var doc = await OnfidoInstance.retriveDocument(kycDataObj.check_id);
             try {
-                const user = await User.update({
-                    kyc_status: doc.status,
-                    kyc_is_verified: doc.status == "complete" ? 1 : 0
-                }, { where: { id: userData.id } });
+
+                const user = await KYC.update({
+                    status: doc.status,
+                    is_verified: doc.status == "complete" ? 1 : 0
+                }, { where: { user_id: userData.id } });
+
 
             } catch (error) {
                 console.log(error);
             }
             if (doc) {
-                console.log(doc);
-
                 return res.status(200).json({
                     error: false,
                     message: "Successful",

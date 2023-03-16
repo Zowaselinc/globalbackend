@@ -1,4 +1,4 @@
-const { AccessToken, User } = require("~database/models");
+const { AccessToken, User, KYC } = require("~database/models");
 const jwt = require("jsonwebtoken");
 const GlobalUtils = require("~utilities/global");
 class AuthMiddleware {
@@ -15,13 +15,20 @@ class AuthMiddleware {
         let headers = req.headers;
         let auth = headers.authorization;
         try {
-           
+
             if (auth) {
                 var error = "";
                 const decoded = jwt.verify(auth, process.env.TOKEN_KEY);
                 var getToken = await AccessToken.findAll({ where: { user_id: decoded.user_id } });
+                var getKycdata = await KYC.findAll({ where: { user_id: decoded.user_id } });
+
                 var user = await User.findByPk(decoded.user_id);
-                req.global = { user: user };
+                if (getKycdata) {
+                    req.global = { user: user, getKycdata };
+                } else {
+                    req.global = { user: user};
+                }
+                
                 var tokenFound = false;
                 if (getToken) {
                     getToken.forEach(item => {

@@ -299,8 +299,6 @@ class AuthController {
                 password: encryptedPassword,
                 type: data.user_type,
                 account_type: data.has_company || data.company_email ? "company" : "individual",
-                kyc_is_verified: 0,
-                DOB: data.DOB,
             });
 
             // Create user wallet

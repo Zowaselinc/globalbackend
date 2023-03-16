@@ -70,6 +70,7 @@ const Conversation = DB.conversation = require("./conversation.model.js").Model(
 const Color = DB.color = require('./color.model.js').Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Bid = DB.bid = require('./bid.model.js').Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Withdrawal = DB.withdrawal = require('./withdrawal.model.js').Model(initialInstance, createSequelizeInstance(), Sequelize);
+const KYC = DB.kyc = require('./kyc.model.js').Model(initialInstance, createSequelizeInstance(), Sequelize);
 
 
 //---------------------------------------------------
@@ -203,6 +204,13 @@ Order.belongsTo(Negotiation, {
 })
 
 
+/* ----------------------------------- KYC ---------------------------------- */
+
+User.hasOne(KYC,{
+  foreignKey : "user_id",
+  as : "kyc"
+});
+
 
 module.exports = {
   DB,
@@ -233,5 +241,6 @@ module.exports = {
   Input,
   Color,
   Bid,
-  Withdrawal
+  Withdrawal,
+  KYC
 };
