@@ -113,6 +113,14 @@ Router.middleware(['isAuthenticated']).group((router) => {
 
     router.post('/users/account/kyc', AccountValidator.startKYC, KYCController.startKycVerification);
 
+    router.get("/users/account/kycstatus", KYCController.retriveCheck);
+
+    // router.post("/users/account/listcheck", AccountValidator.listCheck, KYCController.listCheck);
+
+    // router.post("/users/account/downloadcheck", AccountValidator.downloadCheck, KYCController.downloadCheck)
+
+
+
 
     // Company Settings
 

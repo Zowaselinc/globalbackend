@@ -1,6 +1,8 @@
 const { validationResult } = require("express-validator");
 const { Crop, ErrorLog, Order, User, Company } = require("~database/models");
 const bcrypt = require('bcryptjs');
+var appRoot = require("app-root-path");
+const md5 = require("md5");
 
 class AccountController {
     /* ------------------------------  ----------------------------- */
@@ -30,7 +32,7 @@ class AccountController {
                 profileImagePath = `/data/profile/${newName}`;
 
                 sampleFile = file;
-                uploadPath = `${appRoot}/public${imagePath}`;
+                uploadPath = `${appRoot}/public${profileImagePath}`;
                 sampleFile.mv(uploadPath, function (err) {
                     if (err) {
                         return res.status(500).send(err + " Error in uploading file");

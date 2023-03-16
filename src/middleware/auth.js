@@ -15,6 +15,7 @@ class AuthMiddleware {
         let headers = req.headers;
         let auth = headers.authorization;
         try {
+           
             if (auth) {
                 var error = "";
                 const decoded = jwt.verify(auth, process.env.TOKEN_KEY);

@@ -1,6 +1,7 @@
 const { Onfido, Region, OnfidoApiError } = require("@onfido/api");
 const { countryISOs } = require("~utilities/countries");
 require('dotenv').config();
+const fs = require('fs');
 
 
 class OnfidoProvider {
@@ -16,7 +17,7 @@ class OnfidoProvider {
         this.onfido = onfido;
 
         this.DocumentTypes = {
-            ID_CARD: "national_identity_card",
+            IDENTITY_CARD: "national_identity_card",
             DRIVING_LICENCE: "driving_licence",
             PASSPORT: "passport",
             VOTER_ID: "voter_id",
@@ -41,6 +42,15 @@ class OnfidoProvider {
         this.applicantId = applicantId;
     }
 
+    setDocumentType(documentType) {
+        this.documentType = documentType;
+    }
+
+    setCountry(country) {
+        this.country = country;
+    }
+
+
 
 
     async createNewApplicant(applicantData) {
@@ -60,6 +70,11 @@ class OnfidoProvider {
                     countryOfResidence: this.countryToISO(applicantData.country)
                 }
             });
+            if (applicant.id) {
+                this.setApplicant(applicant.id);
+                this.setCountry(this.countryToISO(applicantData.country));
+                this.setDocumentType(this.DocumentTypes[applicantData.id_type.toUpperCase()]);
+            }
             return applicant;
         } catch (error) {
             if (error instanceof OnfidoApiError) {
@@ -73,10 +88,51 @@ class OnfidoProvider {
 
     }
 
-    async uploadDocument() {
-        const document = new Onfido.Document();
+    async uploadDocument(file, side) {
+        let doc = await this.onfido.document.upload({
+            applicantId: this.applicantId,
+            file: {
+                contents: file.data,
+                filepath: file.name,
+                contentType: file.mimetype
+            },
+            type: this.documentType,
+            side: side,
+            issuingCountry: this.country
+        });
+        console.log(doc);
+        return doc;
     }
 
+    async checkDocument() {
+        const newCheck = await this.onfido.check.create({
+            applicantId: this.applicantId,
+            reportNames: ["document"]
+        });
+        return newCheck;
+    }
+
+    async retriveDocument(id) {
+        const check = await this.onfido.check.find(id);
+        return check
+
+    }
+
+    async listCheck(applicantid) {
+        const listchecks = await this.onfido.check.list(applicantid);
+        return listchecks;
+    }
+
+
+    async resumeCheck(id) {
+        const checks = await this.onfido.check.resume(id);
+        return checks;
+    }
+
+    async downloadCheck(id) {
+        const checkDownload = await this.onfido.check.download(id);
+        return checkDownload;
+    }
 
     /* --------------------------- UTITLITY FUNCTIONS --------------------------- */
 

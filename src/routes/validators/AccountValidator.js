@@ -32,4 +32,18 @@ module.exports = {
         body('id_number').not().isEmpty(),
     ],
 
+    retriveCheck: [
+        body('id').not().isEmpty(),
+    ],
+
+    listCheck: [
+        body('applicant_id').not().isEmpty(),
+    ],
+
+    downloadCheck: [
+        body('id').not().isEmpty(),
+    ],
+
+
+
 }

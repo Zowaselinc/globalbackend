@@ -17,6 +17,10 @@ let Schema = (Sequelize,mode) => {
             allowNull : false,
             unique : true
         },
+        dob : {
+            type: Sequelize.STRING,
+            allowNull : true
+        },
         password : {
             type : Sequelize.STRING,
             allowNull : false
@@ -73,6 +77,19 @@ let Schema = (Sequelize,mode) => {
         },
         is_approved : {
             type : Sequelize.INTEGER
+        },
+        //Move to seperate table
+        kyc_applicant_id: {
+            type : Sequelize.STRING 
+        },
+        kyc_check_id: {
+            type : Sequelize.STRING  
+        },
+        kyc_status: {
+            type : Sequelize.STRING  
+        },
+        kyc_is_verified: {
+            type : Sequelize.INTEGER  
         },
         ...generateTimestamps(Sequelize,mode)
     }
