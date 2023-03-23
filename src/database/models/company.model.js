@@ -1,45 +1,49 @@
 const generateTimestamps = require("./timestamps");
 
-let Schema = (Sequelize,mode) => {
+let Schema = (Sequelize, mode) => {
     return {
-        user_id : {
+        user_id: {
             type: Sequelize.INTEGER,
-            unique : true,
-            allowNull : false
+            unique: true,
+            allowNull: false
         },
-        company_name : {
+        company_name: {
             type: Sequelize.STRING,
-            allowNull : false
+            allowNull: false
         },
-        company_address : {
+        company_address: {
             type: Sequelize.STRING
         },
-        company_email : {
+        company_email: {
             type: Sequelize.STRING,
-            allowNull : false,
-            unique : true
+            allowNull: false,
+            unique: true
         },
-        company_phone : {
+        company_phone: {
             type: Sequelize.STRING,
-            allowNull : false
+            allowNull: false
         },
-        state : {
+        state: {
             type: Sequelize.STRING,
-            allowNull : false
+            allowNull: false
         },
-        rc_number : {
+        country: {
             type: Sequelize.STRING,
-            allowNull : false
+            allowNull: false
+        },
+        rc_number: {
+            type: Sequelize.STRING,
+            allowNull: false
         },
         ...generateTimestamps(Sequelize, mode)
     }
 }
 const Model = (sequelize, instance, Sequelize) => {
     // Define initial for DB sync
-    sequelize.define("companies", Schema(Sequelize,1),{ timestamps: false });
+    sequelize.define("companies", Schema(Sequelize, 1), { timestamps: false });
     // Bypass initial instance to cater for timestamps
-    const Company = instance.define("companies", Schema(Sequelize,2),{ timestamps: false });
+    const Company = instance.define("companies", Schema(Sequelize, 2), { timestamps: false });
     return Company;
 }
 
-module.exports = { Schema , Model};
+module.exports = { Schema, Model };

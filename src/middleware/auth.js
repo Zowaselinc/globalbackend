@@ -20,15 +20,15 @@ class AuthMiddleware {
                 var error = "";
                 const decoded = jwt.verify(auth, process.env.TOKEN_KEY);
                 var getToken = await AccessToken.findAll({ where: { user_id: decoded.user_id } });
-                var getKycdata = await KYC.findAll({ where: { user_id: decoded.user_id } });
+                var getKycdata = await KYC.findOne({ where: { user_id: decoded.user_id } });
 
                 var user = await User.findByPk(decoded.user_id);
                 if (getKycdata) {
-                    req.global = { user: user, getKycdata };
+                    req.global = { user: user, kyc : getKycdata };
                 } else {
-                    req.global = { user: user};
+                    req.global = { user: user };
                 }
-                
+
                 var tokenFound = false;
                 if (getToken) {
                     getToken.forEach(item => {

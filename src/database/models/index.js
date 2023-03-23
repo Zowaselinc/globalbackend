@@ -92,6 +92,10 @@ User.hasMany(Crop, {
   foreignKey: "user_id",
   as: "crops"
 })
+User.hasOne(Company,{
+  foreignKey : "user_id",
+  as : "company"
+});
 Crop.belongsTo(User, {
   foreignKey: "user_id",
   as: "user"

@@ -111,9 +111,13 @@ Router.middleware(['isAuthenticated']).group((router) => {
 
     router.post('/users/account/password', AccountValidator.changePasswordValidator, AccountController.changePassword);
 
+    router.get('/users/account/kyctypes', KYCController.getDocumentTypes);
+
     router.post('/users/account/kyc', AccountValidator.startKYC, KYCController.startKycVerification);
 
     router.get("/users/account/kycstatus", KYCController.retriveCheck);
+
+    router.get("/users/account/kycdocument/:id", KYCController.getDocument);
 
     // router.post("/users/account/listcheck", AccountValidator.listCheck, KYCController.listCheck);
 

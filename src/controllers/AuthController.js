@@ -45,7 +45,11 @@ class AuthController {
         let userType = await userTypeMap[user.type].findOne({
             where: { user_id: user.id },
             include: [
-                { model: User, as: "user" }
+                {
+                    model: User, as: "user", include: [
+                        { model: Company, as: "company" }
+                    ]
+                }
             ]
         });
 
@@ -100,7 +104,6 @@ class AuthController {
         }
 
         const data = req.body;
-        console.log(data)
 
         let user = await AuthController.saveUser(data);
 

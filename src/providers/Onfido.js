@@ -100,7 +100,6 @@ class OnfidoProvider {
             side: side,
             issuingCountry: this.country
         });
-        console.log(doc);
         return doc;
     }
 
@@ -123,6 +122,11 @@ class OnfidoProvider {
         return listchecks;
     }
 
+    async listDocument(applicantid) {
+        const listchecks = await this.onfido.document.list(applicantid);
+        return listchecks;
+    }
+
 
     async resumeCheck(id) {
         const checks = await this.onfido.check.resume(id);
@@ -131,6 +135,11 @@ class OnfidoProvider {
 
     async downloadCheck(id) {
         const checkDownload = await this.onfido.check.download(id);
+        return checkDownload;
+    }
+
+    async downloadDocument(id) {
+        const checkDownload = await this.onfido.document.download(id);
         return checkDownload;
     }
 
