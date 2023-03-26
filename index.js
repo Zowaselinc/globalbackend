@@ -1,3 +1,5 @@
 const Server = require("./src/server");
 
-Server.boot();
+require('dotenv').config();
+
+Server.boot(process.env.APP_PORT ?? 3000);
