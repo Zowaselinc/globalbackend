@@ -8,6 +8,7 @@ var appRoot = require("app-root-path");
 // const jwt = require("jsonwebtoken");
 
 class InputProducts {
+
   static async createInput(req, res) {
     let sampleFile;
     let uploadPath;
@@ -48,13 +49,11 @@ class InputProducts {
             if (err) {
               return res.status(500).send(err + " Error in uploading file");
             } else {
-              // res.send('File uploaded!');
-              // image = "image"+i;
-              // my_object.image = "uploadPath"
+             
             }
           });
         }
-        /* -------------------------- MOVE UPLOADED FOLDER -------------------------- */
+        
 
         /* ------------------------ INSERT INTO PRODUCT TABLE ----------------------- */
         var input = await Input.create({

@@ -1,6 +1,6 @@
 
 const jwt = require("jsonwebtoken");
-const { Pricing, Transaction, Order, Negotiation, ErrorLog, Wallet, Cart, Input, User } = require("~database/models");
+const { Pricing, Transaction, Order, Negotiation, ErrorLog, Wallet, Cart, Input, User, KYC } = require("~database/models");
 const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const Mailer = require('~services/mailer');
@@ -20,10 +20,7 @@ class TransactionController {
     /* ---------------------------- * CREATE A NEW TRANSACTION * ---------------------------- */
     static async createNewTransaction(req, res) {
 
-        // return res.status(200).json({
-        //     message : "Add Category"
-        // });
-
+      
         const errors = validationResult(req);
 
         const thetype = req.body.type;
@@ -33,7 +30,7 @@ class TransactionController {
         try {
 
             if (!errors.isEmpty()) {
-                // return res.status(400).json({ errors: errors.array() });
+            
                 return res.status(400).json({
                     error: true,
                     message: "All fields required",
@@ -41,7 +38,7 @@ class TransactionController {
                 });
             }
 
-
+            
             if (thetype == 'order') {
                 var order = await Order.findOne({ where: { order_id: type_id } });
                 if (!order) {

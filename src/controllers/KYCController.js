@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const OnfidoInstance = require("~providers/Onfido");
 var base64 = require('base64-stream');
 
+const { EncryptConfig, DecryptConfig } = require("~utilities/encryption/encrypt");
 class KYCController {
     /* ------------------------------  ----------------------------- */
     static async startKycVerification(req, res) {
@@ -18,6 +19,8 @@ class KYCController {
                     data: errors,
                 });
             }
+            const body = req.body;
+
             if (!req.files || Object.keys(req.files).length === 0) {
                 return res.status(400).json({
                     error: true,
@@ -41,13 +44,8 @@ class KYCController {
                     });
                 }
 
-                // if (!fileKeys.includes('passport')) {
-                //     return res.status(400).json({
-                //         error: true,
-                //         message: "passport is required",
-                //     });
-                // }
                 var userData = req.global.user;
+
 
                 let applicant = await OnfidoInstance.createNewApplicant({
                     ...{
@@ -62,13 +60,15 @@ class KYCController {
 
 
                 if (applicant) {
+
                     //SAVES USER APPLICANT_ID
                     let userKyc;
                     try {
                         userKyc = await KYC.create({
                             user_id: userData.id,
                             applicant_id: applicant.id,
-                            is_verified: 0
+                            verified: 0,
+                            bvn: EncryptConfig(body.bvn)
                         });
                     } catch (error) {
                         console.log(error)
@@ -82,6 +82,22 @@ class KYCController {
                     });
                 }
 
+                //UPDATES USER RECORD
+                const user = await User.update({
+                    first_name: body.first_name,
+                    last_name: body.last_name,
+                    phone_number: body.phone,
+                    dob: body.email,
+                    country: body.country,
+                    state: body.state,
+                    gender: body.gender,
+                    city: body.city,
+                    address: body.address
+                }, { where: { id: userData.id } });
+
+
+
+                /* ---------------------------- CHECKS DOCUMENTS ---------------------------- */
                 let allImages = Object.keys(req.files);
                 for (let index = 0; index < allImages.length; index++) {
                     const imageKey = allImages[index];
@@ -91,8 +107,9 @@ class KYCController {
                 var response = await OnfidoInstance.checkDocument();
                 if (response) {
                     try {
+
                         const user = await KYC.update({
-                            status: response.status,
+                            status: "pending",
                             check_id: response.id,
                         }, { where: { user_id: userData.id } });
 
@@ -137,7 +154,7 @@ class KYCController {
     }
 
     static async retriveCheck(req, res) {
-        const errors = validationResult(req);
+
         var userData = req.global.user;
         var kycDataObj;
 
@@ -147,10 +164,7 @@ class KYCController {
 
         }
         if (!kycDataObj) {
-            // return res.status(200).json({
-            //     error: true,
-            //     message: "This User Has No Applicant ID  Or Check ID"
-            // });
+
             return res.status(200).json({
                 error: false,
                 message: "This User Has No Applicant ID  Or Check ID",
@@ -173,11 +187,7 @@ class KYCController {
                 console.log(error);
             }
             if (doc) {
-                // return res.status(200).json({
-                //     error: false,
-                //     message: "Successful",
-                //     data: { response: doc, },
-                // });
+
                 var documentList = await OnfidoInstance.listDocument(kycDataObj.applicant_id);
                 for (let index = 0; index < documentList.length; index++) {
                     const document = documentList[index];

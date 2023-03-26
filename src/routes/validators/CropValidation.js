@@ -2,9 +2,7 @@ const { body } = require('express-validator');
 
 const Extended = {
     addCropValidator: [
-        // Crop model requirements
-        // body('type').isString(),
-        // body('user_id').isString(),
+        
         body('category_id').not().isEmpty(),
         body('subcategory_id').not().isEmpty(),
         body('description').not().isEmpty(),
@@ -12,9 +10,7 @@ const Extended = {
         body('currency').not().isEmpty(),
         body('is_negotiable').not().isEmpty(),
         body('video').optional(),
-        // body('packaging').not().isEmpty(),
-
-        // Crop specification Requirements
+        
 
         body('qty').not().isEmpty(),
         body('price').not().isEmpty(),
@@ -75,15 +71,13 @@ module.exports = {
         body('state').isString(),
         body('zip').isString(),
         body('country').isString(),
-        body('address').isString(),
-        // body('delivery_method').isString(),
-        // body('delivery_date').isString(),
+        body('address').isString(),        
         body('delivery_window').isString()
     ],
 
 
     addCropSpecificationValidator: [
-        // body('model_id').isNumeric(),
+        
         body('model_type').isString(),
         body('qty').isNumeric(),
         body('price').isNumeric(),
@@ -114,8 +108,7 @@ module.exports = {
         body('curcumin_content').isNumeric(),
         body('extraneous').isNumeric(),
         body('unit').isString(),
-        // body('kg').isNumeric(),
-        // body('liters').isNumeric(),
+       
     ],
 
     createAuctionBid: [

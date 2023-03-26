@@ -71,7 +71,7 @@ const Color = DB.color = require('./color.model.js').Model(initialInstance, crea
 const Bid = DB.bid = require('./bid.model.js').Model(initialInstance, createSequelizeInstance(), Sequelize);
 const Withdrawal = DB.withdrawal = require('./withdrawal.model.js').Model(initialInstance, createSequelizeInstance(), Sequelize);
 const KYC = DB.kyc = require('./kyc.model.js').Model(initialInstance, createSequelizeInstance(), Sequelize);
-
+const KYB = DB.kyb = require('./kyb.model').Model(initialInstance, createSequelizeInstance(), Sequelize);
 
 //---------------------------------------------------
 //Register Relationships
@@ -216,6 +216,14 @@ User.hasOne(KYC,{
 });
 
 
+/* ----------------------------------- KYB ---------------------------------- */
+
+User.hasOne(KYB,{
+  foreignKey : "user_id",
+  as : "kyb"
+});
+
+
 module.exports = {
   DB,
   User,
@@ -246,5 +254,6 @@ module.exports = {
   Color,
   Bid,
   Withdrawal,
-  KYC
+  KYC,
+  KYB
 };

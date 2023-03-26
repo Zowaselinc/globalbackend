@@ -53,8 +53,6 @@ class AuthController {
             ]
         });
 
-        //user[user.type] = userType;
-
         let passwordCheck = await bcrypt.compare(data.password, user.password)
 
         if (passwordCheck) {
@@ -104,10 +102,11 @@ class AuthController {
         }
 
         const data = req.body;
-
         let user = await AuthController.saveUser(data);
+        console.log("log");
 
         if (user.error) {
+            console.log(user)
             return res.status(400).json({
                 error: true,
                 message: user.message
@@ -117,7 +116,7 @@ class AuthController {
         if (data.has_company) {
             var response = await AuthController.saveCompany(user, data);
             if (response.error) {
-                // await user.delete();
+                
                 return res.status(400).json({
                     error: true,
                     message: response.message
@@ -126,17 +125,17 @@ class AuthController {
         }
 
         var UserTypeModel = data.user_type == "merchant" ? Merchant : Corporate;
-        // UserTypeModel.user_id = user.id;
+       
         let change;
         if (data.user_type == "merchant") {
-            // var merchantType = await MerchantType.findOne({ where : { title : data.merchant_type}});
+           
             var merchantType = await MerchantType.findOne({ where: { title: 'grower' } });
             if (merchantType) {
                 change = { type_id: merchantType.id };
             }
         } else {
             change = { type: "red-hot" };
-            // UserTypeModel.type = "red-hot";
+            
         }
 
         await UserTypeModel.create({ ...change, ...{ user_id: user.id } }).catch((error => {
@@ -311,6 +310,7 @@ class AuthController {
             });
 
         } catch (e) {
+          
             user = {
                 error: true,
                 message: e.sqlMessage

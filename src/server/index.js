@@ -9,9 +9,10 @@ const { DB } = require("~database/models");
 
 const cors = require('cors');
 const GlobalUtils = require('~utilities/global');
+const AppSocket = require('~providers/Socket');
+
 
 class Server {
-
     static boot(port = 3000) {
 
         App.use(cors({
@@ -21,7 +22,6 @@ class Server {
 
         // Register App Routes
         Routes(App).register();
-
 
         //Sync Database Models
         //{ force: true }
@@ -33,11 +33,13 @@ class Server {
                 console.log("Failed to sync db: " + err.message);
             });
 
-        App.listen(port, () => {
-            console.log(`Example app listening on port ${port}`)
+        AppSocket.initSocket(App, (server) => {
+            server.listen(port, () => {
+                console.log(`Example app listening on port ${port}`)
+            })
         })
-    }
 
+    }
 }
 
 module.exports = Server;

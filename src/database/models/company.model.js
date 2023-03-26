@@ -31,9 +31,15 @@ let Schema = (Sequelize, mode) => {
             type: Sequelize.STRING,
             allowNull: false
         },
+        contact_person:  {
+            type: Sequelize.STRING
+        },
         rc_number: {
             type: Sequelize.STRING,
             allowNull: false
+        },
+        company_website: {
+            type: Sequelize.STRING
         },
         ...generateTimestamps(Sequelize, mode)
     }

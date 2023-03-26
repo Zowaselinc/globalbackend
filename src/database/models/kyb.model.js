@@ -6,30 +6,27 @@ let Schema = (Sequelize, mode) => {
             type: Sequelize.STRING,
             allowNull: false
         },
-        applicant_id: {
+        tax_id: {
             type: Sequelize.STRING
         },
-        check_id: {
-            type: Sequelize.STRING
+        cac: {
+            type: Sequelize.STRING,
         },
-        status: {
-            type: Sequelize.STRING
+        financial_statement: {
+            type: Sequelize.STRING,
         },
-        bvn: {
-            type: Sequelize.STRING
-        },        
-        verified: {
-            type: Sequelize.INTEGER
+        mou: {
+            type: Sequelize.STRING,
         },
         ...generateTimestamps(Sequelize, mode)
     }
 }
 const Model = (sequelize, instance, Sequelize) => {
     // Define initial for DB sync
-    sequelize.define("kyc", Schema(Sequelize, 1), { timestamps: false });
+    sequelize.define("kyb", Schema(Sequelize, 1), { timestamps: false });
     // Bypass initial instance to cater for timestamps
-    const Kyc = instance.define("kyc", Schema(Sequelize, 2), { timestamps: false });
-    return Kyc;
+    const Kyb = instance.define("kyb", Schema(Sequelize, 2), { timestamps: false });
+    return Kyb;
 }
 
 module.exports = { Schema, Model };

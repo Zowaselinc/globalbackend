@@ -30,21 +30,9 @@ const {
 const { Op } = require("sequelize");
 
 class OrderController {
-    static async hello(req, res) {
-        return res.status(200).json({
-            message: "Hello Order",
-        });
-    }
-
-    // createNewOrder
+  
     /* ---------------------------- * CREATE NEW ORDER * ---------------------------- */
     static async createNewOrderOld(req, res) {
-        // return res.status(200).json({
-        // message : "Create New Order"
-
-        // });
-
-        // return res.send(req.body);
 
         const errors = validationResult(req);
 
@@ -59,7 +47,6 @@ class OrderController {
 
             const randomid = crypto.randomBytes(16).toString("hex");
 
-            // console.log(errors.isEmpty());
 
             let negotiation_id;
 
@@ -219,16 +206,10 @@ class OrderController {
             });
         }
     }
-    /* ---------------------------- * CREATE NEW ORDER * ---------------------------- */
-
+    
     /* ---------------------------- * CREATE NEW ORDER * ---------------------------- */
     static async createNewOrder(req, res) {
-        // return res.status(200).json({
-        // message : "Create New Order"
-
-        // });
-
-        // return res.send(req.body);
+     
 
         const errors = validationResult(req);
 
@@ -476,8 +457,7 @@ class OrderController {
             });
         }
     }
-    /* ---------------------------- * FULFIL CROP OFFER * ---------------------------- */
-
+    
     /* -------------------------- GET ORDER BY ORDER_ID ------------------------- */
     static async getByOrderHash(req, res) {
         const errors = validationResult(req);
@@ -515,8 +495,7 @@ class OrderController {
             }
         }
     }
-    /* -------------------------- GET ORDER BY ORDER_ID ------------------------- */
-
+  
     /* -------------------------- GET ORDER BY BUYER_ID ------------------------- */
     static async getByBuyer(req, res) {
         const errors = validationResult(req);
@@ -554,8 +533,7 @@ class OrderController {
             }
         }
     }
-    /* -------------------------- GET ORDER BY BUYER_ID ------------------------- */
-
+    
     /* -------------------------- GET ORDER BY BUYER_ID ------------------------- */
     static async getBySeller(req, res) {
         const errors = validationResult(req);
@@ -593,8 +571,7 @@ class OrderController {
             }
         }
     }
-    /* -------------------------- GET ORDER BY BUYER_ID ------------------------- */
-
+   
     /* -------------------------- GET ORDER BY NEGOTIATION_ID ------------------------- */
     static async getByNegotiationId(req, res) {
         try {
@@ -629,9 +606,7 @@ class OrderController {
             }
         }
     }
-    /* -------------------------- GET ORDER BY NEGOTIATION_ID ------------------------- */
-
-    /* -------------------------- GET ORDER BY PAYMENT STATUS ------------------------- */
+        /* -------------------------- GET ORDER BY PAYMENT STATUS ------------------------- */
     static async getByPaymentStatus(req, res) {
         try {
             var findOrder = await Order.findOne({
@@ -665,8 +640,7 @@ class OrderController {
             }
         }
     }
-    /* -------------------------- GET ORDER BY PAYMENT STATUS ------------------------- */
-
+   
     /* -------------------------- UPDATE TRACKING DETAILS BY ORDER_ID ------------------------- */
     static async updateTrackingDetailsByOrderId(req, res) {
         const errors = validationResult(req);
@@ -735,7 +709,6 @@ class OrderController {
             }
         }
     }
-    /* -------------------------- UPDATE TRACKING DETAILS BY ORDER_ID ------------------------- */
 
     /* -------------------------- UPDATE WAYBILL DETAILS BY ORDER_ID  ------------------------- */
     static async updateWaybillDetailsByOrderId(req, res) {
@@ -754,7 +727,7 @@ class OrderController {
                 where: { order_hash: req.params.order },
             });
             if (findOrder) {
-                // return res.send(req.body.tracking_details)
+        
 
                 let theWaybillDetails = JSON.stringify(req.body.waybill_details);
 
@@ -792,8 +765,7 @@ class OrderController {
             }
         }
     }
-    /* -------------------------- UPDATE WAYBILL DETAILS BY ORDER_ID  ------------------------- */
-
+    
     /* -------------------------- UPDATE GOOD RECEIPT NOTE BY ORDER_ID  ------------------------- */
     static async updateGoodReceiptNoteByOrderId(req, res) {
         const errors = validationResult(req);
@@ -811,7 +783,6 @@ class OrderController {
                 where: { order_hash: req.params.order },
             });
             if (findOrder) {
-                // return res.send(req.body.tracking_details)
 
                 let theGoodReceiptDetails = JSON.stringify(req.body.good_receipt_note);
 
@@ -849,14 +820,13 @@ class OrderController {
             }
         }
     }
-    /* -------------------------- UPDATE GOOD RECEIPT NOTE BY ORDER_ID  ------------------------- */
 
     /* -------------------------------------------------------------------------- */
     /*                                    INPUT                                   */
     /* -------------------------------------------------------------------------- */
-    static async createInputOrder(req, res) {
-        // return res.send(req.body);
 
+    static async createInputOrder(req, res) {
+      
         const errors = validationResult(req);
 
         try {
@@ -914,7 +884,9 @@ class OrderController {
         }
     }
 
+
     /* ----------------- get all cart added by a specified user ----------------- */
+
     static async updateOrderPayment(req, res) {
         const errors = validationResult(req);
         try {
