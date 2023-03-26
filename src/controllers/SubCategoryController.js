@@ -7,13 +7,7 @@ const { Sequelize } = require('sequelize');
 
 class SubCategoryController{
 
-    static async hello(req , res){
-
-        return res.status(200).json({
-            message : "Hello SubCategory"
-        });
-    }
-
+   
 
         /* --------------------------- GET ALL SUB CATEGORIES --------------------------- */
 
@@ -60,9 +54,6 @@ class SubCategoryController{
     
         }
     
-        /* --------------------------- GET ALL SUB CATEGORIES --------------------------- */
-        
-
 
 
     /* --------------------------- GET SUBCATEGORIES BY CATEGORY --------------------------- */
@@ -114,13 +105,7 @@ class SubCategoryController{
             } 
         }
     }
-    /* --------------------------- GET SUBCATEGORIES BY CATEGORY --------------------------- */
-
-
-
-
-
-
+   
 
 
     /* --------------------------- GET ONE SUBCATEGORY BY SUBCATEGORY ID --------------------------- */
@@ -154,6 +139,8 @@ class SubCategoryController{
             } 
         }
     }
+
+    
     /* --------------------------- GET ONE SUBCATEGORY BY SUBCATEGORY ID --------------------------- */
 
 

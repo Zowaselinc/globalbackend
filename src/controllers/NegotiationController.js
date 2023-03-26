@@ -22,9 +22,6 @@ class NegotiationController {
     /* ---------------------------- * USER ADD NEGOTIATION MESSAGE * ---------------------------- */
     static async add(req, res) {
 
-        // return res.status(200).json({
-        //     message : "Add Category"
-        // });
 
         const errors = validationResult(req);
 
@@ -85,8 +82,6 @@ class NegotiationController {
                 req.body.conversation_id = conversation.id;
             }
 
-
-            // console.log(errors.isEmpty());
             let randomid = crypto.randomBytes(8).toString('hex');
             let messagetype = "text";
             req.body.messagetype = messagetype;
@@ -114,11 +109,6 @@ class NegotiationController {
 
 
     }
-    /* ---------------------------- * USER ADD NEGOTIATION MESSAGE * ---------------------------- */
-
-
-
-
 
 
     /* --------------------------- GET ALL NEGOTIATION BY USERID --------------------------- */
@@ -184,9 +174,6 @@ class NegotiationController {
             }
         }
     }
-    /* --------------------------- GET ALL NEGOTIATION BY USERID --------------------------- */
-
-
 
 
     /* ------------------ GET ALL NEGOTIATION LIST BY USER ID ----------------- */
@@ -253,29 +240,15 @@ class NegotiationController {
             }
         }
     }
-    /* --------------------------- GET ALL NEGOTIATION BY USERID --------------------------- */
-
-
-
-
 
 
     /* ---------------------------- * SEND NEGOTIATION * ---------------------------- */
     static async sendNegotiationOffer(req, res) {
 
-        // return res.status(200).json({
-        //     message : "Add Category"
-        // });
-
+   
         const errors = validationResult(req);
 
         try {
-
-            // if(!errors.isEmpty()){
-            //     return res.status(400).json({ 
-            //          errors: errors.array() 
-            //     });
-            // }
 
             var obj = new Object();
             obj = {
@@ -335,7 +308,6 @@ class NegotiationController {
                 req.body.conversation_id = conversation.id;
             }
 
-            // return res.send(aa);
 
             // console.log(errors.isEmpty());
             let randomid = crypto.randomBytes(8).toString('hex');
@@ -413,13 +385,10 @@ class NegotiationController {
 
 
     }
+
+
+
     /* ---------------------------- * SEND NEGOTIATION * ---------------------------- */
-
-
-
-
-
-
 
     /* --------------------------- ACCEPT NEGOTIATION BY NEGOIATION ID --------------------------- */
     static async acceptNegotiation(req, res) {
@@ -581,21 +550,9 @@ class NegotiationController {
             })
         }
     }
-    /* --------------------------- ACCEPT NEGOTIATION BY NEGOIATION ID --------------------------- */
-
-
-
-
-
-
-
 
     /* --------------------------- DECLINE NEGOTIATION BY NEGOIATION ID --------------------------- */
     static async declineNegotiation(req, res) {
-
-        // return res.status(200).json({
-        //     message : "Accept Negotiation"
-        // });
 
         try {
 
@@ -654,8 +611,6 @@ class NegotiationController {
             })
         }
     }
-    /* --------------------------- DECLINE NEGOTIATION BY NEGOIATION ID --------------------------- */
-
 
     /* --------------------------- CLOSE NEGOTIATION BY NEGOIATION ID --------------------------- */
     static async closeNegotiation(req, res) {
@@ -834,14 +789,6 @@ class NegotiationController {
 
 
     /* --------------------------- TRANSACTION SUMMARY -------------------------- */
-
-
-
-
-
-
-
-
 
     /* ----------- GET ALL ACCEPTED AND DECLINED NEGOTIATIONS SUMMARY ----------- */
     static async getAllNegotiationTransactionSummary(req, res) {

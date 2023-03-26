@@ -4,100 +4,115 @@ const { User, Company, Merchant, Partner, Corporate, Agent, Crop, CropRequest } 
 const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const Mailer = require('~services/mailer');
-const md5  = require('md5');
+const md5 = require('md5');
 
 
-class UserController{
+class UserController {
 
-    static async getAllUsers(req, res){
+    static async getAllUsers(req, res) {
 
 
-        var merchants = await Merchant.findAll({ include : User});
+        var merchants = await Merchant.findAll({ include: User });
 
-        var corporates = await Corporate.findAll({ include : User});
+        var corporates = await Corporate.findAll({ include: User });
 
-        var agents = await Agent.findAll({ include : User});
+        var agents = await Agent.findAll({ include: User });
 
-        var partners = await Partner.findAll({ include : User});
+        var partners = await Partner.findAll({ include: User });
 
-        var resultSet = [ ...merchants, ...corporates , ...agents, ...partners];
+        var resultSet = [...merchants, ...corporates, ...agents, ...partners];
 
-        resultSet = resultSet.sort((a,b) => b.user_id - a.user_id);
+        resultSet = resultSet.sort((a, b) => b.user_id - a.user_id);
 
         return res.status(200).json({
-            error : false,
-            message : "Users fetched successfully",
-            data : resultSet
+            error: false,
+            message: "Users fetched successfully",
+            data: resultSet
         });
 
     }
 
-    static async getUsersByType(req , res){
+    static async getUsersByType(req, res) {
 
         var result = [];
 
-        if(req.params.type == "merchant"){
-            result = await Merchant.findAll({ include : User });
+        if (req.params.type == "merchant") {
+            result = await Merchant.findAll({ include: User });
         }
 
-        if(req.params.type == "corporate"){
-            result = await Corporate.findAll({ include : User});
+        if (req.params.type == "corporate") {
+            result = await Corporate.findAll({ include: User });
         }
 
-        if(req.params.type == "agent"){
-            result = await Agent.findAll({ include : User});
+        if (req.params.type == "agent") {
+            result = await Agent.findAll({ include: User });
         }
 
-        if(req.params.type == "partner"){
-            result = await Partner.findAll({ include : User});
+        if (req.params.type == "partner") {
+            result = await Partner.findAll({ include: User });
         }
 
 
-        result = result.sort((a,b) => b.user_id - a.user_id);
+        result = result.sort((a, b) => b.user_id - a.user_id);
 
         return res.status(200).json({
-            error : false,
-            message : "Users fetched successfully",
-            data : result
+            error: false,
+            message: "Users fetched successfully",
+            data: result
         });
     }
 
 
-    static async getUserById(req , res){
+    static async getUserById(req, res) {
 
         var id = req.params.id;
 
         var userTypeMap = {
-            merchant : Merchant,
-            corporate : Corporate,
-            agent : Agent,
-            partner : Partner
+            merchant: Merchant,
+            corporate: Corporate,
+            agent: Agent,
+            partner: Partner
         };
 
         let user = await User.findByPk(id);
 
-        if(user){
-            user = await userTypeMap[user.type].findOne({ where : {user_id : id} , include : User});
+        if (user) {
+            var checkCompany = await Company.findOne({ where: { user_id: user.id } });
         }
 
-        if(!user){
+        if (user) {
+            user = await userTypeMap[user.type].findOne({
+                where: { user_id: id },
+                include: [
+                    {
+                        model: User,
+                        as: "user",
+                        include: [
+                            {
+                                model: Company, as: "company"
+                            }
+                        ]
+                    },
+                ]
+            });
+        }
+        if (!user) {
             return res.status(400).json({
-                error : true,
-                message : "User not found",
+                error: true,
+                message: "User not found",
             });
         }
 
-
         return res.status(200).json({
-            error : false,
-            message : "User fetched successfully",
-            data : user
+            error: false,
+            message: "User fetched successfully",
+            data: user
         });
     }
 
 
-    static async getUserStats(req ,res){
-        
+    static async getUserStats(req, res) {
+
     }
 }
 

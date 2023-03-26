@@ -79,7 +79,7 @@ class CropController {
                     });
                 }
 
-                /* -------------------------- MOVE UPLOADED FOLDER -------------------------- */
+
 
                 /* ------------------------ INSERT INTO CROP TABLE ----------------------- */
 
@@ -181,13 +181,11 @@ class CropController {
             }
         }
     }
-    // /* ---------------------------- * ADD Cropdescription * ---------------------------- */
+
 
     /* --------------------------- GET ALL WANTED CROPS --------------------------- */
     static async getByCropWanted(req, res) {
-        // return res.status(200).json({
-        //     message : "GET Wanted Crops"
-        // });
+
 
         const errors = validationResult(req);
 
@@ -245,7 +243,6 @@ class CropController {
             }
         }
     }
-    /* --------------------------- GET ALL WANTED CROPS --------------------------- */
 
     /* --------------------------- GET ALL AUCTION CROPS --------------------------- */
     static async getByCropAuctions(req, res) {
@@ -300,7 +297,6 @@ class CropController {
             }
         }
     }
-    /* --------------------------- GET ALL WANTED CROPS --------------------------- */
 
     /* --------------------------- GET ALL OFFERED CROPS --------------------------- */
     static async getByCropOffer(req, res) {
@@ -363,7 +359,6 @@ class CropController {
             }
         }
     }
-    /* --------------------------- GET ALL OFFERED CROPS --------------------------- */
 
     /* --------------------------- GET ALL AUCTION CROPS --------------------------- */
     static async getAllCropsByUser(req, res) {
@@ -391,7 +386,6 @@ class CropController {
                         as: "crop_request",
                     },
                 ],
-
                 where: { user_id: req.global.user.id, active: 1 },
                 order: [['id', 'DESC']],
             });
@@ -418,7 +412,6 @@ class CropController {
             }
         }
     }
-    /* --------------------------- GET ALL WANTED CROPS --------------------------- */
 
     /* --------------------------- GET CROP BY ID --------------------------- */
     static async getById(req, res) {
@@ -486,6 +479,7 @@ class CropController {
             }
         }
     }
+
     /* --------------------------- GET CROP BY ID --------------------------- */
 
     static async getCropBids(req, res) {
@@ -530,7 +524,7 @@ class CropController {
 
         try {
             if (!errors.isEmpty()) {
-                // return res.status(400).json({ errors: errors.array() });
+               
                 return res.status(200).json({
                     error: true,
                     message: "All fields are required",
@@ -650,25 +644,19 @@ class CropController {
             }
         }
     }
+    
     /* --------------------------- GET ALL CROPS TYPE BY USERID --------------------------- */
 
     /* ---------------------------- * EDIT Project by ID * ---------------------------- */
     static async EditById(req, res) {
-        // return res.status(200).json({
-        //     message : "Add Cropdescription "
-        // });
-
-        let sampleFile;
-        let uploadPath;
 
         const errors = validationResult(req);
 
         let randomid = crypto.randomBytes(8).toString("hex");
-        // let allImages = Object.keys(req.files);
-        // console.log(__dirname + '/uploads/' + req.files[allImages[0]].name);
+
         try {
             if (!errors.isEmpty()) {
-                // return res.status(400).json({ errors: errors.array() });
+
                 return res.status(200).json({
                     error: true,
                     message: "All fields are required",
@@ -689,7 +677,7 @@ class CropController {
                         active: 0,
                         market: "crop",
                         description: req.body.description,
-                        // images: my_object.toString(),
+
                         currency: req.body.currency,
                         is_negotiable: req.body.is_negotiable,
                         video: req.body.video,
@@ -758,11 +746,8 @@ class CropController {
                             { where: { crop_id: req.body.crop_id } }
                         );
 
-                        return res.status(200).json({
-                            error: false,
-                            message: "Crop edited successfully",
-                            // "product": product, Cropspec, ProdRequest
-                        });
+                        return res.status(200).js
+
                     }
                 }
             } else {

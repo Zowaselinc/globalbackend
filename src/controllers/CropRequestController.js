@@ -16,10 +16,7 @@ class CropRequestController{
     /* ---------------------------- * ADD PRODUCT REQUEST * ---------------------------- */
     static async add(req , res){
 
-        // return res.status(200).json({
-        //     message : "Add Category"
-        // });
-
+       
         const errors = validationResult(req);
 
         try{
@@ -28,8 +25,6 @@ class CropRequestController{
                 return res.status(400).json({ errors: errors.array() });
             }
     
-            
-            // console.log(errors.isEmpty());
             let randomid = crypto.randomBytes(8).toString('hex');
 
             const { count, rows } = await Crop.findAndCountAll({ where: { id: req.body.crop_id  } });
@@ -93,20 +88,10 @@ class CropRequestController{
 
         
     }
-    /* ---------------------------- * ADD PRODUCT REQUEST * ---------------------------- */
-
-
-
-
-
-
+   
 
     /* --------------------------- GET ALL PRODUCT REQUEST --------------------------- */
     static async getall(req , res){
-
-        // return res.status(200).json({
-        //     message : "GET ALL Crop Request"
-        // });
 
         try{
             var Crop_Request = await CropRequest.findAll();
@@ -142,9 +127,6 @@ class CropRequestController{
     /* --------------------------- GET ALL PRODUCT REQUEST BY LIMIT --------------------------- */
     static async getallbyLimit(req , res){
 
-        // return res.status(200).json({
-        //     message : "GET ALL Category BY OFFSET "+req.params.offset+" & LIMIT"+req.params.limit
-        // });
 
         const offset = parseInt(req.params.offset);
         const limit = parseInt(req.params.limit);
@@ -172,23 +154,11 @@ class CropRequestController{
             } 
         }
     }
-    /* --------------------------- GET ALL PRODUCT REQUEST BY LIMIT --------------------------- */
-
-
-
-
-
-
-
-
-
+ 
     /* --------------------------- GET PRODUCT REQUEST BY ID --------------------------- */
     static async getbyid(req , res){
 
-        // return res.status(200).json({
-        //     message : "GET Crop Request By ID"
-        // });
-
+    
         const errors = validationResult(req);
 
         try{
@@ -216,18 +186,11 @@ class CropRequestController{
             })  
         }
     }
-    /* --------------------------- GET PRODUCT REQUEST BY ID --------------------------- */
-
-
-
 
 
     /* --------------------------- GET PRODUCT REQUEST BY ID --------------------------- */
     static async getbyproductid(req , res){
 
-        // return res.status(200).json({
-        //     message : "GET Crop Request By ID"
-        // });
 
         const errors = validationResult(req);
 
@@ -256,20 +219,9 @@ class CropRequestController{
             })  
         }
     }
-    /* --------------------------- GET PRODUCT REQUEST BY ID --------------------------- */
-
-
-
-
-
-
 
      /* --------------------------- EDIT PRODUCT REQUEST BY CATEGORY ID --------------------------- */
      static async editbyid(req , res){
-
-        // return res.status(200).json({
-        //     message : "EDIT Crop Request By ID"
-        // });
 
         const errors = validationResult(req);
 

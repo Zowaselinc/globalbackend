@@ -6,22 +6,9 @@ const { CropSpecification, Crop } = require('~database/models');
 
 
 class CropspecController{
-
-    static async hello(req , res){
-
-        return res.status(200).json({
-            message : "Hello Crop Specification"
-        });
-    }
-
    
     /* ---------------------------- * ADD Crop Specification * ---------------------------- */
     static async add(req , res){
-
-        // return res.status(200).json({
-        //     message : "Add Crop Specification "
-        // });
-
     
         const errors = validationResult(req);
 

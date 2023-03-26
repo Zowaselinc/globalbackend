@@ -77,9 +77,6 @@ class CategoryController {
 
     }
 
-    /* --------------------------- GET ALL CATEGORIES --------------------------- */
-
-
 
 
     /* --------------------------- GET ALL CATEGORIES BY LIMIT --------------------------- */
@@ -117,10 +114,6 @@ class CategoryController {
             }
         }
     }
-    /* --------------------------- GET ALL CATEGORIES BY LIMIT --------------------------- */
-
-
-
 
 
     /* --------------------------- GET CATEGORIES BY CATEGORY ID --------------------------- */
@@ -156,9 +149,7 @@ class CategoryController {
             }
         }
     }
-    /* --------------------------- GET CATEGORIES BY CATEGORY ID --------------------------- */
-
-
+  
 }
 
 module.exports = CategoryController;

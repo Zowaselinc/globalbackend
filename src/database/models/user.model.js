@@ -17,6 +17,10 @@ let Schema = (Sequelize,mode) => {
             allowNull : false,
             unique : true
         },
+        dob : {
+            type: Sequelize.STRING,
+            allowNull : true
+        },
         password : {
             type : Sequelize.STRING,
             allowNull : false
@@ -74,6 +78,7 @@ let Schema = (Sequelize,mode) => {
         is_approved : {
             type : Sequelize.INTEGER
         },
+        
         ...generateTimestamps(Sequelize,mode)
     }
 }
