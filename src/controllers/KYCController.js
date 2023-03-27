@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const OnfidoInstance = require("~providers/Onfido");
 var base64 = require('base64-stream');
 
+
 const { EncryptConfig, DecryptConfig } = require("~utilities/encryption/encrypt");
 class KYCController {
     /* ------------------------------  ----------------------------- */
@@ -164,10 +165,9 @@ class KYCController {
 
         }
         if (!kycDataObj) {
-
             return res.status(200).json({
                 error: false,
-                message: "This User Has No Applicant ID  Or Check ID",
+                message: "KYC not started",
                 data: { status: "Unverified" }
             });
         }
@@ -176,12 +176,9 @@ class KYCController {
         try {
             var doc = await OnfidoInstance.retriveDocument(kycDataObj.check_id);
             try {
-
                 const user = await KYC.update({
                     status: doc.status,
-                    is_verified: doc.status == "complete" ? 1 : 0
                 }, { where: { user_id: userData.id } });
-
 
             } catch (error) {
                 console.log(error);
@@ -199,7 +196,7 @@ class KYCController {
                     error: false,
                     message: "Successful",
                     data: {
-                        status: doc.status == "complete" ? "Verified" : "Pending Verification",
+                        status: kycDataObj.verified == 1 ? "Verified" : "Pending Verification",
                         documents: documentList
                     }
                 });

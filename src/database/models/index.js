@@ -72,6 +72,7 @@ const Bid = DB.bid = require('./bid.model.js').Model(initialInstance, createSequ
 const Withdrawal = DB.withdrawal = require('./withdrawal.model.js').Model(initialInstance, createSequelizeInstance(), Sequelize);
 const KYC = DB.kyc = require('./kyc.model.js').Model(initialInstance, createSequelizeInstance(), Sequelize);
 const KYB = DB.kyb = require('./kyb.model').Model(initialInstance, createSequelizeInstance(), Sequelize);
+const TeamMember = DB.teamMember = require('./teamMember.model').Model(initialInstance, createSequelizeInstance(), Sequelize);
 
 //---------------------------------------------------
 //Register Relationships
@@ -92,9 +93,9 @@ User.hasMany(Crop, {
   foreignKey: "user_id",
   as: "crops"
 })
-User.hasOne(Company,{
-  foreignKey : "user_id",
-  as : "company"
+User.hasOne(Company, {
+  foreignKey: "user_id",
+  as: "company"
 });
 Crop.belongsTo(User, {
   foreignKey: "user_id",
@@ -210,17 +211,23 @@ Order.belongsTo(Negotiation, {
 
 /* ----------------------------------- KYC ---------------------------------- */
 
-User.hasOne(KYC,{
-  foreignKey : "user_id",
-  as : "kyc"
+User.hasOne(KYC, {
+  foreignKey: "user_id",
+  as: "kyc"
 });
 
 
 /* ----------------------------------- KYB ---------------------------------- */
 
-User.hasOne(KYB,{
-  foreignKey : "user_id",
-  as : "kyb"
+User.hasOne(KYB, {
+  foreignKey: "user_id",
+  as: "kyb"
+});
+
+/* ------------------------------ TEAM MEMBERS ------------------------------ */
+User.hasOne(TeamMember, {
+  foreignKey: "user_id",
+  as: "team_member"
 });
 
 
@@ -255,5 +262,6 @@ module.exports = {
   Bid,
   Withdrawal,
   KYC,
-  KYB
+  KYB,
+  TeamMember
 };

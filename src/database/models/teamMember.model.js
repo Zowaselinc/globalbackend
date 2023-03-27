@@ -3,36 +3,34 @@ const generateTimestamps = require("./timestamps");
 let Schema = (Sequelize, mode) => {
     return {
         user_id: {
+            type: Sequelize.INTEGER,
+            allowNull: false
+        },
+        first_name: {
             type: Sequelize.STRING,
             allowNull: false
         },
-        tax_id: {
-            type: Sequelize.STRING
-        },
-        cac: {
+        last_name: {
             type: Sequelize.STRING,
+            allowNull: false
         },
-        financial_statement: {
+        email: {
             type: Sequelize.STRING,
+            allowNull: false
         },
-        mou: {
+        password: {
             type: Sequelize.STRING,
-        },
-        check_id: {
-            type: Sequelize.STRING
-        },
-        status: {
-            type: Sequelize.STRING
+            allowNull: false
         },
         ...generateTimestamps(Sequelize, mode)
     }
 }
 const Model = (sequelize, instance, Sequelize) => {
     // Define initial for DB sync
-    sequelize.define("kyb", Schema(Sequelize, 1), { timestamps: false });
+    sequelize.define("team_memebers", Schema(Sequelize, 1), { timestamps: false });
     // Bypass initial instance to cater for timestamps
-    const Kyb = instance.define("kyb", Schema(Sequelize, 2), { timestamps: false });
-    return Kyb;
+    const TeamMembers = instance.define("team_memebers", Schema(Sequelize, 2), { timestamps: false });
+    return TeamMembers;
 }
 
 module.exports = { Schema, Model };

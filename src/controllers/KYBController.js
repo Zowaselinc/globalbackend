@@ -4,6 +4,7 @@ const { validationResult } = require("express-validator");
 const { use } = require("~routes/api");
 const { KYB, Company } = require("~database/models");
 const fs = require('fs');
+const crypto = require('crypto');
 
 class KYBController {
     static async startKybVerification(req, res) {
@@ -47,7 +48,7 @@ class KYBController {
             var pathlist = []
             if (req.files && Object.keys(req.files).length > 0) {
                 let allImage = Object.keys(req.files);
-                console.log(allImage);
+
                 for (let index = 0; index < allImage.length; index++) {
                     const key = allImage[index];
                     let file = req.files[key];
@@ -76,13 +77,16 @@ class KYBController {
 
             if (userData) {
                 try {
+                    let id = crypto.randomUUID();
                     //CREATE KYB RECORD
                     let userKyb = await KYB.create({
                         user_id: userData.id,
                         tax_id: data.tax_id,
                         cac: pathlist[0],
                         financial_statement: pathlist[1],
-                        mou: pathlist[2]
+                        mou: pathlist[2],
+                        check_id: id,
+                        status: "pending",
                     });
                     //UPDATES COMPANY RECORD 
                     let company = await Company.update({
@@ -113,6 +117,57 @@ class KYBController {
             }
         } catch (error) {
             console.log(error);
+        }
+    }
+
+    static async retriveCheck(req, res) {
+        var kybDataObj;
+        if (req.global.kyb) {
+            let data = req.global.kyb;
+            kybDataObj = data;
+        }
+        if (!kybDataObj) {
+            return res.status(200).json({
+                error: false,
+                message: "This User Has No KYB Check ID",
+                data: { status: "Unverified" }
+            });
+        } else {
+            
+
+            return res.status(200).json({
+                error: false,
+                message: "Successful",
+                data: {
+                    status: kybDataObj.status == "complete" ? "Verified" : "Pending Verification",
+                    check_id: kybDataObj.check_id
+                }
+            });
+        }
+    }
+
+    static async getDocument(req, res) {
+        var kybDataObj;
+        if (req.global.kyb) {
+            let data = req.global.kyb;
+            kybDataObj = data;
+        }
+        if (!kybDataObj) {
+            return res.status(200).json({
+                error: false,
+                message: "This User Has No KYB Document",
+                data: { status: "Unverified" }
+            });
+        } else {
+            return res.status(200).json({
+                error: false,
+                message: "Successful",
+                data: {
+                    CAC: kybDataObj.cac,
+                    Financial_Statement: kybDataObj.financial_statement,
+                    MOU: kybDataObj.mou
+                }
+            });
         }
     }
 }

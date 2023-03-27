@@ -64,7 +64,12 @@ module.exports = {
         body('phone').not().isEmpty(),
         body('website').not().isEmpty(),
         body('email').not().isEmpty(),
+    ],
 
+    registerTeamMember: [
+        body('first_name').not().isEmpty(),
+        body('last_name').not().isEmpty(),
+        body('email').isString().isEmail(),
     ],
 
 
