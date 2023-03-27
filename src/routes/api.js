@@ -1,56 +1,44 @@
 
 /* ------------------------------- CONTROLLERS ------------------------------ */
 /* ----------------------------------- --- ---------------------------------- */
-
 const Controller = require("~controllers/Controller");
-
 const AuthController = require('~controllers/AuthController');
-
 const UserController = require('~controllers/UserController');
-
 const CropController = require('~controllers/CropController');
-
 const CategoryController = require('../controllers/CategoryController');
-
 const SubCategoryController = require('../controllers/SubCategoryController');
-
 const CropRequestController = require('../controllers/CropRequestController');
-
 const CropSpecificationController = require('../controllers/CropSpecificationController');
-
 const NegotiationController = require('../controllers/NegotiationController');
-
 const InputController = require('~controllers/InputProductController');
-
 const Cart = require('~controllers/CartController');
+const ConversationController = require("~controllers/ConversationController");
+const NotificationController = require("~controllers/NotificationController");
+const OrderController = require("~controllers/OrderController");
+const TransactionController = require("~controllers/TransactionController");
+const ColorController = require("~controllers/ColorController");
+const WalletController = require("~controllers/WalletController");
+const AnalyticsController = require("~controllers/AnalyticsController");
+const AccountController = require("~controllers/AccountController");
+const KYCController = require("~controllers/KYCController");
+const KYBController = require("~controllers/KYBController");
 
 /* ------------------------------- VALIDATORS ------------------------------- */
 
 const { RegisterMerchantCorporateValidator, LoginValidator, RegisterPartnerValidator, RegisterAgentValidator, SendVerificationValidator, ConfirmVerificationValidator, ResetPasswordValidator, VerifyResetTokenValidator } = require('./validators/AuthValidators');
-
 const CategoryValidator = require('./validators/CategoryValidator');
 const SubCategoryValidator = require('./validators/SubCategoryValidator');
 const CropValidation = require('./validators/CropValidation');
 const NegotiationValidator = require('./validators/NegotiationValidator');
 const InputsValidator = require('./validators/InputsValidator');
 const OrderValidators = require("./validators/OrderValidators");
+const TransactionValidator = require("./validators/TransactionValidator");
+const AccountValidator = require("./validators/AccountValidator");
+const WalletValidator = require("./validators/WalletValidator");
 
 
 /* -------------------------------- PROVIDERS ------------------------------- */
-
 const RouteProvider = require('~providers/RouteProvider');
-const OrderController = require("~controllers/OrderController");
-const TransactionValidator = require("./validators/TransactionValidator");
-const TransactionController = require("~controllers/TransactionController");
-const ColorController = require("~controllers/ColorController");
-const { Order, Wallet } = require("~database/models");
-const WalletController = require("~controllers/WalletController");
-const AnalyticsController = require("~controllers/AnalyticsController");
-const AccountController = require("~controllers/AccountController");
-const AccountValidator = require("./validators/AccountValidator");
-const WalletValidator = require("./validators/WalletValidator");
-const KYCController = require("~controllers/KYCController");
-const KYBController = require("~controllers/KYBController");
 
 
 const Router = RouteProvider.Router;
@@ -151,8 +139,34 @@ Router.group((router) => {
     router.get('/color/getall', ColorController.getAllColors);
     router.get('/color/getbyid/:id', ColorController.getColorbyid);
     router.get('/color/params/:offset/:limit', ColorController.getColorbyparams);
+
+    /* ------------------------------ Conversation ------------------------------ */
+    router.get('/conversation/getall', ConversationController.getAllConversations);
+    router.get('/conversation/getbyuserid/:userid', ConversationController.getAllConversationsByUserID);
 });
 
+
+/* -------------------------------------------------------------------------- */
+/*                              NOTIFICATION                                  */
+/* -------------------------------------------------------------------------- */
+Router.middleware(['isAuthenticated']).group((router) => {
+    router.get('/notification/:usertype/:user_id', NotificationController.getAllNotificationByUserTypeandID);
+    router.post('/notification/general_seen/updatebyuser', NotificationController.updateGeneralNotificationToSeen);
+    router.post('/notification/:notification_id/updatesingle_seen', NotificationController.updateSingleNotificationToSeen);
+});
+/* -------------------------------------------------------------------------- */
+/*                              NOTIFICATION                                  */
+/* -------------------------------------------------------------------------- */
+
+/* -------------------------------------------------------------------------- */
+/*                                  WALLET                                    */
+/* -------------------------------------------------------------------------- */
+Router.middleware(['isAuthenticated']).group((router) => {
+    router.get('/wallet/user_id', WalletController.getWalletByUserId);
+});
+/* -------------------------------------------------------------------------- */
+/*                                  WALLET                                    */
+/* -------------------------------------------------------------------------- */
 
 
 /* -------------------------------------------------------------------------- */
@@ -162,17 +176,19 @@ Router.group((router) => {
 // Routes
 
 Router.middleware(['isAuthenticated']).group((router) => {
+    // Router.group((router) => {
 
     // router.get();
 
 
     /* ------------------------------- Crop ------------------------------ */
 
-    router.post('/crop/:type/add', CropValidation.addCropForSaleValidator, CropController.add);
+    router.post('/crop/:type/add', CropValidation.addCropWantedValidator, CropController.add);
     router.get('/crop/getbycropwanted', CropController.getByCropWanted);
     router.get('/crop/getbycropauction', CropController.getByCropAuctions);
     router.get('/crop/getbycropoffer', CropController.getByCropOffer);
     router.get('/crop/getbyid/:id', CropController.getById);
+    router.get('/crop/:type/userid', CropController.getByTypeandUserID);
 
     router.post('/crop/:id/deactivate', CropController.deactivateCropById);
     router.post('/crop/:id/fulfil', OrderController.fulfilCropOffer);
@@ -237,6 +253,7 @@ Router.middleware(['isAuthenticated']).group((router) => {
 /* -------------------------------------------------------------------------- */
 
 Router.middleware('isAuthenticated').group((router) => {
+    // Router.group((router) => {
     /* ---------------------------------- Input ---------------------------------- */
     router.post('/input/add', InputsValidator.createInputValidator, InputController.createInput);
     router.get('/input/getallbyuserid/:user_id', InputController.getAllInputsByUser);
