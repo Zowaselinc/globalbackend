@@ -103,6 +103,12 @@ class OnfidoProvider {
         return doc;
     }
 
+    async retrieveApplicant(id) {
+        const applicant = await this.onfido.applicant.find(id);
+        return applicant;
+
+    }
+
     async checkDocument() {
         const newCheck = await this.onfido.check.create({
             applicantId: this.applicantId,

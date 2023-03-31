@@ -88,7 +88,7 @@ class KYCController {
                     first_name: body.first_name,
                     last_name: body.last_name,
                     phone_number: body.phone,
-                    dob: body.email,
+                    dob: body.dob,
                     country: body.country,
                     state: body.state,
                     gender: body.gender,
@@ -117,10 +117,15 @@ class KYCController {
                     } catch (error) {
                         console.log(error);
                     }
+                    var data = req.body
+
+
                     return res.status(200).json({
                         error: false,
                         message: "Successful",
                         data: { response: response },
+                        user: { userData, data },
+
                     });
                 } else {
                     return res.status(400).json({
@@ -190,6 +195,8 @@ class KYCController {
                     const document = documentList[index];
                     const downloadDocument = await OnfidoInstance.downloadDocument(document.id);
                     var base64 = await KYCController.streamToBase64(downloadDocument.asStream());
+                    var applicant = await OnfidoInstance.retrieveApplicant(kycDataObj.applicant_id);
+                    applicant['bvn'] = DecryptConfig(kycDataObj.bvn);
                     documentList[index]['base64'] = `data:${downloadDocument.contentType};base64,${base64}`;
                 }
                 return res.status(200).json({
@@ -197,7 +204,8 @@ class KYCController {
                     message: "Successful",
                     data: {
                         status: kycDataObj.verified == 1 ? "Verified" : "Pending Verification",
-                        documents: documentList
+                        documents: documentList,
+                        applicant: applicant
                     }
                 });
             } else {

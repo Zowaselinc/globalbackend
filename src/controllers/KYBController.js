@@ -133,14 +133,15 @@ class KYBController {
                 data: { status: "Unverified" }
             });
         } else {
-            
+
 
             return res.status(200).json({
                 error: false,
                 message: "Successful",
                 data: {
                     status: kybDataObj.status == "complete" ? "Verified" : "Pending Verification",
-                    check_id: kybDataObj.check_id
+                    check_id: kybDataObj.check_id,
+
                 }
             });
         }
@@ -159,15 +160,29 @@ class KYBController {
                 data: { status: "Unverified" }
             });
         } else {
-            return res.status(200).json({
-                error: false,
-                message: "Successful",
-                data: {
-                    CAC: kybDataObj.cac,
-                    Financial_Statement: kybDataObj.financial_statement,
-                    MOU: kybDataObj.mou
-                }
-            });
+            var split = `${appRoot}/public`;
+
+            var company_details = await Company.findOne({ where: { user_id: kybDataObj.user_id } });
+            if (company_details) {
+                return res.status(200).json({
+                    error: false,
+                    message: "Successful",
+                    data: {
+                        cac: kybDataObj.cac.split(split)[1],
+                        financial_statement: kybDataObj.financial_statement.split(split)[1],
+                        mou: kybDataObj.mou.split(split)[1],
+                        contact_person: company_details.contact_person,
+                        website: company_details.company_website,
+                        tax_id: kybDataObj.tax_id,
+                    }
+                });
+            } else {
+                return res.status(200).json({
+                    error: false,
+                    message: "An Error Occcured",
+
+                });
+            }
         }
     }
 }

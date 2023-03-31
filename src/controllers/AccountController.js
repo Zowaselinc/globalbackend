@@ -30,10 +30,8 @@ class AccountController {
                 var newName =
                     md5(file.name + new Date().toDateString()) + `.${extension}`;
                 profileImagePath = `/data/profile/${newName}`;
-
                 sampleFile = file;
                 uploadPath = `${appRoot}/public${profileImagePath}`;
-
                 sampleFile.mv(uploadPath, function (err) {
                     if (err) {
                         return res.status(500).send(err + " Error in uploading file");
