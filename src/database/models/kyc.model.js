@@ -13,11 +13,11 @@ let Schema = (Sequelize, mode) => {
             type: Sequelize.STRING
         },
         status: {
-            type: Sequelize.STRING
+            type: Sequelize.ENUM("pending", "complete", "failed")
         },
         bvn: {
             type: Sequelize.STRING
-        },        
+        },
         verified: {
             type: Sequelize.INTEGER
         },
