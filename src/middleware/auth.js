@@ -19,11 +19,11 @@ class AuthMiddleware {
                 var error = "";
                 const decoded = jwt.verify(auth, process.env.TOKEN_KEY);
                 var getToken = await AccessToken.findAll({ where: { user_id: decoded.user_id } });
-                var getKycdata = await KYC.findOne({ where: { user_id: decoded.user_id } });
-                var getKybdata = await KYB.findOne({ where: { user_id: decoded.user_id } });
+                var kycData = await KYC.findOne({ where: { user_id: decoded.user_id } });
+                var kybData = await KYB.findOne({ where: { user_id: decoded.user_id } });
                 var user = await User.findByPk(decoded.user_id);
-                if (getKycdata || getKybdata) {
-                    req.global = { user: user, kyc : getKycdata, kyb : getKybdata };
+                if (kycData || kybData) {
+                    req.global = { user: user, kyc : kycData, kyb : kybData };
                 } else {
                     req.global = { user: user };
                 }

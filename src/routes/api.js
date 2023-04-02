@@ -84,43 +84,41 @@ Router.middleware(['isAuthenticated']).group((router) => {
 
     router.get('/users/bytype/:type', UserController.getUsersByType);
 
-    router.get('/users/:id', UserController.getUserById);
+    router.get('/user', UserController.getUser);
 
-    router.get('/users/:id/orders', OrderController.getByBuyer);
+    router.get('/orders', OrderController.getByBuyer);
 
-    router.get('/users/:id/sales', OrderController.getBySeller);
+    router.get('/sales', OrderController.getBySeller);
 
-    router.get('/users/:id/crops', CropController.getAllCropsByUser);
+    router.get('/crops', CropController.getAllCropsByUser);
 
-    router.get('/users/:id/inputs', InputController.getAllInputsByUser);
+    router.get('/inputs', InputController.getAllInputsByUser);
 
 
     // Account Settings
 
-    router.post('/users/account', AccountValidator.updateAccountValidator, AccountController.updateAccountDetails);
+    router.post('/account', AccountValidator.updateAccountValidator, AccountController.updateAccountDetails);
 
-    router.post('/users/account/password', AccountValidator.changePasswordValidator, AccountController.changePassword);
+    router.post('/account/password', AccountValidator.changePasswordValidator, AccountController.changePassword);
 
-    router.get('/users/account/kyctypes', KYCController.getDocumentTypes);
+    router.get('/account/kyctypes', KYCController.getDocumentTypes);
 
-    router.post('/users/account/kyc', AccountValidator.startKYC, KYCController.startKycVerification);
+    router.post('/account/kyc', AccountValidator.startKYC, KYCController.startKycVerification);
 
-    router.get("/users/account/kycstatus", KYCController.retriveCheck);
-
-    router.get("/users/account/kycdocument/:id", KYCController.getDocument);
+    router.get("/account/kycstatus", KYCController.retriveCheck);
 
     /* ----------------------------------- KYB ---------------------------------- */
 
-    router.post('/users/account/kyb', AccountValidator.startKYB, KYBController.startKybVerification);
+    router.post('/account/kyb', AccountValidator.startKYB, KYBController.startKybVerification);
 
-    router.get("/users/account/kybstatus", KYBController.retriveCheck);
+    router.get("/account/kybstatus", KYBController.retriveCheck);
 
-    router.get("/users/account/kybdocument", KYBController.getDocument);
+    router.get("/account/kybdocument", KYBController.getDocument);
 
 
     /* ------------------------------ Team Memeber ------------------------------ */
 
-    router.post("/users/account/register/teammember", AccountValidator.registerTeamMember, TeamMemberController.registerTeamMember)
+    router.post("/account/team", AccountValidator.registerTeamMember, TeamMemberController.registerTeamMember)
 
     /* --------------------------- GET ALL SUB CATEGORIES --------------------------- */
 

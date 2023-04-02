@@ -63,9 +63,7 @@ class UserController {
     }
 
 
-    static async getUserById(req, res) {
-
-        var id = req.params.id;
+    static async getUser(req, res) {
 
         var userTypeMap = {
             merchant: Merchant,
@@ -74,7 +72,7 @@ class UserController {
             partner: Partner
         };
 
-        let user = await User.findByPk(id);
+        let user = req.global.user;
 
         if (user) {
             var checkCompany = await Company.findOne({ where: { user_id: user.id } });
@@ -82,7 +80,7 @@ class UserController {
 
         if (user) {
             user = await userTypeMap[user.type].findOne({
-                where: { user_id: id },
+                where: { user_id: user.id },
                 include: [
                     {
                         model: User,
